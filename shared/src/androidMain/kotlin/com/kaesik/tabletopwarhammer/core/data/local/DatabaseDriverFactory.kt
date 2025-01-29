@@ -1,4 +1,4 @@
-package com.kaesik.tabletopwarhammer.character_sheet.data.local
+package com.kaesik.tabletopwarhammer.core.data.local
 
 import android.content.Context
 import app.cash.sqldelight.db.SqlDriver

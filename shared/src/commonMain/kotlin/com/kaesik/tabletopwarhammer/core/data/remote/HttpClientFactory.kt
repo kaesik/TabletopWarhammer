@@ -1,4 +1,4 @@
-package com.kaesik.tabletopwarhammer.character_sheet.data.remote
+package com.kaesik.tabletopwarhammer.core.data.remote
 
 import io.ktor.client.HttpClient
 
