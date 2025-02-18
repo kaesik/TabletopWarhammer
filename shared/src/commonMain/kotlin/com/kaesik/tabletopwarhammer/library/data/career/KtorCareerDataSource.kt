@@ -1,4 +1,5 @@
 package com.kaesik.tabletopwarhammer.library.data.career
 
-class KtorCareerDataSource {
+interface KtorCareerDataSource {
+    fun getCareers(): List<CareerDto>
 }
