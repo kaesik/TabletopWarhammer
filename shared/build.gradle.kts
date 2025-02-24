@@ -36,6 +36,9 @@ kotlin {
             implementation(libs.supabase.postgrest)
             implementation(libs.supabase.auth)
             implementation(libs.supabase.realtime)
+
+//            implementation(libs.mongodb.driver)
+//            implementation(libs.mongodb.bson)
         }
 
         androidMain.dependencies {
@@ -52,6 +55,11 @@ kotlin {
             implementation(libs.kotlin.test)
             implementation(libs.assertk)
             implementation(libs.turbine)
+        }
+        getByName("commonMain") {
+            dependencies {
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
+            }
         }
     }
 }

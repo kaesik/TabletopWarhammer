@@ -1,4 +1,4 @@
-package com.kaesik.tabletopwarhammer.library.domain.library.attribute
+package com.kaesik.tabletopwarhammer.library.domain.library.items
 
 data class AttributeItem(
     val id: String,

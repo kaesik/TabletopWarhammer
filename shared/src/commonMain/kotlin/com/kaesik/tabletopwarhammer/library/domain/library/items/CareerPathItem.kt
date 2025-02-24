@@ -1,9 +1,10 @@
-package com.kaesik.tabletopwarhammer.library.domain.library.career
+package com.kaesik.tabletopwarhammer.library.domain.library.items
 
-data class CareerItem (
+data class CareerPathItem(
     val id: String,
     val name: String,
     val limitations: String,
+    val summary: String,
     val description: String,
     val advanceScheme: String,
     val quotations: String,
@@ -11,5 +12,5 @@ data class CareerItem (
     val source: String,
     val careerPath: String,
     val className: String,
-    val page: Int,
+    val page: Double
 )

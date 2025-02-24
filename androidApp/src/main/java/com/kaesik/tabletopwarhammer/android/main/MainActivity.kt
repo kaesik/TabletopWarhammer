@@ -1,4 +1,4 @@
-package com.kaesik.tabletopwarhammer.android
+package com.kaesik.tabletopwarhammer.android.main
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -9,17 +9,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.kaesik.tabletopwarhammer.Greeting
+import com.kaesik.tabletopwarhammer.main
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MyApplicationTheme {
+            MainTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    GreetingView(Greeting().greet())
+                    MainRoot()
+                    main()
                 }
             }
         }
@@ -27,14 +29,6 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun GreetingView(text: String) {
-    Text(text = text)
-}
-
-@Preview
-@Composable
-fun DefaultPreview() {
-    MyApplicationTheme {
-        GreetingView("Hello, Android!")
-    }
+fun MainRoot() {
+    TODO("Not yet implemented")
 }
