@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,7 +21,7 @@ import com.kaesik.tabletopwarhammer.character_sheet.presentation.CharacterSheetS
 @Composable
 fun CharacterCreatorScreen(
     state: CharacterCreatorState,
-    event: (CharacterCreatorEvent) -> Unit
+    onEvent: (CharacterCreatorEvent) -> Unit
 ) {
     Scaffold (
 
@@ -38,6 +39,7 @@ fun CharacterCreatorScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
+                    Text("Character Creator Screen")
                     Button1(
                         text = "Button 1",
                         onClick = { }
@@ -62,6 +64,6 @@ fun CharacterCreatorScreen(
 fun CharacterCreatorScreenPreview() {
     CharacterCreatorScreen(
         state = CharacterCreatorState(),
-        event = {}
+        onEvent = {}
     )
 }

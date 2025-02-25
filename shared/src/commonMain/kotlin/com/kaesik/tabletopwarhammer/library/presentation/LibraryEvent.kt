@@ -1,4 +1,5 @@
 package com.kaesik.tabletopwarhammer.library.presentation
 
-class LibraryEvent {
+sealed class LibraryEvent {
+    data class LoadLibrary(val library: String) : LibraryEvent()
 }

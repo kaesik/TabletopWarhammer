@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,7 +19,7 @@ import com.kaesik.tabletopwarhammer.library.presentation.LibraryState
 @Composable
 fun LibraryScreen(
     state: LibraryState,
-    event: (LibraryEvent) -> Unit
+    onEvent: (LibraryEvent) -> Unit
 ) {
     Scaffold (
 
@@ -36,17 +37,60 @@ fun LibraryScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
+                    Text("Library Screen")
                     Button1(
-                        text = "Button 1",
-                        onClick = { }
+                        text = "attribute",
+                        onClick = {
+                            onEvent(LibraryEvent.LoadLibrary("attribute"))
+                        }
                     )
                     Button1(
-                        text = "Button 2",
-                        onClick = { }
+                        text = "career",
+                        onClick = {
+                            onEvent(LibraryEvent.LoadLibrary("career"))
+                        }
                     )
                     Button1(
-                        text = "Button 3",
-                        onClick = { }
+                        text = "careerpath",
+                        onClick = {
+                            onEvent(LibraryEvent.LoadLibrary("careerpath"))
+                        }
+                    )
+                    Button1(
+                        text = "class",
+                        onClick = {
+                            onEvent(LibraryEvent.LoadLibrary("class"))
+                        }
+                    )
+                    Button1(
+                        text = "item",
+                        onClick = {
+                            onEvent(LibraryEvent.LoadLibrary("item"))
+                        }
+                    )
+                    Button1(
+                        text = "qualityflaw",
+                        onClick = {
+                            onEvent(LibraryEvent.LoadLibrary("qualityflaw"))
+                        }
+                    )
+                    Button1(
+                        text = "skill",
+                        onClick = {
+                            onEvent(LibraryEvent.LoadLibrary("skill"))
+                        }
+                    )
+                    Button1(
+                        text = "species",
+                        onClick = {
+                            onEvent(LibraryEvent.LoadLibrary("species"))
+                        }
+                    )
+                    Button1(
+                        text = "talent",
+                        onClick = {
+                            onEvent(LibraryEvent.LoadLibrary("talent"))
+                        }
                     )
                 }
             }
@@ -60,6 +104,6 @@ fun LibraryScreen(
 fun LibraryScreenPreview() {
     LibraryScreen(
         state = LibraryState(),
-        event = {}
+        onEvent = {}
     )
 }

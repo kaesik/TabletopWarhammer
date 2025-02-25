@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
@@ -19,7 +20,7 @@ import com.kaesik.tabletopwarhammer.menu.presentation.MenuState
 @Composable
 fun MenuScreen(
     state: MenuState,
-    event: (MenuEvent) -> Unit
+    onEvent: (MenuEvent) -> Unit
 ) {
     Scaffold (
 
@@ -37,17 +38,18 @@ fun MenuScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
+                    Text("Menu Screen")
                     Button1(
-                        text = "Button 1",
-                        onClick = { }
+                        text = "LibraryScreen",
+                        onClick = { onEvent(MenuEvent.NavigateToLibraryScreen)}
                     )
                     Button1(
-                        text = "Button 2",
-                        onClick = { }
+                        text = "CharacterSheetScreen",
+                        onClick = { onEvent(MenuEvent.NavigateToCharacterSheetScreen) }
                     )
                     Button1(
-                        text = "Button 3",
-                        onClick = { }
+                        text = "CharacterCreatorScreen",
+                        onClick = { onEvent(MenuEvent.NavigateToCharacterCreatorScreen) }
                     )
                 }
             }
@@ -61,6 +63,6 @@ fun MenuScreen(
 fun MenuScreenPreview() {
     MenuScreen(
         state = MenuState(),
-        event = {}
+        onEvent = {}
     )
 }

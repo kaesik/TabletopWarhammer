@@ -23,7 +23,10 @@ import com.kaesik.tabletopwarhammer.android.library.presentation.LibraryScreen
 import com.kaesik.tabletopwarhammer.android.menu.presentation.AndroidMenuViewModel
 import com.kaesik.tabletopwarhammer.android.menu.presentation.MenuScreen
 import com.kaesik.tabletopwarhammer.main
+import com.kaesik.tabletopwarhammer.menu.presentation.MenuEvent
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,7 +37,6 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     MainRoot()
-                    main()
                 }
             }
         }
@@ -50,8 +52,25 @@ fun MainRoot() {
             val state by viewModel.state.collectAsState()
             MenuScreen(
                 state = state,
-                event = {event ->
-                    viewModel.onEvent(event)
+                onEvent = {event ->
+                    when (event) {
+                        is MenuEvent.NavigateToLibraryScreen -> {
+                            navController.navigate(
+                                Routes.LIBRARY
+                            )
+                        }
+                        is MenuEvent.NavigateToCharacterSheetScreen -> {
+                            navController.navigate(
+                                Routes.CHARACTER_SHEET
+                            )
+                        }
+                        is MenuEvent.NavigateToCharacterCreatorScreen -> {
+                            navController.navigate(
+                                Routes.CHARACTER_CREATOR
+                            )
+                        }
+                        else -> viewModel.onEvent(event)
+                    }
                 }
             )
         }
@@ -60,7 +79,7 @@ fun MainRoot() {
             val state by viewModel.state.collectAsState()
             LibraryScreen(
                 state = state,
-                event = {event ->
+                onEvent = {event ->
                     viewModel.onEvent(event)
                 }
             )
@@ -70,7 +89,7 @@ fun MainRoot() {
             val state by viewModel.state.collectAsState()
             CharacterSheetScreen(
                 state = state,
-                event = {event ->
+                onEvent = {event ->
                     viewModel.onEvent(event)
                 }
             )
@@ -80,7 +99,7 @@ fun MainRoot() {
             val state by viewModel.state.collectAsState()
             CharacterCreatorScreen(
                 state = state,
-                event = {event ->
+                onEvent = {event ->
                     viewModel.onEvent(event)
                 }
             )
