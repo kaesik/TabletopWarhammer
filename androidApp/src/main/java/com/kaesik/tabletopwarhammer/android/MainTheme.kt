@@ -1,4 +1,4 @@
-package com.kaesik.tabletopwarhammer.android.main
+package com.kaesik.tabletopwarhammer.android
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape

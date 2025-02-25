@@ -1,4 +1,7 @@
 package com.kaesik.tabletopwarhammer.library.presentation
 
-class LibraryState {
-}
+import com.kaesik.tabletopwarhammer.library.domain.library.LibraryError
+
+data class LibraryState(
+    val error: LibraryError? = null
+)
