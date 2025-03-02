@@ -18,11 +18,10 @@ import com.kaesik.tabletopwarhammer.android.character_creator.presentation.Chara
 import com.kaesik.tabletopwarhammer.android.character_sheet.presentation.AndroidCharacterSheetViewModel
 import com.kaesik.tabletopwarhammer.android.character_sheet.presentation.CharacterSheetScreen
 import com.kaesik.tabletopwarhammer.android.core.presentation.Routes
-import com.kaesik.tabletopwarhammer.android.library.presentation.AndroidLibraryViewModel
-import com.kaesik.tabletopwarhammer.android.library.presentation.LibraryScreen
+import com.kaesik.tabletopwarhammer.android.library.presentation.library.AndroidLibraryViewModel
+import com.kaesik.tabletopwarhammer.android.library.presentation.library.LibraryScreen
 import com.kaesik.tabletopwarhammer.android.menu.presentation.AndroidMenuViewModel
 import com.kaesik.tabletopwarhammer.android.menu.presentation.MenuScreen
-import com.kaesik.tabletopwarhammer.main
 import com.kaesik.tabletopwarhammer.menu.presentation.MenuEvent
 import dagger.hilt.android.AndroidEntryPoint
 

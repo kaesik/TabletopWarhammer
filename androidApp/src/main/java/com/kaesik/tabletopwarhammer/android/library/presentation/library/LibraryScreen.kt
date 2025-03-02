@@ -1,4 +1,4 @@
-package com.kaesik.tabletopwarhammer.android.library.presentation
+package com.kaesik.tabletopwarhammer.android.library.presentation.library
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,8 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kaesik.tabletopwarhammer.android.library.presentation.components.Button1
-import com.kaesik.tabletopwarhammer.library.presentation.LibraryEvent
-import com.kaesik.tabletopwarhammer.library.presentation.LibraryState
+import com.kaesik.tabletopwarhammer.library.presentation.library.LibraryEvent
+import com.kaesik.tabletopwarhammer.library.presentation.library.LibraryState
 
 @Composable
 fun LibraryScreen(

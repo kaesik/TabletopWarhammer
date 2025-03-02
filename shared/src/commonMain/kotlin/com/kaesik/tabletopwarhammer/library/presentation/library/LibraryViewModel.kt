@@ -1,4 +1,4 @@
-package com.kaesik.tabletopwarhammer.library.presentation
+package com.kaesik.tabletopwarhammer.library.presentation.library
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update

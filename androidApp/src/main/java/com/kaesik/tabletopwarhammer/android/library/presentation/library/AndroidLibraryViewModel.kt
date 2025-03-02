@@ -1,8 +1,8 @@
-package com.kaesik.tabletopwarhammer.android.library.presentation
+package com.kaesik.tabletopwarhammer.android.library.presentation.library
 
 import androidx.lifecycle.ViewModel
-import com.kaesik.tabletopwarhammer.library.presentation.LibraryEvent
-import com.kaesik.tabletopwarhammer.library.presentation.LibraryViewModel
+import com.kaesik.tabletopwarhammer.library.presentation.library.LibraryEvent
+import com.kaesik.tabletopwarhammer.library.presentation.library.LibraryViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -12,8 +12,7 @@ class AndroidLibraryViewModel @Inject constructor(
 ): ViewModel()  {
 
     private val viewModel by lazy {
-    LibraryViewModel(
-    )
+    LibraryViewModel()
 }
 
     val state = viewModel.state

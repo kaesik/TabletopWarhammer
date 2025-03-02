@@ -1,4 +1,4 @@
-package com.kaesik.tabletopwarhammer.library.presentation
+package com.kaesik.tabletopwarhammer.library.presentation.library
 
 import com.kaesik.tabletopwarhammer.library.domain.library.LibraryError
 
