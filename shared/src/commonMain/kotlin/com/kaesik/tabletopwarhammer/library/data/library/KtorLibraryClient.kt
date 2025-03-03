@@ -33,6 +33,7 @@ class KtorLibraryClient : LibraryClient {
     }
 
     override suspend fun getAttributes(): List<AttributeItem> {
+        println("KtorLibraryClient.getAttributes")
         return try {
             supabaseClient
                 .from("attribute")
