@@ -20,8 +20,13 @@ import com.kaesik.tabletopwarhammer.android.character_sheet.presentation.Charact
 import com.kaesik.tabletopwarhammer.android.core.presentation.Routes
 import com.kaesik.tabletopwarhammer.android.library.presentation.library.AndroidLibraryViewModel
 import com.kaesik.tabletopwarhammer.android.library.presentation.library.LibraryScreen
+import com.kaesik.tabletopwarhammer.android.library.presentation.library_item.AndroidLibraryItemViewModel
+import com.kaesik.tabletopwarhammer.android.library.presentation.library_item.LibraryItemScreen
+import com.kaesik.tabletopwarhammer.android.library.presentation.library_list.AndroidLibraryListViewModel
+import com.kaesik.tabletopwarhammer.android.library.presentation.library_list.LibraryListScreen
 import com.kaesik.tabletopwarhammer.android.menu.presentation.AndroidMenuViewModel
 import com.kaesik.tabletopwarhammer.android.menu.presentation.MenuScreen
+import com.kaesik.tabletopwarhammer.library.presentation.library.LibraryEvent
 import com.kaesik.tabletopwarhammer.menu.presentation.MenuEvent
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -77,6 +82,34 @@ fun MainRoot() {
             val viewModel = hiltViewModel<AndroidLibraryViewModel>()
             val state by viewModel.state.collectAsState()
             LibraryScreen(
+                state = state,
+                onEvent = {event ->
+                    when (event) {
+                        is LibraryEvent.LoadLibrary -> {
+                            viewModel.onEvent(event)
+                            navController.navigate(
+                                Routes.LIBRARY_LIST
+                            )
+                        }
+                        else -> viewModel.onEvent(event)
+                    }
+                }
+            )
+        }
+        composable(route = Routes.LIBRARY_LIST) {
+            val viewModel = hiltViewModel<AndroidLibraryListViewModel>()
+            val state by viewModel.state.collectAsState()
+            LibraryListScreen(
+                state = state,
+                onEvent = {event ->
+                    viewModel.onEvent(event)
+                }
+            )
+        }
+        composable(route = Routes.LIBRARY_ITEM) {
+            val viewModel = hiltViewModel<AndroidLibraryItemViewModel>()
+            val state by viewModel.state.collectAsState()
+            LibraryItemScreen(
                 state = state,
                 onEvent = {event ->
                     viewModel.onEvent(event)

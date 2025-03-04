@@ -1,8 +1,8 @@
 package com.kaesik.tabletopwarhammer.library.domain.library.items
 
 data class ItemItem(
-    val id: String,
-    val name: String,
+    override val id: String,
+    override val name: String,
     val group: String,
     val source: String,
     val ap: String,
@@ -21,4 +21,4 @@ data class ItemItem(
     val meleeRanged: String,
     val type: String,
     val page: Double
-)
+): LibraryItem

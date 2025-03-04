@@ -1,8 +1,8 @@
 package com.kaesik.tabletopwarhammer.library.domain.library.items
 
 data class SpeciesItem(
-    val id: String,
-    val name: String,
+    override val id: String,
+    override val name: String,
     val description: String,
     val opinions: String,
     val source: String,
@@ -33,4 +33,4 @@ data class SpeciesItem(
     val initiative: String,
     val page: Double,
     val names: String
-)
+) : LibraryItem

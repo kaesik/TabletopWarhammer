@@ -1,8 +1,8 @@
 package com.kaesik.tabletopwarhammer.library.domain.library.items
 
 data class CareerPathItem(
-    val id: String,
-    val name: String,
+    override val id: String,
+    override val name: String,
     val limitations: String,
     val summary: String,
     val description: String,
@@ -13,4 +13,4 @@ data class CareerPathItem(
     val careerPath: String,
     val className: String,
     val page: Double
-)
+): LibraryItem

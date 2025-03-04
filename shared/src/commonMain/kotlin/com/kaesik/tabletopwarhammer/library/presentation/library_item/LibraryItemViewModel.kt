@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
 class LibraryItemViewModel {
-    private val _state = MutableStateFlow(LibraryState())
+    private val _state = MutableStateFlow(LibraryItemState())
     val state = _state
 
     fun onEvent(event: LibraryItemEvent) {
