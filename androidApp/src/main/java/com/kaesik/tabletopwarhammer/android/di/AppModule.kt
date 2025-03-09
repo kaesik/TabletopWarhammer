@@ -7,6 +7,7 @@ import com.kaesik.tabletopwarhammer.core.data.remote.HttpClientFactory
 import com.kaesik.tabletopwarhammer.library.data.library.KtorLibraryClient
 import com.kaesik.tabletopwarhammer.library.domain.library.Library
 import com.kaesik.tabletopwarhammer.library.domain.library.LibraryClient
+import com.kaesik.tabletopwarhammer.library.domain.library.items.LibraryItem
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -38,9 +39,21 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideLoadLibraryUseCase(
+    fun provideLibraryUseCase(
         client: LibraryClient,
     ): Library {
         return Library(client)
+    }
+
+    @Provides
+    @Singleton
+    fun provideLibraryId(): String {
+        return ""
+    }
+
+    @Provides
+    @Singleton
+    fun provideLibraryList(): List<LibraryItem> {
+        return emptyList()
     }
 }

@@ -7,5 +7,5 @@ data class QualityFlawItem(
     val description: String,
     val isQuality: Boolean,
     val source: String,
-    val page: Double
+    val page: Int
 ): LibraryItem

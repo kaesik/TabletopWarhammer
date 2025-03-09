@@ -6,5 +6,5 @@ data class ClassItem(
     val description: String,
     val trappings: String,
     val careers: String,
-    val page: Double
+    val page: Int
 ): LibraryItem

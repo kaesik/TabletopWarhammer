@@ -33,6 +33,7 @@ import com.kaesik.tabletopwarhammer.library.domain.library.items.CareerItem
 import com.kaesik.tabletopwarhammer.library.domain.library.items.CareerPathItem
 import com.kaesik.tabletopwarhammer.library.domain.library.items.ClassItem
 import com.kaesik.tabletopwarhammer.library.domain.library.items.ItemItem
+import com.kaesik.tabletopwarhammer.library.domain.library.items.LibraryItem
 import com.kaesik.tabletopwarhammer.library.domain.library.items.QualityFlawItem
 import com.kaesik.tabletopwarhammer.library.domain.library.items.SkillItem
 import com.kaesik.tabletopwarhammer.library.domain.library.items.SpeciesItem
@@ -221,6 +222,22 @@ class KtorLibraryClient : LibraryClient {
                 .select()
                 .decodeList<TalentDto>()
                 .map { it.toTalentItem() }
+        } catch (e: ClientRequestException) {
+            throw LibraryException(LibraryError.CLIENT_ERROR)
+        } catch (e: ServerResponseException) {
+            throw LibraryException(LibraryError.SERVER_ERROR)
+        } catch (e: HttpRequestTimeoutException) {
+            throw LibraryException(LibraryError.SERVICE_UNAVAILABLE)
+        } catch (e: Exception) {
+            throw LibraryException(LibraryError.UNKNOWN_ERROR)
+        }
+    }
+
+    override suspend fun getLibraryItem(id: String, libraryList: List<LibraryItem>): LibraryItem {
+        println("KtorLibraryClient.getLibraryItem")
+        return try {
+            libraryList.find { it.id == id }
+                ?: throw LibraryException(LibraryError.UNKNOWN_ERROR)
         } catch (e: ClientRequestException) {
             throw LibraryException(LibraryError.CLIENT_ERROR)
         } catch (e: ServerResponseException) {

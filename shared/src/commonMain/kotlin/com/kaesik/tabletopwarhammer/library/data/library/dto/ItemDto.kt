@@ -44,5 +44,5 @@ data class ItemDto(
     @SerialName("type")
     val type: String,
     @SerialName("page")
-    val page: Double
+    val page: Int
 )

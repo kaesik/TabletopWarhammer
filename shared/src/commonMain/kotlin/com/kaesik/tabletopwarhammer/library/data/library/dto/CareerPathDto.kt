@@ -9,24 +9,12 @@ data class CareerPathDto(
     val id: String,
     @SerialName("name")
     val name: String,
-    @SerialName("limitations")
-    val limitations: String,
-    @SerialName("summary")
-    val summary: String,
-    @SerialName("description")
-    val description: String,
-    @SerialName("advance_scheme")
-    val advanceScheme: String,
-    @SerialName("quotations")
-    val quotations: String,
-    @SerialName("adventuring")
-    val adventuring: String,
-    @SerialName("source")
-    val source: String,
-    @SerialName("career_path")
-    val careerPath: String,
-    @SerialName("class_name")
-    val className: String,
-    @SerialName("page")
-    val page: Double
+    @SerialName("status")
+    val status: String,
+    @SerialName("skills")
+    val skills: String,
+    @SerialName("trappings")
+    val trappings: String,
+    @SerialName("talents")
+    val talents: String,
 )

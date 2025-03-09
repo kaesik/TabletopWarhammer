@@ -31,6 +31,6 @@ data class SpeciesItem(
     val hairColour: String,
     val height: String,
     val initiative: String,
-    val page: Double,
+    val page: Int,
     val names: String
 ) : LibraryItem

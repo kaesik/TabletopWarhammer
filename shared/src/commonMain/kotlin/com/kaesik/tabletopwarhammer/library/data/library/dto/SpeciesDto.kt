@@ -66,7 +66,7 @@ data class SpeciesDto(
     @SerialName("initiative")
     val initiative: String,
     @SerialName("page")
-    val page: Double,
+    val page: Int,
     @SerialName("names")
     val names: String
 )

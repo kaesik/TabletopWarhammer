@@ -20,5 +20,5 @@ data class ItemItem(
     val range: String,
     val meleeRanged: String,
     val type: String,
-    val page: Double
+    val page: Int
 ): LibraryItem

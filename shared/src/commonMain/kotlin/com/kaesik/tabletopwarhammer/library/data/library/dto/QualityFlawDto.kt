@@ -18,5 +18,5 @@ data class QualityFlawDto(
     @SerialName("source")
     val source: String,
     @SerialName("page")
-    val page: Double
+    val page: Int
 )

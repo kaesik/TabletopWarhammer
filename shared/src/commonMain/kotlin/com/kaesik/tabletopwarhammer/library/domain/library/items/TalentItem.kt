@@ -7,5 +7,5 @@ data class TalentItem(
     val tests: String,
     val description: String,
     val source: String,
-    val page: Double
+    val page: Int
 ): LibraryItem

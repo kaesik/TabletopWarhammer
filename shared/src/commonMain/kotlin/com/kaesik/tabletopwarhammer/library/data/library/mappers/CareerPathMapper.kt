@@ -7,15 +7,9 @@ fun CareerPathDto.toCareerPathItem(): CareerPathItem {
     return CareerPathItem(
         id = id,
         name = name,
-        limitations = limitations,
-        summary = summary,
-        description = description,
-        advanceScheme = advanceScheme,
-        quotations = quotations,
-        adventuring = adventuring,
-        source = source,
-        careerPath = careerPath,
-        className = className,
-        page = page,
+        skills = skills,
+        status = status,
+        trappings = trappings,
+        talents = talents
     )
 }

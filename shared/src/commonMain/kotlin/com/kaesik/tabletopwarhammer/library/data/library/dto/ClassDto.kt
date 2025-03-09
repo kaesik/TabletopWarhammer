@@ -16,5 +16,5 @@ data class ClassDto(
     @SerialName("careers")
     val careers: String,
     @SerialName("page")
-    val page: Double
+    val page: Int
 )

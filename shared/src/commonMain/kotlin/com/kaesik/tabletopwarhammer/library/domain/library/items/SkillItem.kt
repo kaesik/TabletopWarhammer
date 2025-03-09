@@ -9,5 +9,5 @@ data class SkillItem(
     val description: String,
     val specialization: String,
     val source: String,
-    val page: Double
+    val page: Int
 ): LibraryItem

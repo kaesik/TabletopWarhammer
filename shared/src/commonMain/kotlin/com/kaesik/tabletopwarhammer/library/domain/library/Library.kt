@@ -57,4 +57,17 @@ class Library(
             Resource.Error(e)
         }
     }
+
+    suspend fun loadLibraryList(
+        id: String,
+        libraryList: List<LibraryItem>,
+    ): Resource<LibraryItem> {
+        return try {
+            val libraryItem = client.getLibraryItem(id, libraryList)
+            Resource.Success(libraryItem)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource.Error(e)
+        }
+    }
 }

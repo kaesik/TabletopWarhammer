@@ -22,5 +22,5 @@ data class SkillDto(
     @SerialName("source")
     val source: String,
     @SerialName("page")
-    val page: Double
+    val page: Int
 )

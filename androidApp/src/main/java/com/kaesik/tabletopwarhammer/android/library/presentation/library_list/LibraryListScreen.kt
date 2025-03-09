@@ -8,13 +8,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.kaesik.tabletopwarhammer.library.domain.library.items.LibraryItem
 import com.kaesik.tabletopwarhammer.library.presentation.library_list.LibraryListEvent
 import com.kaesik.tabletopwarhammer.library.presentation.library_list.LibraryListState
 
 @Composable
 fun LibraryListScreen(
     state: LibraryListState,
-    onEvent: (LibraryListEvent) -> Unit
+    onEvent: (LibraryListEvent) -> Unit,
+    libraryList: List<LibraryItem>
 ) {
     Scaffold { padding ->
         LazyColumn(
@@ -34,6 +36,7 @@ fun LibraryListScreen(
 fun LibraryListScreenPreview() {
     LibraryListScreen(
         state = LibraryListState(),
-        onEvent = {}
+        onEvent = {},
+        libraryList = emptyList()
     )
 }

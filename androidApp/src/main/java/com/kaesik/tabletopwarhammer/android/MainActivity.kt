@@ -26,7 +26,10 @@ import com.kaesik.tabletopwarhammer.android.library.presentation.library_list.An
 import com.kaesik.tabletopwarhammer.android.library.presentation.library_list.LibraryListScreen
 import com.kaesik.tabletopwarhammer.android.menu.presentation.AndroidMenuViewModel
 import com.kaesik.tabletopwarhammer.android.menu.presentation.MenuScreen
+import com.kaesik.tabletopwarhammer.library.domain.library.items.LibraryItem
 import com.kaesik.tabletopwarhammer.library.presentation.library.LibraryEvent
+import com.kaesik.tabletopwarhammer.library.presentation.library_list.LibraryListEvent
+import com.kaesik.tabletopwarhammer.library.presentation.library_list.LibraryListState
 import com.kaesik.tabletopwarhammer.menu.presentation.MenuEvent
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -87,23 +90,33 @@ fun MainRoot() {
                     when (event) {
                         is LibraryEvent.LoadLibrary -> {
                             viewModel.onEvent(event)
-                            navController.navigate(
-                                Routes.LIBRARY_LIST
-                            )
+                            navController.currentBackStackEntry?.savedStateHandle?.set("library_state", state)
+                            navController.navigate(Routes.LIBRARY_LIST)
                         }
                         else -> viewModel.onEvent(event)
                     }
                 }
             )
         }
-        composable(route = Routes.LIBRARY_LIST) {
+        composable(route = Routes.LIBRARY_LIST) {backStackEntry ->
             val viewModel = hiltViewModel<AndroidLibraryListViewModel>()
+            val libraryState = backStackEntry.savedStateHandle.get<LibraryListState>("library_state")
             val state by viewModel.state.collectAsState()
+            val libraryList = state.list
             LibraryListScreen(
                 state = state,
-                onEvent = {event ->
-                    viewModel.onEvent(event)
-                }
+                onEvent = { event ->
+                    when (event) {
+                        is LibraryListEvent.LoadItem -> {
+                            viewModel.onEvent(event)
+                            navController.navigate(
+                                Routes.LIBRARY_ITEM
+                            )
+                        }
+                        else -> viewModel.onEvent(event)
+                    }
+                },
+                libraryList = libraryState?.list ?: emptyList(),
             )
         }
         composable(route = Routes.LIBRARY_ITEM) {
