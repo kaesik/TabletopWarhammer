@@ -14,7 +14,7 @@ import javax.inject.Inject
 class AndroidLibraryListViewModel @Inject constructor(
     private val library: Library,
     private val id: String,
-    private val libraryList: List<LibraryItem>,
+    @JvmSuppressWildcards private val libraryList: List<LibraryItem>,
 ): ViewModel() {
 
     private val viewModel by lazy {
