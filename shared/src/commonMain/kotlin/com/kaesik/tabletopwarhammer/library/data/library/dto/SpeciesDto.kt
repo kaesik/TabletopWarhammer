@@ -10,63 +10,63 @@ data class SpeciesDto(
     @SerialName("name")
     val name: String,
     @SerialName("description")
-    val description: String,
+    val description: String?,
     @SerialName("opinions")
-    val opinions: String,
+    val opinions: String?,
     @SerialName("source")
-    val source: String,
+    val source: String?,
     @SerialName("weapon_skill")
-    val weaponSkill: String,
+    val weaponSkill: String?,
     @SerialName("ballistic_skill")
-    val ballisticSkill: String,
+    val ballisticSkill: String?,
     @SerialName("strength")
-    val strength: String,
+    val strength: String?,
     @SerialName("toughness")
-    val toughness: String,
+    val toughness: String?,
     @SerialName("agility")
-    val agility: String,
+    val agility: String?,
     @SerialName("dexterity")
-    val dexterity: String,
+    val dexterity: String?,
     @SerialName("intelligence")
-    val intelligence: String,
+    val intelligence: String?,
     @SerialName("willpower")
-    val willpower: String,
+    val willpower: String?,
     @SerialName("fellowship")
-    val fellowship: String,
+    val fellowship: String?,
     @SerialName("wounds")
-    val wounds: String,
+    val wounds: String?,
     @SerialName("fate_points")
-    val fatePoints: String,
+    val fatePoints: String?,
     @SerialName("resilience")
-    val resilience: String,
+    val resilience: String?,
     @SerialName("extra_points")
-    val extraPoints: String,
+    val extraPoints: String?,
     @SerialName("movement")
-    val movement: String,
+    val movement: String?,
     @SerialName("skills")
-    val skills: String,
+    val skills: String?,
     @SerialName("talents")
-    val talents: String,
+    val talents: String?,
     @SerialName("forenames")
-    val forenames: String,
+    val forenames: String?,
     @SerialName("surnames")
-    val surnames: String,
+    val surnames: String?,
     @SerialName("clans")
-    val clans: String,
+    val clans: String?,
     @SerialName("epithets")
-    val epithets: String,
+    val epithets: String?,
     @SerialName("age")
-    val age: String,
+    val age: String?,
     @SerialName("eye_colour")
-    val eyeColour: String,
+    val eyeColour: String?,
     @SerialName("hair_colour")
-    val hairColour: String,
+    val hairColour: String?,
     @SerialName("height")
-    val height: String,
+    val height: String?,
     @SerialName("initiative")
-    val initiative: String,
+    val initiative: String?,
     @SerialName("page")
-    val page: Int,
+    val page: Int?,
     @SerialName("names")
-    val names: String
+    val names: String?,
 )

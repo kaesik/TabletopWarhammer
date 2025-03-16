@@ -7,14 +7,13 @@ import com.kaesik.tabletopwarhammer.library.domain.library.items.LibraryItem
 import com.kaesik.tabletopwarhammer.library.presentation.library_list.LibraryListEvent
 import com.kaesik.tabletopwarhammer.library.presentation.library_list.LibraryListViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
 import javax.inject.Inject
 
 @HiltViewModel
 class AndroidLibraryListViewModel @Inject constructor(
     private val library: Library,
     private val id: String,
-    @JvmSuppressWildcards private val libraryList: List<LibraryItem>,
+    private val libraryList: @JvmSuppressWildcards List<LibraryItem>,
 ): ViewModel() {
 
     private val viewModel by lazy {

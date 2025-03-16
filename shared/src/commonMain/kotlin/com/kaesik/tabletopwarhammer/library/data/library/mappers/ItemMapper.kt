@@ -22,7 +22,7 @@ fun ItemDto.toItemItem(): ItemItem {
         qualitiesAndFlaws = qualitiesAndFlaws,
         quantity = quantity,
         range = range,
-        meleeRanged = meleeRanged,
+        meeleRanged = meeleRanged,
         type = type,
         page = page
     )

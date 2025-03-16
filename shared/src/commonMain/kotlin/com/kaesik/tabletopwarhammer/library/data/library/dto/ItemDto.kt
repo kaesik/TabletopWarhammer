@@ -10,39 +10,39 @@ data class ItemDto(
     @SerialName("name")
     val name: String,
     @SerialName("group")
-    val group: String,
+    val group: String?,
     @SerialName("source")
-    val source: String,
+    val source: String?,
     @SerialName("ap")
-    val ap: String,
+    val ap: String?,
     @SerialName("availability")
-    val availability: String,
+    val availability: String?,
     @SerialName("carries")
-    val carries: String,
+    val carries: String?,
     @SerialName("damage")
-    val damage: String,
+    val damage: String?,
     @SerialName("description")
-    val description: String,
+    val description: String?,
     @SerialName("encumbrance")
-    val encumbrance: String,
+    val encumbrance: String?,
     @SerialName("is_2h")
-    val isTwoHanded: Boolean,
+    val isTwoHanded: Boolean?,
     @SerialName("locations")
-    val locations: String,
+    val locations: String?,
     @SerialName("penalty")
-    val penalty: String,
+    val penalty: String?,
     @SerialName("price")
-    val price: String,
+    val price: String?,
     @SerialName("qualities_and_flaws")
-    val qualitiesAndFlaws: String,
+    val qualitiesAndFlaws: String?,
     @SerialName("quantity")
-    val quantity: String,
+    val quantity: String?,
     @SerialName("range")
-    val range: String,
+    val range: String?,
     @SerialName("meele_ranged")
-    val meleeRanged: String,
+    val meeleRanged: String?,
     @SerialName("type")
-    val type: String,
+    val type: String?,
     @SerialName("page")
-    val page: Int
+    val page: Int?,
 )

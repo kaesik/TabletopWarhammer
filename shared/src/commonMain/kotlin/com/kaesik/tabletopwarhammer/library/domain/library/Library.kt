@@ -12,41 +12,15 @@ class Library(
         println("Library.loadLibrary")
         return try {
             val library = when (fromTable) {
-                "attribute" -> {
-                    client.getAttributes()
-                }
-
-                "career" -> {
-                    client.getCareers()
-                }
-
-                "careerpath" -> {
-                    client.getCareerPaths()
-                }
-
-                "class" -> {
-                    client.getClasses()
-                }
-
-                "item" -> {
-                    client.getItems()
-                }
-
-                "qualityflaw" -> {
-                    client.getQualitiesFlaws()
-                }
-
-                "skill" -> {
-                    client.getSkills()
-                }
-
-                "species" -> {
-                    client.getSpecies()
-                }
-
-                "talent" -> {
-                    client.getTalents()
-                }
+                "attribute" -> { client.getAttributes() }
+                "career" -> { client.getCareers() }
+                "careerpath" -> { client.getCareerPaths() }
+                "class" -> { client.getClasses() }
+                "item" -> { client.getItems() }
+                "qualityflaw" -> { client.getQualitiesFlaws() }
+                "skill" -> { client.getSkills() }
+                "species" -> { client.getSpecies() }
+                "talent" -> { client.getTalents() }
 
                 else -> emptyList()
             }

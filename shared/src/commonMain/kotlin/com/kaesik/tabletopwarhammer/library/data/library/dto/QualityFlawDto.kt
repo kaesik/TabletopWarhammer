@@ -10,13 +10,13 @@ data class QualityFlawDto(
     @SerialName("name")
     val name: String,
     @SerialName("group")
-    val group: String,
+    val group: String?,
     @SerialName("description")
-    val description: String,
+    val description: String?,
     @SerialName("is_quality")
-    val isQuality: Boolean,
+    val isQuality: Boolean?,
     @SerialName("source")
-    val source: String,
+    val source: String?,
     @SerialName("page")
-    val page: Int
+    val page: Int?,
 )

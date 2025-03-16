@@ -56,18 +56,8 @@ class KtorLibraryClient : LibraryClient {
                 .decodeList<AttributeDto>()
                 .map { it.toAttributeItem() }
 
-        } catch (e: ClientRequestException) {
-//            println(e)
-            throw LibraryException(LibraryError.CLIENT_ERROR)
-        } catch (e: ServerResponseException) {
-//            println(e)
-            throw LibraryException(LibraryError.SERVER_ERROR)
-        } catch (e: HttpRequestTimeoutException) {
-//            println(e)
-            throw LibraryException(LibraryError.SERVICE_UNAVAILABLE)
         } catch (e: Exception) {
-//            println(e)
-            throw LibraryException(LibraryError.UNKNOWN_ERROR)
+            handleException(e)
         }
     }
 
@@ -80,18 +70,8 @@ class KtorLibraryClient : LibraryClient {
                 .decodeList<CareerDto>()
                 .map { it.toCareerItem() }
 
-        } catch (e: ClientRequestException) {
-//            println(e)
-            throw LibraryException(LibraryError.CLIENT_ERROR)
-        } catch (e: ServerResponseException) {
-//            println(e)
-            throw LibraryException(LibraryError.SERVER_ERROR)
-        } catch (e: HttpRequestTimeoutException) {
-//            println(e)
-            throw LibraryException(LibraryError.SERVICE_UNAVAILABLE)
         } catch (e: Exception) {
-//            println(e)
-            throw LibraryException(LibraryError.UNKNOWN_ERROR)
+            handleException(e)
         }
     }
 
@@ -104,18 +84,8 @@ class KtorLibraryClient : LibraryClient {
                 .decodeList<CareerPathDto>()
                 .map { it.toCareerPathItem() }
 
-        } catch (e: ClientRequestException) {
-//            println(e)
-            throw LibraryException(LibraryError.CLIENT_ERROR)
-        } catch (e: ServerResponseException) {
-//            println(e)
-            throw LibraryException(LibraryError.SERVER_ERROR)
-        } catch (e: HttpRequestTimeoutException) {
-//            println(e)
-            throw LibraryException(LibraryError.SERVICE_UNAVAILABLE)
         } catch (e: Exception) {
-//            println(e)
-            throw LibraryException(LibraryError.UNKNOWN_ERROR)
+            handleException(e)
         }
     }
 
@@ -127,14 +97,8 @@ class KtorLibraryClient : LibraryClient {
                 .select()
                 .decodeList<ClassDto>()
                 .map { it.toClassItem() }
-        } catch (e: ClientRequestException) {
-            throw LibraryException(LibraryError.CLIENT_ERROR)
-        } catch (e: ServerResponseException) {
-            throw LibraryException(LibraryError.SERVER_ERROR)
-        } catch (e: HttpRequestTimeoutException) {
-            throw LibraryException(LibraryError.SERVICE_UNAVAILABLE)
         } catch (e: Exception) {
-            throw LibraryException(LibraryError.UNKNOWN_ERROR)
+            handleException(e)
         }
     }
 
@@ -146,14 +110,8 @@ class KtorLibraryClient : LibraryClient {
                 .select()
                 .decodeList<ItemDto>()
                 .map { it.toItemItem() }
-        } catch (e: ClientRequestException) {
-            throw LibraryException(LibraryError.CLIENT_ERROR)
-        } catch (e: ServerResponseException) {
-            throw LibraryException(LibraryError.SERVER_ERROR)
-        } catch (e: HttpRequestTimeoutException) {
-            throw LibraryException(LibraryError.SERVICE_UNAVAILABLE)
         } catch (e: Exception) {
-            throw LibraryException(LibraryError.UNKNOWN_ERROR)
+            handleException(e)
         }
     }
 
@@ -165,14 +123,8 @@ class KtorLibraryClient : LibraryClient {
                 .select()
                 .decodeList<QualityFlawDto>()
                 .map { it.toQualityFlawItem() }
-        } catch (e: ClientRequestException) {
-            throw LibraryException(LibraryError.CLIENT_ERROR)
-        } catch (e: ServerResponseException) {
-            throw LibraryException(LibraryError.SERVER_ERROR)
-        } catch (e: HttpRequestTimeoutException) {
-            throw LibraryException(LibraryError.SERVICE_UNAVAILABLE)
         } catch (e: Exception) {
-            throw LibraryException(LibraryError.UNKNOWN_ERROR)
+            handleException(e)
         }
     }
 
@@ -184,14 +136,8 @@ class KtorLibraryClient : LibraryClient {
                 .select()
                 .decodeList<SkillDto>()
                 .map { it.toSkillItem() }
-        } catch (e: ClientRequestException) {
-            throw LibraryException(LibraryError.CLIENT_ERROR)
-        } catch (e: ServerResponseException) {
-            throw LibraryException(LibraryError.SERVER_ERROR)
-        } catch (e: HttpRequestTimeoutException) {
-            throw LibraryException(LibraryError.SERVICE_UNAVAILABLE)
         } catch (e: Exception) {
-            throw LibraryException(LibraryError.UNKNOWN_ERROR)
+            handleException(e)
         }
     }
 
@@ -203,14 +149,8 @@ class KtorLibraryClient : LibraryClient {
                 .select()
                 .decodeList<SpeciesDto>()
                 .map { it.toSpeciesItem() }
-        } catch (e: ClientRequestException) {
-            throw LibraryException(LibraryError.CLIENT_ERROR)
-        } catch (e: ServerResponseException) {
-            throw LibraryException(LibraryError.SERVER_ERROR)
-        } catch (e: HttpRequestTimeoutException) {
-            throw LibraryException(LibraryError.SERVICE_UNAVAILABLE)
         } catch (e: Exception) {
-            throw LibraryException(LibraryError.UNKNOWN_ERROR)
+            handleException(e)
         }
     }
 
@@ -222,14 +162,8 @@ class KtorLibraryClient : LibraryClient {
                 .select()
                 .decodeList<TalentDto>()
                 .map { it.toTalentItem() }
-        } catch (e: ClientRequestException) {
-            throw LibraryException(LibraryError.CLIENT_ERROR)
-        } catch (e: ServerResponseException) {
-            throw LibraryException(LibraryError.SERVER_ERROR)
-        } catch (e: HttpRequestTimeoutException) {
-            throw LibraryException(LibraryError.SERVICE_UNAVAILABLE)
         } catch (e: Exception) {
-            throw LibraryException(LibraryError.UNKNOWN_ERROR)
+            handleException(e)
         }
     }
 
@@ -238,14 +172,8 @@ class KtorLibraryClient : LibraryClient {
         return try {
             libraryList.find { it.id == id }
                 ?: throw LibraryException(LibraryError.UNKNOWN_ERROR)
-        } catch (e: ClientRequestException) {
-            throw LibraryException(LibraryError.CLIENT_ERROR)
-        } catch (e: ServerResponseException) {
-            throw LibraryException(LibraryError.SERVER_ERROR)
-        } catch (e: HttpRequestTimeoutException) {
-            throw LibraryException(LibraryError.SERVICE_UNAVAILABLE)
         } catch (e: Exception) {
-            throw LibraryException(LibraryError.UNKNOWN_ERROR)
+            handleException(e)
         }
     }
 }

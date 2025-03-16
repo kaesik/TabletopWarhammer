@@ -10,11 +10,11 @@ data class ClassDto(
     @SerialName("name")
     val name: String,
     @SerialName("description")
-    val description: String,
+    val description: String?,
     @SerialName("trappings")
-    val trappings: String,
+    val trappings: String?,
     @SerialName("careers")
-    val careers: String,
+    val careers: String?,
     @SerialName("page")
-    val page: Int
+    val page: Int?,
 )

@@ -4,7 +4,6 @@ import com.kaesik.tabletopwarhammer.core.domain.util.Resource
 import com.kaesik.tabletopwarhammer.library.domain.library.Library
 import com.kaesik.tabletopwarhammer.library.domain.library.LibraryException
 import com.kaesik.tabletopwarhammer.library.domain.library.items.LibraryItem
-import com.kaesik.tabletopwarhammer.library.presentation.library.LibraryState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

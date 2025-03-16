@@ -10,23 +10,23 @@ data class CareerDto(
     @SerialName("name")
     val name: String,
     @SerialName("limitations")
-    val limitations: String,
+    val limitations: String?,
     @SerialName("summary")
-    val summary: String,
+    val summary: String?,
     @SerialName("description")
-    val description: String,
+    val description: String?,
     @SerialName("advance_scheme")
-    val advanceScheme: String,
+    val advanceScheme: String?,
     @SerialName("quotations")
-    val quotations: String,
+    val quotations: String?,
     @SerialName("adventuring")
-    val adventuring: String,
+    val adventuring: String?,
     @SerialName("source")
-    val source: String,
+    val source: String?,
     @SerialName("career_path")
-    val careerPath: String,
+    val careerPath: String?,
     @SerialName("class_name")
-    val className: String,
+    val className: String?,
     @SerialName("page")
-    val page: Int,
+    val page: Int?,
     )

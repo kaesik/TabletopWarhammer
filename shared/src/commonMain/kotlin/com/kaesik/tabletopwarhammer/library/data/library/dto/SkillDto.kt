@@ -10,17 +10,17 @@ data class SkillDto(
     @SerialName("name")
     val name: String,
     @SerialName("attribute")
-    val attribute: String,
+    val attribute: String?,
     @SerialName("is_basic")
-    val isBasic: Boolean,
+    val isBasic: Boolean?,
     @SerialName("is_grouped")
-    val isGrouped: Boolean,
+    val isGrouped: Boolean?,
     @SerialName("description")
-    val description: String,
+    val description: String?,
     @SerialName("specialization")
-    val specialization: String,
+    val specialization: String?,
     @SerialName("source")
-    val source: String,
+    val source: String?,
     @SerialName("page")
-    val page: Int
+    val page: Int?,
 )

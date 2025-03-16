@@ -10,11 +10,11 @@ data class CareerPathDto(
     @SerialName("name")
     val name: String,
     @SerialName("status")
-    val status: String,
+    val status: String?,
     @SerialName("skills")
-    val skills: String,
+    val skills: String?,
     @SerialName("trappings")
-    val trappings: String,
+    val trappings: String?,
     @SerialName("talents")
-    val talents: String,
+    val talents: String?,
 )

@@ -10,9 +10,9 @@ data class AttributeDto(
     @SerialName("name")
     val name: String,
     @SerialName("description")
-    val description: String,
+    val description: String?,
     @SerialName("short_name")
-    val shortName: String,
+    val shortName: String?,
     @SerialName("page")
-    val page: Int,
+    val page: Int?,
 )

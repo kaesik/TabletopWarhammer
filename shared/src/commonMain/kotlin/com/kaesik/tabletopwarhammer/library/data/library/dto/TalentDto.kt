@@ -10,13 +10,13 @@ data class TalentDto(
     @SerialName("name")
     val name: String,
     @SerialName("max")
-    val max: String,
+    val max: String?,
     @SerialName("tests")
-    val tests: String,
+    val tests: String?,
     @SerialName("description")
-    val description: String,
+    val description: String?,
     @SerialName("source")
-    val source: String,
+    val source: String?,
     @SerialName("page")
-    val page: Int
+    val page: Int?,
 )
