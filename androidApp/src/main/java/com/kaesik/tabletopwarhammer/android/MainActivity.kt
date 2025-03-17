@@ -90,7 +90,6 @@ fun MainRoot() {
                     when (event) {
                         is LibraryEvent.LoadLibrary -> {
                             viewModel.onEvent(event)
-                            navController.currentBackStackEntry?.savedStateHandle?.set("library_state", state.result)
                             navController.navigate(Routes.LIBRARY_LIST)
                         }
                         else -> viewModel.onEvent(event)
@@ -100,23 +99,19 @@ fun MainRoot() {
         }
         composable(route = Routes.LIBRARY_LIST) {backStackEntry ->
             val viewModel = hiltViewModel<AndroidLibraryListViewModel>()
-            val libraryState = backStackEntry.savedStateHandle.get<LibraryListState>("library_state")
             val state by viewModel.state.collectAsState()
-            val libraryList = backStackEntry.savedStateHandle.get<List<LibraryItem>>("library_list")
+
             LibraryListScreen(
                 state = state,
                 onEvent = { event ->
                     when (event) {
                         is LibraryListEvent.LoadItem -> {
                             viewModel.onEvent(event)
-                            navController.navigate(
-                                Routes.LIBRARY_ITEM
-                            )
+                            navController.navigate(Routes.LIBRARY_ITEM)
                         }
                         else -> viewModel.onEvent(event)
                     }
-                },
-                libraryList = libraryList ?: emptyList()
+                }
             )
         }
         composable(route = Routes.LIBRARY_ITEM) {

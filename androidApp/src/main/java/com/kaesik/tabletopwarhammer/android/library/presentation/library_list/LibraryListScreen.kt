@@ -3,12 +3,16 @@ package com.kaesik.tabletopwarhammer.android.library.presentation.library_list
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.kaesik.tabletopwarhammer.android.library.presentation.components.Button1
 import com.kaesik.tabletopwarhammer.library.domain.library.items.LibraryItem
+import com.kaesik.tabletopwarhammer.library.presentation.library.LibraryEvent
 import com.kaesik.tabletopwarhammer.library.presentation.library_list.LibraryListEvent
 import com.kaesik.tabletopwarhammer.library.presentation.library_list.LibraryListState
 
@@ -16,8 +20,8 @@ import com.kaesik.tabletopwarhammer.library.presentation.library_list.LibraryLis
 fun LibraryListScreen(
     state: LibraryListState,
     onEvent: (LibraryListEvent) -> Unit,
-    libraryList: List<LibraryItem>
 ) {
+    val libraryList = state.list
     Scaffold { padding ->
         LazyColumn(
             modifier = Modifier
@@ -26,6 +30,17 @@ fun LibraryListScreen(
         ) {
             item {
                 Text("Item List")
+            }
+            item {
+                Button1(
+                    text = "libraryList",
+                    onClick = {
+                        println("LibraryListScreen.libraryList: $libraryList")
+                    }
+                )
+            }
+            items(libraryList) { item ->
+                Text(text = item.name)
             }
         }
     }
@@ -37,6 +52,5 @@ fun LibraryListScreenPreview() {
     LibraryListScreen(
         state = LibraryListState(),
         onEvent = {},
-        libraryList = emptyList()
     )
 }

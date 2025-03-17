@@ -13,14 +13,12 @@ import javax.inject.Inject
 class AndroidLibraryListViewModel @Inject constructor(
     private val library: Library,
     private val id: String,
-    private val libraryList: @JvmSuppressWildcards List<LibraryItem>,
 ): ViewModel() {
 
     private val viewModel by lazy {
         LibraryListViewModel(
             library = library,
             id = id,
-            libraryList = libraryList,
             coroutineScope = viewModelScope
         )
     }

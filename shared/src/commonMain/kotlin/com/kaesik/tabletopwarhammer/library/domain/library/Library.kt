@@ -21,10 +21,9 @@ class Library(
                 "skill" -> { client.getSkills() }
                 "species" -> { client.getSpecies() }
                 "talent" -> { client.getTalents() }
-
                 else -> emptyList()
             }
-            println(library)
+            println("Library.loadLibrary: $library")
             Resource.Success(library)
         } catch (e: Exception) {
             e.printStackTrace()
