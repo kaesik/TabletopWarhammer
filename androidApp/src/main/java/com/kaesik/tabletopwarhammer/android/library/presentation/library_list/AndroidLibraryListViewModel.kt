@@ -28,8 +28,4 @@ class AndroidLibraryListViewModel @Inject constructor(
     fun onEvent(event: LibraryListEvent) {
         viewModel.onEvent(event)
     }
-
-    fun setLibraryList(items: List<LibraryItem>) {
-        viewModel.setLibraryList(items)
-    }
 }

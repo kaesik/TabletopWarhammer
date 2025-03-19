@@ -7,7 +7,7 @@ fun main() = runBlocking {
     val client = KtorLibraryClient()
 
     try {
-        val attributes = client.getAttributes()
+        val attributes = client.getLibraryList("attribute")
         println("📜 Otrzymane atrybuty: $attributes")
     } catch (e: Exception) {
         println("❌ Wystąpił błąd: ${e.message}")

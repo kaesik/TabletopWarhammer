@@ -28,9 +28,15 @@ kotlin {
         commonMain.dependencies {
             //put your multiplatform dependencies here
             implementation(libs.bundles.ktor)
+            implementation(libs.bundles.coil)
+
             implementation(libs.sqldelight.runtime)
             implementation(libs.sqldelight.coroutines.extensions)
             implementation(libs.kotlin.date.time)
+
+            implementation(libs.koin.compose)
+            implementation(libs.koin.compose.viewmodel)
+            api(libs.koin.core)
 
             implementation(project.dependencies.platform(libs.supabase.bom))
             implementation(libs.supabase.postgrest)
@@ -44,6 +50,9 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.ktor.android)
             implementation(libs.sqldelight.android.driver)
+
+            implementation(libs.koin.android)
+            implementation(libs.koin.androidx.compose)
         }
 
         iosMain.dependencies {

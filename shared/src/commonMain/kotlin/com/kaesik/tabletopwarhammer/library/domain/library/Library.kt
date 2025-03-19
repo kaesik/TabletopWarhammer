@@ -9,20 +9,8 @@ class Library(
     suspend fun loadLibrary(
         fromTable: String
     ): Resource<List<LibraryItem>> {
-        println("Library.loadLibrary")
         return try {
-            val library = when (fromTable) {
-                "attribute" -> { client.getAttributes() }
-                "career" -> { client.getCareers() }
-                "careerpath" -> { client.getCareerPaths() }
-                "class" -> { client.getClasses() }
-                "item" -> { client.getItems() }
-                "qualityflaw" -> { client.getQualitiesFlaws() }
-                "skill" -> { client.getSkills() }
-                "species" -> { client.getSpecies() }
-                "talent" -> { client.getTalents() }
-                else -> emptyList()
-            }
+            val library = client.getLibraryList(fromTable)
             println("Library.loadLibrary: $library")
             Resource.Success(library)
         } catch (e: Exception) {

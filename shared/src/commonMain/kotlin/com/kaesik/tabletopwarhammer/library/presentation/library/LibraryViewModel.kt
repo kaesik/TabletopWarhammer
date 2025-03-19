@@ -7,6 +7,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -16,41 +17,16 @@ class LibraryViewModel(
 ) {
     private val viewModelScope = coroutineScope ?: CoroutineScope(Dispatchers.Main)
     private val _state = MutableStateFlow(LibraryState())
-    val state = _state
+    val state = _state.asStateFlow()
 
     private var loadLibraryJob: Job? = null
 
     fun onEvent(event: LibraryEvent) {
         when (event) {
-            is LibraryEvent.LoadLibrary -> loadLibrary(state.value, event.fromTable)
-        }
-    }
+            is LibraryEvent.OnLibrarySelect -> {
 
-    private fun loadLibrary(
-        state: LibraryState,
-        fromTable: String,
-    ) {
-        if (state.isLoading) return
-
-        println("LibraryViewModel.loadLibrary: $fromTable")
-
-        loadLibraryJob = viewModelScope.launch {
-            _state.update { it.copy(isLoading = true) }
-
-            when (val result = library.loadLibrary(fromTable)) {
-                is Resource.Success -> {
-                    _state.update { it.copy(
-                        result = result.data,
-                        isLoading = false
-                    ) }
-                }
-                is Resource.Error -> {
-                    _state.update { it.copy(
-                        error = (result.throwable as? LibraryException)?.error,
-                        isLoading = false
-                    ) }
-                }
             }
         }
     }
+
 }

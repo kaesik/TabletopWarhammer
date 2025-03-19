@@ -88,7 +88,7 @@ fun MainRoot() {
                 state = state,
                 onEvent = {event ->
                     when (event) {
-                        is LibraryEvent.LoadLibrary -> {
+                        is LibraryEvent.OnLibrarySelect -> {
                             viewModel.onEvent(event)
                             navController.navigate(Routes.LIBRARY_LIST)
                         }
@@ -105,7 +105,7 @@ fun MainRoot() {
                 state = state,
                 onEvent = { event ->
                     when (event) {
-                        is LibraryListEvent.LoadItem -> {
+                        is LibraryListEvent.LoadLibrary-> {
                             viewModel.onEvent(event)
                             navController.navigate(Routes.LIBRARY_ITEM)
                         }

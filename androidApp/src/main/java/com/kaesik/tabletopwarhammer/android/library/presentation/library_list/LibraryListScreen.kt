@@ -21,7 +21,6 @@ fun LibraryListScreen(
     state: LibraryListState,
     onEvent: (LibraryListEvent) -> Unit,
 ) {
-    val libraryList = state.list
     Scaffold { padding ->
         LazyColumn(
             modifier = Modifier
@@ -35,12 +34,9 @@ fun LibraryListScreen(
                 Button1(
                     text = "libraryList",
                     onClick = {
-                        println("LibraryListScreen.libraryList: $libraryList")
+                        println("LibraryListScreen.libraryList: dupa")
                     }
                 )
-            }
-            items(libraryList) { item ->
-                Text(text = item.name)
             }
         }
     }

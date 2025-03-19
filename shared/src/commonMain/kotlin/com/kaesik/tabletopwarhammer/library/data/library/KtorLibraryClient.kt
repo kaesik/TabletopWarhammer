@@ -47,127 +47,73 @@ class KtorLibraryClient : LibraryClient {
         install(Postgrest)
     }
 
-    override suspend fun getAttributes(): List<AttributeItem> {
-        println("KtorLibraryClient.getAttributes")
+    override suspend fun getLibraryList(
+        fromTable: String
+    ): List<LibraryItem> {
         return try {
-            supabaseClient
-                .from("attribute")
+            val supabaseList = supabaseClient
+                .from(fromTable)
                 .select()
-                .decodeList<AttributeDto>()
-                .map { it.toAttributeItem() }
-
+            when (fromTable) {
+                "attribute" -> {
+                    supabaseList
+                        .decodeList<AttributeDto>()
+                        .map { it.toAttributeItem() }
+                }
+                "career" -> {
+                    supabaseList
+                        .decodeList<CareerDto>()
+                        .map { it.toCareerItem() }
+                }
+                "careerpath" -> {
+                    supabaseList
+                        .decodeList<CareerPathDto>()
+                        .map { it.toCareerPathItem() }
+                }
+                "class" -> {
+                    supabaseList
+                        .decodeList<ClassDto>()
+                        .map { it.toClassItem() }
+                }
+                "item" -> {
+                    supabaseList
+                        .decodeList<ItemDto>()
+                        .map { it.toItemItem() }
+                }
+                "qualityflaw" -> {
+                    supabaseList
+                        .decodeList<QualityFlawDto>()
+                        .map { it.toQualityFlawItem() }
+                }
+                "skill" -> {
+                    supabaseList
+                        .decodeList<SkillDto>()
+                        .map { it.toSkillItem() }
+                }
+                "species" -> {
+                    supabaseList
+                        .decodeList<SpeciesDto>()
+                        .map { it.toSpeciesItem() }
+                }
+                "talent" -> {
+                    supabaseList
+                        .decodeList<TalentDto>()
+                        .map { it.toTalentItem() }
+                }
+                else -> {
+                    throw LibraryException(LibraryError.UNKNOWN_ERROR)
+                }
+            }
         } catch (e: Exception) {
             handleException(e)
         }
+
     }
 
-    override suspend fun getCareers(): List<CareerItem> {
-        println("KtorLibraryClient.getCareers")
-        return try {
-            supabaseClient
-                .from("career")
-                .select()
-                .decodeList<CareerDto>()
-                .map { it.toCareerItem() }
-
-        } catch (e: Exception) {
-            handleException(e)
-        }
-    }
-
-    override suspend fun getCareerPaths(): List<CareerPathItem> {
-        println("KtorLibraryClient.getCareerPaths")
-        return try {
-            supabaseClient
-                .from("careerpath")
-                .select()
-                .decodeList<CareerPathDto>()
-                .map { it.toCareerPathItem() }
-
-        } catch (e: Exception) {
-            handleException(e)
-        }
-    }
-
-    override suspend fun getClasses(): List<ClassItem> {
-        println("KtorLibraryClient.getClasses")
-        return try {
-            supabaseClient
-                .from("class")
-                .select()
-                .decodeList<ClassDto>()
-                .map { it.toClassItem() }
-        } catch (e: Exception) {
-            handleException(e)
-        }
-    }
-
-    override suspend fun getItems(): List<ItemItem> {
-        println("KtorLibraryClient.getItems")
-        return try {
-            supabaseClient
-                .from("item")
-                .select()
-                .decodeList<ItemDto>()
-                .map { it.toItemItem() }
-        } catch (e: Exception) {
-            handleException(e)
-        }
-    }
-
-    override suspend fun getQualitiesFlaws(): List<QualityFlawItem> {
-        println("KtorLibraryClient.getQualitiesFlaws")
-        return try {
-            supabaseClient
-                .from("qualityflaw")
-                .select()
-                .decodeList<QualityFlawDto>()
-                .map { it.toQualityFlawItem() }
-        } catch (e: Exception) {
-            handleException(e)
-        }
-    }
-
-    override suspend fun getSkills(): List<SkillItem> {
-        println("KtorLibraryClient.getSkills")
-        return try {
-            supabaseClient
-                .from("skill")
-                .select()
-                .decodeList<SkillDto>()
-                .map { it.toSkillItem() }
-        } catch (e: Exception) {
-            handleException(e)
-        }
-    }
-
-    override suspend fun getSpecies(): List<SpeciesItem> {
-        println("KtorLibraryClient.getSpecies")
-        return try {
-            supabaseClient
-                .from("species")
-                .select()
-                .decodeList<SpeciesDto>()
-                .map { it.toSpeciesItem() }
-        } catch (e: Exception) {
-            handleException(e)
-        }
-    }
-
-    override suspend fun getTalents(): List<TalentItem> {
-        println("KtorLibraryClient.getTalents")
-        return try {
-            supabaseClient
-                .from("talent")
-                .select()
-                .decodeList<TalentDto>()
-                .map { it.toTalentItem() }
-        } catch (e: Exception) {
-            handleException(e)
-        }
-    }
-
-    override suspend fun getLibraryItem(id: String, libraryList: List<LibraryItem>): LibraryItem {
+    override suspend fun getLibraryItem(
+        id: String,
+        libraryList: List<LibraryItem>
+    ): LibraryItem {
         println("KtorLibraryClient.getLibraryItem")
         return try {
             libraryList.find { it.id == id }
