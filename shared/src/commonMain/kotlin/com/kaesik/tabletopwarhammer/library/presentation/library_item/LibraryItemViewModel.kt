@@ -1,20 +1,22 @@
 package com.kaesik.tabletopwarhammer.library.presentation.library_item
 
-import com.kaesik.tabletopwarhammer.core.domain.util.Resource
-import com.kaesik.tabletopwarhammer.library.domain.library.LibraryException
-import com.kaesik.tabletopwarhammer.library.presentation.library.LibraryState
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 class LibraryItemViewModel {
     private val _state = MutableStateFlow(LibraryItemState())
     val state = _state.asStateFlow()
 
+    private var loadLibraryItemJob: Job? = null
+
     fun onEvent(event: LibraryItemEvent) {
         when (event) {
-            is LibraryItemEvent.LoadItem -> {
+            is LibraryItemEvent.OnFavoriteClick -> {
+
+            }
+
+            is LibraryItemEvent.OnBackClick -> {
 
             }
         }

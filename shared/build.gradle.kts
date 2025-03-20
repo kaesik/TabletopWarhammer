@@ -1,9 +1,16 @@
 plugins {
+    alias(libs.plugins.android.library)
+
+    alias(libs.plugins.compose.compiler)
+
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlin.native.cocoapods)
-    alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.serialization)
+
     alias(libs.plugins.sqldelight)
+
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.room)
 }
 
 kotlin {
@@ -11,6 +18,10 @@ kotlin {
     iosX64()
     iosArm64()
     iosSimulatorArm64()
+
+    room {
+        schemaDirectory("$projectDir/schemas")
+    }
 
     cocoapods {
         summary = "Some description for the Shared Module"
@@ -48,7 +59,10 @@ kotlin {
         }
 
         androidMain.dependencies {
+            implementation(libs.androidx.activity.compose)
+
             implementation(libs.ktor.android)
+
             implementation(libs.sqldelight.android.driver)
 
             implementation(libs.koin.android)
@@ -75,9 +89,9 @@ kotlin {
 
 android {
     namespace = "com.kaesik.tabletopwarhammer"
-    compileSdk = 34
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
     defaultConfig {
-        minSdk = 24
+        minSdk = libs.versions.android.minSdk.get().toInt()
     }
 
     buildFeatures {

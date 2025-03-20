@@ -8,25 +8,43 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaesik.tabletopwarhammer.android.library.presentation.components.Button1
 import com.kaesik.tabletopwarhammer.library.data.library.LibraryEnum
 import com.kaesik.tabletopwarhammer.library.presentation.library.LibraryEvent
 import com.kaesik.tabletopwarhammer.library.presentation.library.LibraryState
-//@Composable
-//fun LibraryScreenRoot(
-//    viewModel: AndroidLibraryViewModel
-//)
+import org.koin.androidx.compose.koinViewModel
+
+@Composable
+fun LibraryScreenRoot(
+    viewModel: AndroidLibraryViewModel = koinViewModel(),
+    onLibrarySelect: () -> Unit
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    LibraryScreen(
+        state = state,
+        onEvent = { event ->
+            when (event) {
+                is LibraryEvent.OnLibrarySelect -> onLibrarySelect()
+                else -> Unit
+            }
+
+            viewModel.onEvent(event)
+        }
+    )
+}
 
 @Composable
 fun LibraryScreen(
     state: LibraryState,
-    onEvent: (LibraryEvent) -> Unit
+    onEvent: (LibraryEvent) -> Unit,
 ) {
-    Scaffold (
+    Scaffold(
 
     ) { padding ->
         LazyColumn(
@@ -42,7 +60,7 @@ fun LibraryScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    Text("Library Screen")
+                    Text("LibraryScreen")
                     for (enum in LibraryEnum.entries) {
                         Button1(
                             text = enum.name,

@@ -1,24 +1,19 @@
 package com.kaesik.tabletopwarhammer.android.library.presentation.library
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.kaesik.tabletopwarhammer.library.domain.library.Library
+import com.kaesik.tabletopwarhammer.library.domain.library.items.LibraryItem
 import com.kaesik.tabletopwarhammer.library.presentation.library.LibraryEvent
 import com.kaesik.tabletopwarhammer.library.presentation.library.LibraryViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 
-@HiltViewModel
-class AndroidLibraryViewModel @Inject constructor(
-    private val library: Library
-): ViewModel()  {
+class AndroidLibraryViewModel(
+    private val libraryList: List<LibraryItem>
+) : ViewModel() {
 
     private val viewModel by lazy {
-    LibraryViewModel(
-        library = library,
-        coroutineScope = viewModelScope
-    )
-}
+        LibraryViewModel(
+            libraryList = libraryList
+        )
+    }
 
     val state = viewModel.state
 

@@ -6,10 +6,32 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaesik.tabletopwarhammer.library.presentation.library_item.LibraryItemEvent
 import com.kaesik.tabletopwarhammer.library.presentation.library_item.LibraryItemState
+import org.koin.androidx.compose.koinViewModel
+
+@Composable
+fun LibraryItemScreenRoot(
+    viewModel: AndroidLibraryItemViewModel = koinViewModel(),
+    onBackClick: () -> Unit,
+    onFavoriteClick: () -> Unit
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    LibraryItemScreen(
+        state = LibraryItemState(),
+        onEvent = { event ->
+            when (event) {
+                is LibraryItemEvent.OnBackClick -> onBackClick()
+                is LibraryItemEvent.OnFavoriteClick -> onFavoriteClick()
+                else -> Unit
+            }
+        }
+    )
+}
 
 @Composable
 fun LibraryItemScreen(
@@ -23,7 +45,7 @@ fun LibraryItemScreen(
                 .padding(padding)
         ) {
             item {
-                Text("Item")
+                Text("LibraryItemScreen")
             }
         }
     }

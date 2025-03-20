@@ -9,11 +9,11 @@ plugins {
 
 android {
     namespace = "com.kaesik.tabletopwarhammer.android"
-    compileSdk = 34
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
     defaultConfig {
         applicationId = "com.kaesik.tabletopwarhammer.android"
-        minSdk = 24
-        targetSdk = 34
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
 
@@ -64,6 +64,9 @@ dependencies {
     implementation(libs.ktor.android)
 
     implementation(libs.coil.compose)
+    
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
 
     kspAndroidTest(libs.hilt.android.compiler)
     androidTestImplementation(libs.hilt.testing)

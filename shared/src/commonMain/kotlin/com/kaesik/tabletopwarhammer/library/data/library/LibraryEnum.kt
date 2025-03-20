@@ -9,5 +9,5 @@ enum class LibraryEnum {
     QUALITY_FLAW,
     SKILL,
     SPECIES,
-    TALENT
+    TALENT,
 }

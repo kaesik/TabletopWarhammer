@@ -1,7 +1,7 @@
 package com.kaesik.tabletopwarhammer.library.presentation.library_list
 
-import com.kaesik.tabletopwarhammer.library.data.library.LibraryEnum
+import com.kaesik.tabletopwarhammer.library.domain.library.items.LibraryItem
 
 sealed class LibraryListEvent {
-    data class LoadLibrary(val fromTable: Enum<LibraryEnum>) : LibraryListEvent()
+    data class OnLibraryItemSelect(val libraryItem: LibraryItem) : LibraryListEvent()
 }
