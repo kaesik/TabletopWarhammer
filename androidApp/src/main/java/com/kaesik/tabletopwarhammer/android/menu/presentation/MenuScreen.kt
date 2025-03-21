@@ -8,14 +8,40 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaesik.tabletopwarhammer.android.menu.presentation.components.Button1
 import com.kaesik.tabletopwarhammer.menu.presentation.MenuEvent
 import com.kaesik.tabletopwarhammer.menu.presentation.MenuState
+import com.kaesik.tabletopwarhammer.menu.presentation.MenuViewModel
+import org.koin.androidx.compose.koinViewModel
+
+@Composable
+fun MenuScreenRoot(
+    viewModel: AndroidMenuViewModel = koinViewModel(),
+    onNavigateToLibraryScreen: () -> Unit,
+    onNavigateToCharacterSheetScreen: () -> Unit,
+    onNavigateToCharacterCreatorScreen: () -> Unit
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    MenuScreen(
+        state = state,
+        onEvent = { event ->
+            when (event) {
+                is MenuEvent.NavigateToLibraryScreen -> onNavigateToLibraryScreen()
+                is MenuEvent.NavigateToCharacterSheetScreen -> onNavigateToCharacterSheetScreen()
+                is MenuEvent.NavigateToCharacterCreatorScreen -> onNavigateToCharacterCreatorScreen()
+                else -> Unit
+            }
+
+            viewModel.onEvent(event)
+        }
+    )
+}
 
 @Composable
 fun MenuScreen(

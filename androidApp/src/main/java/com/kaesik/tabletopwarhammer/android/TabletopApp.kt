@@ -1,7 +1,14 @@
 package com.kaesik.tabletopwarhammer.android
 
 import android.app.Application
-import dagger.hilt.android.HiltAndroidApp
+import com.kaesik.tabletopwarhammer.di.initKoin
+import org.koin.android.ext.koin.androidContext
 
-@HiltAndroidApp
-class TabletopApp: Application()
+class TabletopApp : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        initKoin {
+            androidContext(this@TabletopApp)
+        }
+    }
+}

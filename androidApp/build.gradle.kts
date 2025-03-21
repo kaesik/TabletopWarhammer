@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.compose.compiler)
 }
@@ -16,8 +15,6 @@ android {
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
-
-        testInstrumentationRunner = "com.kaesik.tabletopwarhammer.TestHiltRunner"
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
@@ -54,22 +51,19 @@ dependencies {
     debugImplementation(libs.compose.ui.tooling)
 
     implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.lifecycle.viewmodel)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.jetbrains.compose.navigation)
     implementation(platform(libs.androidx.compose.bom))
-
-    ksp(libs.hilt.android.compiler)
-    implementation(libs.hilt.android)
-    implementation(libs.hilt.navigation.compose)
 
     implementation(libs.ktor.android)
 
     implementation(libs.coil.compose)
-    
+
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
 
-    kspAndroidTest(libs.hilt.android.compiler)
-    androidTestImplementation(libs.hilt.testing)
+    implementation(libs.ktor.client.okhttp)
 
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.test.runner)
