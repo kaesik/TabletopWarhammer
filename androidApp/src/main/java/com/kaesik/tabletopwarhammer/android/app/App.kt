@@ -5,14 +5,18 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
-import com.kaesik.tabletopwarhammer.android.library.presentation.library.AndroidLibraryViewModel
-import com.kaesik.tabletopwarhammer.android.library.presentation.library.LibraryScreenRoot
-import com.kaesik.tabletopwarhammer.android.library.presentation.library_item.AndroidLibraryItemViewModel
-import com.kaesik.tabletopwarhammer.android.library.presentation.library_item.LibraryItemScreenRoot
-import com.kaesik.tabletopwarhammer.android.library.presentation.library_list.AndroidLibraryListViewModel
-import com.kaesik.tabletopwarhammer.android.library.presentation.library_list.LibraryListScreenRoot
-import com.kaesik.tabletopwarhammer.android.menu.presentation.AndroidMenuViewModel
-import com.kaesik.tabletopwarhammer.android.menu.presentation.MenuScreenRoot
+import com.kaesik.tabletopwarhammer.character_creator.presentation.AndroidCharacterCreatorViewModel
+import com.kaesik.tabletopwarhammer.character_creator.presentation.CharacterCreatorScreenRoot
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.AndroidCharacterSheetViewModel
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.CharacterSheetScreenRoot
+import com.kaesik.tabletopwarhammer.library.presentation.library.AndroidLibraryViewModel
+import com.kaesik.tabletopwarhammer.library.presentation.library.LibraryScreenRoot
+import com.kaesik.tabletopwarhammer.library.presentation.library_item.AndroidLibraryItemViewModel
+import com.kaesik.tabletopwarhammer.library.presentation.library_item.LibraryItemScreenRoot
+import com.kaesik.tabletopwarhammer.library.presentation.library_list.AndroidLibraryListViewModel
+import com.kaesik.tabletopwarhammer.library.presentation.library_list.LibraryListScreenRoot
+import com.kaesik.tabletopwarhammer.menu.presentation.AndroidMenuViewModel
+import com.kaesik.tabletopwarhammer.menu.presentation.MenuScreenRoot
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -78,6 +82,18 @@ fun App() {
                     onFavoriteClick = {
 
                     }
+                )
+            }
+            composable<Route.CharacterSheet> {
+                val viewModel = koinViewModel<AndroidCharacterSheetViewModel>()
+                CharacterSheetScreenRoot(
+                    viewModel = viewModel,
+                )
+            }
+            composable<Route.CharacterCreator> {
+                val viewModel = koinViewModel<AndroidCharacterCreatorViewModel>()
+                CharacterCreatorScreenRoot(
+                    viewModel = viewModel,
                 )
             }
         }

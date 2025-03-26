@@ -1,0 +1,88 @@
+package com.kaesik.tabletopwarhammer.character_sheet.presentation
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.components.Button1
+import com.kaesik.tabletopwarhammer.library.presentation.library.AndroidLibraryViewModel
+import com.kaesik.tabletopwarhammer.library.presentation.library.LibraryEvent
+import com.kaesik.tabletopwarhammer.library.presentation.library.LibraryScreen
+import org.koin.androidx.compose.koinViewModel
+
+@Composable
+fun CharacterSheetScreenRoot(
+    viewModel: AndroidCharacterSheetViewModel = koinViewModel()
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    CharacterSheetScreen(
+        state = state,
+        onEvent = { event ->
+            when (event) {
+                else -> Unit
+            }
+
+            viewModel.onEvent(event)
+        }
+    )
+}
+
+@Composable
+fun CharacterSheetScreen(
+    state: CharacterSheetState,
+    onEvent: (CharacterSheetEvent) -> Unit
+) {
+    Scaffold(
+
+    ) { padding ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            item {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text("Character Sheet Screen")
+                    Button1(
+                        text = "Button 1",
+                        onClick = { }
+                    )
+                    Button1(
+                        text = "Button 2",
+                        onClick = { }
+                    )
+                    Button1(
+                        text = "Button 3",
+                        onClick = { }
+                    )
+                }
+            }
+        }
+
+    }
+}
+
+@Preview
+@Composable
+fun CharacterSheetScreenPreview() {
+    CharacterSheetScreen(
+        state = CharacterSheetState(),
+        onEvent = {}
+    )
+}
