@@ -20,7 +20,7 @@ fun LibraryItemScreenRoot(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     LibraryItemScreen(
-        state = LibraryItemState(),
+        state = state,
         onEvent = { event ->
             when (event) {
                 is LibraryItemEvent.OnBackClick -> onBackClick()

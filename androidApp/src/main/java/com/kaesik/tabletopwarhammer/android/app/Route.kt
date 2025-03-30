@@ -14,7 +14,7 @@ sealed interface Route {
     data object Library : Route
 
     @Serializable
-    data object LibraryList : Route
+    data class LibraryList(val fromTable: String) : Route
 
     @Serializable
     data class LibraryItem(val id: String) : Route

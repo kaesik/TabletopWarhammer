@@ -1,15 +1,14 @@
 package com.kaesik.tabletopwarhammer.library.presentation.library_list
 
 import androidx.lifecycle.ViewModel
-import com.kaesik.tabletopwarhammer.library.domain.library.items.LibraryItem
 
 class AndroidLibraryListViewModel(
-    private val libraryItem: LibraryItem
+    private val id: String
 ) : ViewModel() {
 
     private val viewModel by lazy {
         LibraryListViewModel(
-            libraryItem = libraryItem
+            id = id
         )
     }
 

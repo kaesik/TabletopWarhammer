@@ -56,7 +56,7 @@ fun App() {
                     viewModel = viewModel,
                     onLibrarySelect = {
                         navController.navigate(
-                            Route.LibraryList
+                            Route.LibraryList(fromTable = it)
                         )
                     }
                 )
@@ -67,7 +67,7 @@ fun App() {
                     viewModel = viewModel,
                     onLibraryItemSelect = {
                         navController.navigate(
-                            Route.LibraryItem(it.id)
+                            Route.LibraryItem(id = it)
                         )
                     }
                 )

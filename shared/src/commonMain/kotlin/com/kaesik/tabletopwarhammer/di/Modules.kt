@@ -14,8 +14,9 @@ import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
+const val stringKoin: String = ""
 val libraryList = listOf<LibraryItem>()
-val libraryItem: LibraryItem = AttributeItem("", "", "", "", 0,)
+val libraryItem: LibraryItem = AttributeItem("", "", "", "", 0)
 
 expect val platformModule: Module
 
@@ -25,6 +26,7 @@ val sharedModule = module {
 
     viewModelOf(::MenuViewModel)
 
+    single { stringKoin }
     single { libraryList }
     single { libraryItem }
     viewModelOf(::LibraryViewModel)

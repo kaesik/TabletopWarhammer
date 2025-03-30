@@ -10,20 +10,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.kaesik.tabletopwarhammer.library.domain.library.items.LibraryItem
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun LibraryListScreenRoot(
     viewModel: AndroidLibraryListViewModel = koinViewModel(),
-    onLibraryItemSelect: (LibraryItem) -> Unit
+    onLibraryItemSelect: (String) -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     LibraryListScreen(
         state = state,
         onEvent = { event ->
             when (event) {
-                is LibraryListEvent.OnLibraryItemSelect -> onLibraryItemSelect(event.libraryItem)
+                is LibraryListEvent.OnLibraryItemSelect -> onLibraryItemSelect(event.id)
                 else -> Unit
             }
 
@@ -45,6 +44,7 @@ fun LibraryListScreen(
         ) {
             item {
                 Text("LibraryListScreen")
+
             }
         }
     }

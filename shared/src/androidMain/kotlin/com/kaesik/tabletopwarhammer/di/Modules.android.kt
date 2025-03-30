@@ -14,6 +14,8 @@ import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
+const val string = ""
+
 actual val platformModule: Module
     get() = module {
         single<HttpClientEngine> { OkHttp.create() }
@@ -21,6 +23,7 @@ actual val platformModule: Module
 
         viewModelOf(::AndroidMenuViewModel)
 
+        single { string }
         viewModelOf(::AndroidLibraryViewModel)
         viewModelOf(::AndroidLibraryListViewModel)
         viewModelOf(::AndroidLibraryItemViewModel)

@@ -1,13 +1,12 @@
 package com.kaesik.tabletopwarhammer.library.presentation.library_list
 
 import androidx.lifecycle.ViewModel
-import com.kaesik.tabletopwarhammer.library.domain.library.items.LibraryItem
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class LibraryListViewModel(
-    private val libraryItem: LibraryItem
+    private val id: String
 ) : ViewModel() {
     private val _state = MutableStateFlow(LibraryListState())
     val state = _state.asStateFlow()
