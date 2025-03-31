@@ -19,7 +19,7 @@ class Library(
         }
     }
 
-    suspend fun loadLibraryItem(
+    fun loadLibraryItem(
         id: String,
         libraryList: List<LibraryItem>
     ): Resource<LibraryItem> {

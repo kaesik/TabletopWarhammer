@@ -16,9 +16,13 @@ class LibraryListViewModel(
     fun onEvent(event: LibraryListEvent) {
         when (event) {
             is LibraryListEvent.OnLibraryItemSelect -> {
-
+                loadLibraryItem(itemId = id)
             }
         }
+    }
+
+    private fun loadLibraryItem(itemId: String) {
+        println("loadLibraryItem: $itemId")
     }
 
 

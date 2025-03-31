@@ -8,7 +8,7 @@ interface LibraryClient {
         fromTable: String
     ): List<LibraryItem>
 
-    suspend fun getLibraryItem(
+    fun getLibraryItem(
         id: String,
         libraryList: List<LibraryItem>
     ): LibraryItem

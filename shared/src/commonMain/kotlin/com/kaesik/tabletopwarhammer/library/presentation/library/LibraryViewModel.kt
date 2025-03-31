@@ -1,11 +1,16 @@
 package com.kaesik.tabletopwarhammer.library.presentation.library
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.kaesik.tabletopwarhammer.library.domain.library.LibraryClient
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 class LibraryViewModel(
+    private val libraryClient: LibraryClient,
+    private val fromTable: String
 ) : ViewModel() {
     private val _state = MutableStateFlow(LibraryState())
     val state = _state.asStateFlow()
@@ -14,13 +19,18 @@ class LibraryViewModel(
 
     fun onEvent(event: LibraryEvent) {
         when (event) {
-            is LibraryEvent.OnLibrarySelect -> {
-                loadLibrary()
+            is LibraryEvent.OnLibraryListSelect -> {
+                loadLibraryList(fromTable = fromTable)
             }
         }
     }
 
-    private fun loadLibrary() {
-        println("loadLibrary")
+    private fun loadLibraryList(fromTable: String) {
+        loadLibraryJob?.cancel()
+        println("LibraryViewModel:loadLibraryList fromTable: $fromTable")
+        loadLibraryJob = viewModelScope.launch {
+            val job = libraryClient.getLibraryList(fromTable = "attribute")
+            println("LibraryViewModel:loadLibraryList job: $job")
+        }
     }
 }

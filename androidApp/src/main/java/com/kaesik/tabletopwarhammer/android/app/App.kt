@@ -54,7 +54,8 @@ fun App() {
                 val viewModel = koinViewModel<AndroidLibraryViewModel>()
                 LibraryScreenRoot(
                     viewModel = viewModel,
-                    onLibrarySelect = {
+                    onLibraryListSelect = {
+                        println("App:LibraryScreenRoot $it")
                         navController.navigate(
                             Route.LibraryList(fromTable = it)
                         )
@@ -63,9 +64,12 @@ fun App() {
             }
             composable<Route.LibraryList> {
                 val viewModel = koinViewModel<AndroidLibraryListViewModel>()
+//                main()
+//                println("main() $it")
                 LibraryListScreenRoot(
                     viewModel = viewModel,
                     onLibraryItemSelect = {
+                        println("App:LibraryListScreenRoot $it")
                         navController.navigate(
                             Route.LibraryItem(id = it)
                         )
