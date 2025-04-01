@@ -12,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.kaesik.tabletopwarhammer.library.data.library.LibraryEnum
 import com.kaesik.tabletopwarhammer.library.presentation.components.LibraryListItem
 import org.koin.androidx.compose.koinViewModel
 
@@ -19,7 +20,7 @@ import org.koin.androidx.compose.koinViewModel
 fun LibraryListScreenRoot(
     viewModel: AndroidLibraryListViewModel = koinViewModel(),
     onLibraryItemSelect: (String) -> Unit,
-    fromTable: String
+    fromTable: LibraryEnum
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     LaunchedEffect(true) {

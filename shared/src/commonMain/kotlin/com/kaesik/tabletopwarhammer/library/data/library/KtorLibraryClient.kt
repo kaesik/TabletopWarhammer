@@ -36,62 +36,62 @@ class KtorLibraryClient : LibraryClient {
     }
 
     override suspend fun getLibraryList(
-        fromTable: String
+        fromTable: LibraryEnum
     ): List<LibraryItem> {
         return try {
             println("Fetching data from table: $fromTable")
-            val supabaseList = supabaseClient.from(fromTable).select()
+            val supabaseList = supabaseClient.from(fromTable.tableName).select()
             println("Supabase response: $supabaseList")
             when (fromTable) {
-                "attribute" -> {
+                LibraryEnum.ATTRIBUTE -> {
                     supabaseList
                         .decodeList<AttributeDto>()
                         .map { it.toAttributeItem() }
                 }
 
-                "career" -> {
+                LibraryEnum.CAREER -> {
                     supabaseList
                         .decodeList<CareerDto>()
                         .map { it.toCareerItem() }
                 }
 
-                "careerpath" -> {
+                LibraryEnum.CAREER_PATH -> {
                     supabaseList
                         .decodeList<CareerPathDto>()
                         .map { it.toCareerPathItem() }
                 }
 
-                "class" -> {
+                LibraryEnum.CLASS -> {
                     supabaseList
                         .decodeList<ClassDto>()
                         .map { it.toClassItem() }
                 }
 
-                "item" -> {
+                LibraryEnum.ITEM -> {
                     supabaseList
                         .decodeList<ItemDto>()
                         .map { it.toItemItem() }
                 }
 
-                "qualityflaw" -> {
+                LibraryEnum.QUALITY_FLAW -> {
                     supabaseList
                         .decodeList<QualityFlawDto>()
                         .map { it.toQualityFlawItem() }
                 }
 
-                "skill" -> {
+                LibraryEnum.SKILL -> {
                     supabaseList
                         .decodeList<SkillDto>()
                         .map { it.toSkillItem() }
                 }
 
-                "species" -> {
+                LibraryEnum.SPECIES -> {
                     supabaseList
                         .decodeList<SpeciesDto>()
                         .map { it.toSpeciesItem() }
                 }
 
-                "talent" -> {
+                LibraryEnum.TALENT -> {
                     supabaseList
                         .decodeList<TalentDto>()
                         .map { it.toTalentItem() }

@@ -1,13 +1,14 @@
 package com.kaesik.tabletopwarhammer.library.domain.library
 
 import com.kaesik.tabletopwarhammer.core.domain.util.Resource
+import com.kaesik.tabletopwarhammer.library.data.library.LibraryEnum
 import com.kaesik.tabletopwarhammer.library.domain.library.items.LibraryItem
 
 class Library(
     private val client: LibraryClient,
 ) {
     suspend fun loadLibraryList(
-        fromTable: String
+        fromTable: LibraryEnum
     ): Resource<List<LibraryItem>> {
         return try {
             val library = client.getLibraryList(fromTable)

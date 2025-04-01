@@ -21,7 +21,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun LibraryScreenRoot(
     viewModel: AndroidLibraryViewModel = koinViewModel(),
-    onLibraryListSelect: (String) -> Unit
+    onLibraryListSelect: (LibraryEnum) -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     LibraryScreen(
@@ -68,7 +68,7 @@ fun LibraryScreen(
                             text = enum.name,
                             onClick = {
                                 println("LibraryScreen:LibraryScreen ${enum.name}")
-                                onEvent(LibraryEvent.OnLibraryListSelect(enum.name.lowercase()))
+                                onEvent(LibraryEvent.OnLibraryListSelect(enum))
                             }
                         )
                     }
