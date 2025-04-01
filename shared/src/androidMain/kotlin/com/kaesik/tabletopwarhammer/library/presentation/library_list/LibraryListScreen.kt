@@ -3,21 +3,28 @@ package com.kaesik.tabletopwarhammer.library.presentation.library_list
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.kaesik.tabletopwarhammer.library.presentation.components.LibraryListItem
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun LibraryListScreenRoot(
     viewModel: AndroidLibraryListViewModel = koinViewModel(),
-    onLibraryItemSelect: (String) -> Unit
+    onLibraryItemSelect: (String) -> Unit,
+    fromTable: String
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    LaunchedEffect(true) {
+        viewModel.onEvent(LibraryListEvent.InitList(fromTable))
+    }
     LibraryListScreen(
         state = state,
         onEvent = { event ->
@@ -42,9 +49,11 @@ fun LibraryListScreen(
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            item {
-                Text("LibraryListScreen")
-
+            items(state.libraryList){
+                LibraryListItem(
+                    it,
+                    {},
+                )
             }
         }
     }

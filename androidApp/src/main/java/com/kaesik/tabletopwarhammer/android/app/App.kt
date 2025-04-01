@@ -5,6 +5,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.kaesik.tabletopwarhammer.character_creator.presentation.AndroidCharacterCreatorViewModel
 import com.kaesik.tabletopwarhammer.character_creator.presentation.CharacterCreatorScreenRoot
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.AndroidCharacterSheetViewModel
@@ -15,6 +16,7 @@ import com.kaesik.tabletopwarhammer.library.presentation.library_item.AndroidLib
 import com.kaesik.tabletopwarhammer.library.presentation.library_item.LibraryItemScreenRoot
 import com.kaesik.tabletopwarhammer.library.presentation.library_list.AndroidLibraryListViewModel
 import com.kaesik.tabletopwarhammer.library.presentation.library_list.LibraryListScreenRoot
+import com.kaesik.tabletopwarhammer.main
 import com.kaesik.tabletopwarhammer.menu.presentation.AndroidMenuViewModel
 import com.kaesik.tabletopwarhammer.menu.presentation.MenuScreenRoot
 import org.koin.androidx.compose.koinViewModel
@@ -62,8 +64,9 @@ fun App() {
                     }
                 )
             }
-            composable<Route.LibraryList> {
+            composable<Route.LibraryList> { backstackEntry ->
                 val viewModel = koinViewModel<AndroidLibraryListViewModel>()
+                val libraryListRoute: Route.LibraryList = backstackEntry.toRoute()
 //                main()
 //                println("main() $it")
                 LibraryListScreenRoot(
@@ -73,7 +76,8 @@ fun App() {
                         navController.navigate(
                             Route.LibraryItem(id = it)
                         )
-                    }
+                    },
+                    fromTable = libraryListRoute.fromTable,
                 )
             }
             composable<Route.LibraryItem> {

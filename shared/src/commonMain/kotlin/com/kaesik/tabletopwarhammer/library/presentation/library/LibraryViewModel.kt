@@ -19,18 +19,7 @@ class LibraryViewModel(
 
     fun onEvent(event: LibraryEvent) {
         when (event) {
-            is LibraryEvent.OnLibraryListSelect -> {
-                loadLibraryList(fromTable = fromTable)
-            }
-        }
-    }
-
-    private fun loadLibraryList(fromTable: String) {
-        loadLibraryJob?.cancel()
-        println("LibraryViewModel:loadLibraryList fromTable: $fromTable")
-        loadLibraryJob = viewModelScope.launch {
-            val job = libraryClient.getLibraryList(fromTable = "attribute")
-            println("LibraryViewModel:loadLibraryList job: $job")
+            else -> {}
         }
     }
 }
