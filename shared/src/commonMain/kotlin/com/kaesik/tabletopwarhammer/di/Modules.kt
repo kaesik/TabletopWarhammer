@@ -18,7 +18,7 @@ import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 const val stringKoin: String = ""
-val libraryList = listOf<LibraryItem>()
+var libraryList = listOf<LibraryItem>()
 val libraryItem: LibraryItem = AttributeItem("", "", "", "", 0)
 
 expect val platformModule: Module

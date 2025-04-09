@@ -28,10 +28,7 @@ fun LibraryScreenRoot(
         state = state,
         onEvent = { event ->
             when (event) {
-                is LibraryEvent.OnLibraryListSelect -> {
-                    println("LibraryScreen:LibraryScreenRoot ${event.fromTable}")
-                    onLibraryListSelect(event.fromTable)
-                }
+                is LibraryEvent.OnLibraryListSelect -> onLibraryListSelect(event.fromTable)
 
                 else -> Unit
             }

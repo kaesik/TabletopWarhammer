@@ -4,15 +4,12 @@ import androidx.lifecycle.ViewModel
 import com.kaesik.tabletopwarhammer.library.domain.library.LibraryClient
 
 class AndroidLibraryListViewModel(
-    private val libraryClient: LibraryClient,
-    private val id: String,
-    private val fromTable: String
+    private val libraryClient: LibraryClient
 ) : ViewModel() {
 
     private val viewModel by lazy {
         LibraryListViewModel(
-            libraryClient = libraryClient,
-            id = id
+            libraryClient = libraryClient
         )
     }
 

@@ -9,8 +9,8 @@ interface LibraryClient {
         fromTable: LibraryEnum
     ): List<LibraryItem>
 
-    fun getLibraryItem(
-        id: String,
-        libraryList: List<LibraryItem>
+    suspend fun getLibraryItem(
+        itemId: String,
+        fromTable: LibraryEnum
     ): LibraryItem
 }

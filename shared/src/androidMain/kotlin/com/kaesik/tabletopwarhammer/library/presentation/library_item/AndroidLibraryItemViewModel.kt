@@ -1,11 +1,16 @@
 package com.kaesik.tabletopwarhammer.library.presentation.library_item
 
 import androidx.lifecycle.ViewModel
+import com.kaesik.tabletopwarhammer.library.domain.library.LibraryClient
 
-class AndroidLibraryItemViewModel : ViewModel() {
+class AndroidLibraryItemViewModel(
+    private val libraryClient: LibraryClient,
+) : ViewModel() {
 
     private val viewModel by lazy {
-        LibraryItemViewModel()
+        LibraryItemViewModel(
+            libraryClient = libraryClient,
+        )
     }
 
     val state = viewModel.state

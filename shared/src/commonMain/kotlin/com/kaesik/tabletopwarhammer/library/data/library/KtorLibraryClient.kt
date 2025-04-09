@@ -1,5 +1,6 @@
 package com.kaesik.tabletopwarhammer.library.data.library
 
+import com.kaesik.tabletopwarhammer.di.libraryList
 import com.kaesik.tabletopwarhammer.library.data.Const
 import com.kaesik.tabletopwarhammer.library.data.library.dto.AttributeDto
 import com.kaesik.tabletopwarhammer.library.data.library.dto.CareerDto
@@ -108,13 +109,14 @@ class KtorLibraryClient : LibraryClient {
 
     }
 
-    override fun getLibraryItem(
-        id: String,
-        libraryList: List<LibraryItem>
+    override suspend fun getLibraryItem(
+        itemId: String,
+        fromTable: LibraryEnum
     ): LibraryItem {
         println("KtorLibraryClient.getLibraryItem")
         return try {
-            libraryList.find { it.id == id }
+            libraryList = getLibraryList(fromTable)
+            libraryList.find { it.id == itemId }
                 ?: throw LibraryException(LibraryError.UNKNOWN_ERROR)
         } catch (e: Exception) {
             handleException(e)

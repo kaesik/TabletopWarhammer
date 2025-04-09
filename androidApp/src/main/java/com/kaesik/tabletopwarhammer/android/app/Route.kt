@@ -15,10 +15,15 @@ sealed interface Route {
     data object Library : Route
 
     @Serializable
-    data class LibraryList(val fromTable: LibraryEnum) : Route
+    data class LibraryList(
+        val fromTable: LibraryEnum
+    ) : Route
 
     @Serializable
-    data class LibraryItem(val id: String) : Route
+    data class LibraryItem(
+        val itemId: String,
+        val fromTable: LibraryEnum
+    ) : Route
 
     @Serializable
     data object CharacterSheet : Route
