@@ -1,6 +1,7 @@
 package com.kaesik.tabletopwarhammer.di
 
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator.CharacterCreatorViewModel
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_2species.CharacterSpeciesViewModel
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.CharacterSheetViewModel
 import com.kaesik.tabletopwarhammer.core.data.local.DatabaseDriverFactory
 import com.kaesik.tabletopwarhammer.core.data.remote.HttpClientFactory
@@ -33,11 +34,14 @@ val sharedModule = module {
     single { libraryList }
     single { libraryItem }
     single { KtorLibraryClient() as LibraryClient }
-    viewModel { (fromTable: String) -> LibraryViewModel(get(), fromTable) }
+    viewModel { (fromTable: String) -> LibraryViewModel() }
     viewModelOf(::LibraryViewModel)
     viewModelOf(::LibraryListViewModel)
     viewModelOf(::LibraryItemViewModel)
 
     viewModelOf(::CharacterSheetViewModel)
+
     viewModelOf(::CharacterCreatorViewModel)
+    viewModelOf(::CharacterSpeciesViewModel)
+
 }

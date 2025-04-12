@@ -1,0 +1,4 @@
+package com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents
+
+class CharacterSkillsAndTalentsEvent {
+}

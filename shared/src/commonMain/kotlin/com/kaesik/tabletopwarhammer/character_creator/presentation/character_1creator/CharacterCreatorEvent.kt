@@ -1,4 +1,6 @@
 package com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator
 
-class CharacterCreatorEvent {
+sealed class CharacterCreatorEvent {
+    data object OnCreateCharacterSelect : CharacterCreatorEvent()
+    data object OnRandomCharacterSelect : CharacterCreatorEvent()
 }

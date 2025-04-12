@@ -30,4 +30,28 @@ sealed interface Route {
 
     @Serializable
     data object CharacterCreator : Route
+
+    @Serializable
+    data object CharacterSpecies : Route
+
+    @Serializable
+    data object CharacterClassAndCareer : Route
+
+    @Serializable
+    data object CharacterAttributes : Route
+
+    @Serializable
+    data object CharacterSkillsAndTalents : Route
+
+    @Serializable
+    data object CharacterTrappings : Route
+
+    @Serializable
+    data object CharacterDetails : Route
+
+    @Serializable
+    data object CharacterTenQuestions : Route
+
+    @Serializable
+    data object CharacterAdvancement : Route
 }

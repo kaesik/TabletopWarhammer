@@ -2,14 +2,10 @@ package com.kaesik.tabletopwarhammer.character_creator.presentation.character_1c
 
 import androidx.lifecycle.ViewModel
 
-class AndroidCharacterCreatorViewModel(
-
-) : ViewModel() {
+class AndroidCharacterCreatorViewModel : ViewModel() {
 
     private val viewModel by lazy {
-        CharacterCreatorViewModel(
-
-        )
+        CharacterCreatorViewModel()
     }
 
     val state = viewModel.state

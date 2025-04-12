@@ -8,6 +8,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator.AndroidCharacterCreatorViewModel
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator.CharacterCreatorScreenRoot
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_2species.AndroidCharacterSpeciesViewModel
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_2species.CharacterSpeciesScreenRoot
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.AndroidCharacterSheetViewModel
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.CharacterSheetScreenRoot
 import com.kaesik.tabletopwarhammer.library.presentation.library_1.AndroidLibraryViewModel
@@ -51,6 +53,8 @@ fun App() {
                     }
                 )
             }
+
+            // LIBRARY
             composable<Route.Library> {
                 val viewModel = koinViewModel<AndroidLibraryViewModel>()
                 LibraryScreenRoot(
@@ -97,15 +101,32 @@ fun App() {
                     }
                 )
             }
+
+            // CHARACTER SHEET
             composable<Route.CharacterSheet> {
                 val viewModel = koinViewModel<AndroidCharacterSheetViewModel>()
                 CharacterSheetScreenRoot(
                     viewModel = viewModel,
                 )
             }
+
+            // CHARACTER CREATOR
             composable<Route.CharacterCreator> {
                 val viewModel = koinViewModel<AndroidCharacterCreatorViewModel>()
                 CharacterCreatorScreenRoot(
+                    viewModel = viewModel,
+                    onCreateCharacterSelect = {
+                        navController.navigate(
+                            Route.CharacterSpecies
+                        )
+                    },
+                    onRandomCharacterSelect = {
+                    },
+                )
+            }
+            composable<Route.CharacterSpecies> {
+                val viewModel = koinViewModel<AndroidCharacterSpeciesViewModel>()
+                CharacterSpeciesScreenRoot(
                     viewModel = viewModel,
                 )
             }

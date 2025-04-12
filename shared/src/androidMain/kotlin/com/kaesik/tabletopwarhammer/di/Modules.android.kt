@@ -1,6 +1,7 @@
 package com.kaesik.tabletopwarhammer.di
 
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator.AndroidCharacterCreatorViewModel
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_2species.AndroidCharacterSpeciesViewModel
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.AndroidCharacterSheetViewModel
 import com.kaesik.tabletopwarhammer.core.data.local.DatabaseDriverFactory
 import com.kaesik.tabletopwarhammer.library.presentation.library_1.AndroidLibraryViewModel
@@ -31,4 +32,5 @@ actual val platformModule: Module
         viewModelOf(::AndroidCharacterSheetViewModel)
 
         viewModelOf(::AndroidCharacterCreatorViewModel)
+        viewModelOf(::AndroidCharacterSpeciesViewModel)
     }

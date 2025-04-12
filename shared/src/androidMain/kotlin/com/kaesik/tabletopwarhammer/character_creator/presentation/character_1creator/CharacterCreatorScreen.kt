@@ -1,7 +1,7 @@
 package com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -9,7 +9,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -19,13 +18,23 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun CharacterCreatorScreenRoot(
-    viewModel: AndroidCharacterCreatorViewModel = koinViewModel()
+    viewModel: AndroidCharacterCreatorViewModel = koinViewModel(),
+    onCreateCharacterSelect: () -> Unit,
+    onRandomCharacterSelect: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     CharacterCreatorScreen(
         state = state,
         onEvent = { event ->
             when (event) {
+                is CharacterCreatorEvent.OnCreateCharacterSelect -> {
+                    onCreateCharacterSelect()
+                }
+
+                is CharacterCreatorEvent.OnRandomCharacterSelect -> {
+                    onRandomCharacterSelect()
+                }
+
                 else -> Unit
             }
 
@@ -50,30 +59,37 @@ fun CharacterCreatorScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             item {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Text("Character Creator Screen")
+                Text("Character Creator Screen")
+            }
+            item {
+                Text("Lorem ipsum dolor sit amet")
+            }
+            item {
+                Text("Lorem ipsum dolor sit amet, impedit volumus vis te, cu eam ipsum saperet disputando. Eum nonumy corpora commune ne, graecis sententiae vix ad. Ei vel aperiam invidunt, ludus persius vix et. Dolorem complectitur mel in. In mel vide habeo, mei malorum indoctum intellegebat at, pri cibo minim ex. No pri case facer, cu vim dolorum impedit prodesset, ut justo phaedrum complectitur mel.")
+            }
+            item {
+                Row {
                     Button1(
-                        text = "Button 1",
-                        onClick = { }
+                        text = "Losuj Postać",
+                        onClick = {
+                            println("CharacterCreatorScreen")
+                        }
                     )
                     Button1(
-                        text = "Button 2",
-                        onClick = { }
-                    )
-                    Button1(
-                        text = "Button 3",
-                        onClick = { }
+                        text = "Stwórz Postać",
+                        onClick = {
+                            println("CharacterCreatorScreen")
+                            onEvent(
+                                CharacterCreatorEvent.OnCreateCharacterSelect
+                            )
+                        }
                     )
                 }
             }
         }
-
     }
 }
+
 
 @Preview
 @Composable
