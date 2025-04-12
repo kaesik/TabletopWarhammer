@@ -1,4 +1,4 @@
-package com.kaesik.tabletopwarhammer.character_sheet.presentation
+package com.kaesik.tabletopwarhammer.library.presentation.library_1
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,18 +14,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.kaesik.tabletopwarhammer.character_sheet.presentation.components.Button1
+import com.kaesik.tabletopwarhammer.library.data.library.LibraryEnum
+import com.kaesik.tabletopwarhammer.library.presentation.components.Button1
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun CharacterSheetScreenRoot(
-    viewModel: AndroidCharacterSheetViewModel = koinViewModel()
+fun LibraryScreenRoot(
+    viewModel: AndroidLibraryViewModel = koinViewModel(),
+    onLibraryListSelect: (LibraryEnum) -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    CharacterSheetScreen(
+    LibraryScreen(
         state = state,
         onEvent = { event ->
             when (event) {
+                is LibraryEvent.OnLibraryListSelect -> onLibraryListSelect(event.fromTable)
+
                 else -> Unit
             }
 
@@ -35,9 +39,9 @@ fun CharacterSheetScreenRoot(
 }
 
 @Composable
-fun CharacterSheetScreen(
-    state: CharacterSheetState,
-    onEvent: (CharacterSheetEvent) -> Unit
+fun LibraryScreen(
+    state: LibraryState,
+    onEvent: (LibraryEvent) -> Unit,
 ) {
     Scaffold(
 
@@ -55,19 +59,16 @@ fun CharacterSheetScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    Text("Character Sheet Screen")
-                    Button1(
-                        text = "Button 1",
-                        onClick = { }
-                    )
-                    Button1(
-                        text = "Button 2",
-                        onClick = { }
-                    )
-                    Button1(
-                        text = "Button 3",
-                        onClick = { }
-                    )
+                    Text("LibraryScreen")
+                    for (enum in LibraryEnum.entries) {
+                        Button1(
+                            text = enum.name,
+                            onClick = {
+                                println("LibraryScreen:LibraryScreen ${enum.name}")
+                                onEvent(LibraryEvent.OnLibraryListSelect(enum))
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -77,9 +78,9 @@ fun CharacterSheetScreen(
 
 @Preview
 @Composable
-fun CharacterSheetScreenPreview() {
-    CharacterSheetScreen(
-        state = CharacterSheetState(),
+fun LibraryScreenPreview() {
+    LibraryScreen(
+        state = LibraryState(),
         onEvent = {}
     )
 }

@@ -1,11 +1,11 @@
 package com.kaesik.tabletopwarhammer.di
 
-import com.kaesik.tabletopwarhammer.character_creator.presentation.AndroidCharacterCreatorViewModel
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator.AndroidCharacterCreatorViewModel
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.AndroidCharacterSheetViewModel
 import com.kaesik.tabletopwarhammer.core.data.local.DatabaseDriverFactory
-import com.kaesik.tabletopwarhammer.library.presentation.library.AndroidLibraryViewModel
-import com.kaesik.tabletopwarhammer.library.presentation.library_item.AndroidLibraryItemViewModel
-import com.kaesik.tabletopwarhammer.library.presentation.library_list.AndroidLibraryListViewModel
+import com.kaesik.tabletopwarhammer.library.presentation.library_1.AndroidLibraryViewModel
+import com.kaesik.tabletopwarhammer.library.presentation.library_2list.AndroidLibraryListViewModel
+import com.kaesik.tabletopwarhammer.library.presentation.library_3item.AndroidLibraryItemViewModel
 import com.kaesik.tabletopwarhammer.menu.presentation.AndroidMenuViewModel
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.okhttp.OkHttp

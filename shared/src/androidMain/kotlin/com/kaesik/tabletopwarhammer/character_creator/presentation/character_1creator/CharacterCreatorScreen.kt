@@ -1,4 +1,4 @@
-package com.kaesik.tabletopwarhammer.character_sheet.presentation
+package com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,15 +14,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.kaesik.tabletopwarhammer.character_sheet.presentation.components.Button1
+import com.kaesik.tabletopwarhammer.character_creator.presentation.components.Button1
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun CharacterSheetScreenRoot(
-    viewModel: AndroidCharacterSheetViewModel = koinViewModel()
+fun CharacterCreatorScreenRoot(
+    viewModel: AndroidCharacterCreatorViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    CharacterSheetScreen(
+    CharacterCreatorScreen(
         state = state,
         onEvent = { event ->
             when (event) {
@@ -35,9 +35,9 @@ fun CharacterSheetScreenRoot(
 }
 
 @Composable
-fun CharacterSheetScreen(
-    state: CharacterSheetState,
-    onEvent: (CharacterSheetEvent) -> Unit
+fun CharacterCreatorScreen(
+    state: CharacterCreatorState,
+    onEvent: (CharacterCreatorEvent) -> Unit
 ) {
     Scaffold(
 
@@ -55,7 +55,7 @@ fun CharacterSheetScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    Text("Character Sheet Screen")
+                    Text("Character Creator Screen")
                     Button1(
                         text = "Button 1",
                         onClick = { }
@@ -77,9 +77,9 @@ fun CharacterSheetScreen(
 
 @Preview
 @Composable
-fun CharacterSheetScreenPreview() {
-    CharacterSheetScreen(
-        state = CharacterSheetState(),
+fun CharacterCreatorScreenPreview() {
+    CharacterCreatorScreen(
+        state = CharacterCreatorState(),
         onEvent = {}
     )
 }

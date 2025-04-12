@@ -1,6 +1,6 @@
 package com.kaesik.tabletopwarhammer.di
 
-import com.kaesik.tabletopwarhammer.character_creator.presentation.CharacterCreatorViewModel
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator.CharacterCreatorViewModel
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.CharacterSheetViewModel
 import com.kaesik.tabletopwarhammer.core.data.local.DatabaseDriverFactory
 import com.kaesik.tabletopwarhammer.core.data.remote.HttpClientFactory
@@ -8,9 +8,9 @@ import com.kaesik.tabletopwarhammer.library.data.library.KtorLibraryClient
 import com.kaesik.tabletopwarhammer.library.domain.library.LibraryClient
 import com.kaesik.tabletopwarhammer.library.domain.library.items.AttributeItem
 import com.kaesik.tabletopwarhammer.library.domain.library.items.LibraryItem
-import com.kaesik.tabletopwarhammer.library.presentation.library.LibraryViewModel
-import com.kaesik.tabletopwarhammer.library.presentation.library_item.LibraryItemViewModel
-import com.kaesik.tabletopwarhammer.library.presentation.library_list.LibraryListViewModel
+import com.kaesik.tabletopwarhammer.library.presentation.library_1.LibraryViewModel
+import com.kaesik.tabletopwarhammer.library.presentation.library_2list.LibraryListViewModel
+import com.kaesik.tabletopwarhammer.library.presentation.library_3item.LibraryItemViewModel
 import com.kaesik.tabletopwarhammer.menu.presentation.MenuViewModel
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
