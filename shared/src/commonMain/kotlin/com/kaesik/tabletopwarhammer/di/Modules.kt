@@ -1,5 +1,7 @@
 package com.kaesik.tabletopwarhammer.di
 
+import com.kaesik.tabletopwarhammer.character_creator.data.KtorCharacterCreatorClient
+import com.kaesik.tabletopwarhammer.character_creator.domain.CharacterCreatorClient
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator.CharacterCreatorViewModel
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_2species.CharacterSpeciesViewModel
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.CharacterSheetViewModel
@@ -41,6 +43,7 @@ val sharedModule = module {
 
     viewModelOf(::CharacterSheetViewModel)
 
+    single { KtorCharacterCreatorClient() as CharacterCreatorClient }
     viewModelOf(::CharacterCreatorViewModel)
     viewModelOf(::CharacterSpeciesViewModel)
 

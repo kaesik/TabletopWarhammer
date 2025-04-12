@@ -1,15 +1,15 @@
 package com.kaesik.tabletopwarhammer.character_creator.presentation.character_2species
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -19,25 +19,42 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun CharacterSpeciesScreenRoot(
-    viewModel: AndroidCharacterSpeciesViewModel = koinViewModel()
+    viewModel: AndroidCharacterSpeciesViewModel = koinViewModel(),
+    onSpeciesSelect: () -> Unit,
+    onNextClick: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    LaunchedEffect(true) {
+        viewModel.onEvent(CharacterSpeciesEvent.InitSpeciesList)
+    }
+//    val species = state.speciesList
+    val species = listOf("Human", "Elf", "Dwarf", "Orc", "Goblin")
     CharacterSpeciesScreen(
         state = state,
         onEvent = { event ->
             when (event) {
+                is CharacterSpeciesEvent.OnSpeciesSelect -> {
+                    onSpeciesSelect()
+                }
+
+                is CharacterSpeciesEvent.OnNextClick -> {
+                    onNextClick()
+                }
+
                 else -> Unit
             }
 
             viewModel.onEvent(event)
-        }
+        },
+        species = species
     )
 }
 
 @Composable
 fun CharacterSpeciesScreen(
     state: CharacterSpeciesState,
-    onEvent: (CharacterSpeciesEvent) -> Unit
+    onEvent: (CharacterSpeciesEvent) -> Unit,
+    species: List<String>
 ) {
     Scaffold(
 
@@ -52,6 +69,23 @@ fun CharacterSpeciesScreen(
             item {
                 Text("Character Species Screen")
             }
+            items(species) {
+                Button1(
+                    text = it,
+                    onClick = {
+                        println("CharacterSpeciesScreen: $it")
+                    }
+                )
+            }
+            item {
+                Button1(
+                    text = "Next",
+                    onClick = {
+                        println("CharacterSpeciesScreen")
+                        onEvent(CharacterSpeciesEvent.OnNextClick)
+                    }
+                )
+            }
         }
 
     }
@@ -62,6 +96,7 @@ fun CharacterSpeciesScreen(
 fun CharacterSpeciesScreenPreview() {
     CharacterSpeciesScreen(
         state = CharacterSpeciesState(),
-        onEvent = {}
+        onEvent = {},
+        species = listOf("Human", "Elf", "Dwarf", "Orc", "Goblin")
     )
 }

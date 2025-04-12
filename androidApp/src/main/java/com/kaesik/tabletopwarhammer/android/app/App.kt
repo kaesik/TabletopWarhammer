@@ -128,6 +128,11 @@ fun App() {
                 val viewModel = koinViewModel<AndroidCharacterSpeciesViewModel>()
                 CharacterSpeciesScreenRoot(
                     viewModel = viewModel,
+                    onSpeciesSelect = {
+                    },
+                    onNextClick = {
+
+                    }
                 )
             }
         }
