@@ -10,6 +10,10 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1cr
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator.CharacterCreatorScreenRoot
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_2species.AndroidCharacterSpeciesViewModel
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_2species.CharacterSpeciesScreenRoot
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_3class_and_career.AndroidCharacterClassAndCareerViewModel
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_3class_and_career.CharacterClassAndCareerScreenRoot
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_4attributes.AndroidCharacterAttributesViewModel
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_4attributes.CharacterAttributesScreenRoot
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.AndroidCharacterSheetViewModel
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.CharacterSheetScreenRoot
 import com.kaesik.tabletopwarhammer.library.presentation.library_1.AndroidLibraryViewModel
@@ -131,8 +135,33 @@ fun App() {
                     onSpeciesSelect = {
                     },
                     onNextClick = {
-
-                    }
+                        navController.navigate(
+                            Route.CharacterClassAndCareer
+                        )
+                    },
+                )
+            }
+            composable<Route.CharacterClassAndCareer> {
+                val viewModel = koinViewModel<AndroidCharacterClassAndCareerViewModel>()
+                CharacterClassAndCareerScreenRoot(
+                    viewModel = viewModel,
+                    onCareerSelect = {
+                    },
+                    onClassSelect = {
+                    },
+                    onNextClick = {
+                        navController.navigate(
+                            Route.CharacterAttributes
+                        )
+                    },
+                )
+            }
+            composable<Route.CharacterAttributes> {
+                val viewModel = koinViewModel<AndroidCharacterAttributesViewModel>()
+                CharacterAttributesScreenRoot(
+                    viewModel = viewModel,
+                    onNextClick = {
+                    },
                 )
             }
         }

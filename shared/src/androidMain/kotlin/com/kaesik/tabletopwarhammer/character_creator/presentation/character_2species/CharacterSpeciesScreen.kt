@@ -27,8 +27,7 @@ fun CharacterSpeciesScreenRoot(
     LaunchedEffect(true) {
         viewModel.onEvent(CharacterSpeciesEvent.InitSpeciesList)
     }
-//    val species = state.speciesList
-    val species = listOf("Human", "Elf", "Dwarf", "Orc", "Goblin")
+    val species = state.speciesList
     CharacterSpeciesScreen(
         state = state,
         onEvent = { event ->

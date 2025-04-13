@@ -1,43 +1,55 @@
 package com.kaesik.tabletopwarhammer.character_creator.presentation.character_4attributes
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Card
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.kaesik.tabletopwarhammer.character_creator.presentation.components.Button1
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_4attributes.components.AttributesTable
+import com.kaesik.tabletopwarhammer.library.presentation.components.Button1
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun CharacterCreatorScreenRoot(
-    viewModel: AndroidCharacterAttributesViewModel = koinViewModel()
+fun CharacterAttributesScreenRoot(
+    viewModel: AndroidCharacterAttributesViewModel = koinViewModel(),
+    onNextClick: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    CharacterCreatorScreen(
+    LaunchedEffect(true) {
+        viewModel.onEvent(CharacterAttributesEvent.InitAttributesList)
+    }
+    val attributes = state.attributeList
+    CharacterAttributesScreen(
         state = state,
         onEvent = { event ->
             when (event) {
+                is CharacterAttributesEvent.OnNextClick -> {
+                    onNextClick()
+                }
+
                 else -> Unit
             }
 
             viewModel.onEvent(event)
-        }
+        },
+        attributes = attributes,
     )
 }
 
 @Composable
-fun CharacterCreatorScreen(
+fun CharacterAttributesScreen(
     state: CharacterAttributesState,
-    onEvent: (CharacterAttributesEvent) -> Unit
+    onEvent: (CharacterAttributesEvent) -> Unit,
+    attributes: List<String>,
 ) {
     Scaffold(
 
@@ -50,25 +62,26 @@ fun CharacterCreatorScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             item {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Text("Character Creator Screen")
-                    Button1(
-                        text = "Button 1",
-                        onClick = { }
-                    )
-                    Button1(
-                        text = "Button 2",
-                        onClick = { }
-                    )
-                    Button1(
-                        text = "Button 3",
-                        onClick = { }
+                Text("Character Attributes Screen")
+            }
+            item {
+                Card {
+                    AttributesTable(
+                        attributes = attributes,
+                        diceThrow = listOf("1", "2", "3", "4", "5", "6", "7", "8"),
+                        baseAttributeValue = listOf("10", "20", "30", "40", "50", "60", "70", "80"),
+                        totalAttributeValue = listOf("11", "22", "33", "44", "55", "66", "77", "88"),
                     )
                 }
+            }
+            item {
+                Button1(
+                    text = "Next",
+                    onClick = {
+                        println("CharacterClassAndCareerScreen")
+                        onEvent(CharacterAttributesEvent.OnNextClick)
+                    }
+                )
             }
         }
 
@@ -77,9 +90,19 @@ fun CharacterCreatorScreen(
 
 @Preview
 @Composable
-fun CharacterCreatorScreenPreview() {
-    CharacterCreatorScreen(
+fun CharacterAttributesScreenPreview() {
+    CharacterAttributesScreen(
         state = CharacterAttributesState(),
-        onEvent = {}
+        onEvent = {},
+        attributes = listOf(
+            "Weapon Skill",
+            "Ballistic Skill",
+            "Strength",
+            "Toughness",
+            "Agility",
+            "Intelligence",
+            "Willpower",
+            "Fellowship"
+        )
     )
 }
