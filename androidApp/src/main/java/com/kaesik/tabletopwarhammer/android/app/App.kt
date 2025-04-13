@@ -14,6 +14,10 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.character_3cl
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_3class_and_career.CharacterClassAndCareerScreenRoot
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_4attributes.AndroidCharacterAttributesViewModel
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_4attributes.CharacterAttributesScreenRoot
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.AndroidCharacterSkillsAndTalentsViewModel
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.CharacterSkillsAndTalentsScreenRoot
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_6trappings.AndroidCharacterTrappingsViewModel
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_6trappings.CharacterTrappingsScreenRoot
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.AndroidCharacterSheetViewModel
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.CharacterSheetScreenRoot
 import com.kaesik.tabletopwarhammer.library.presentation.library_1.AndroidLibraryViewModel
@@ -159,6 +163,28 @@ fun App() {
             composable<Route.CharacterAttributes> {
                 val viewModel = koinViewModel<AndroidCharacterAttributesViewModel>()
                 CharacterAttributesScreenRoot(
+                    viewModel = viewModel,
+                    onNextClick = {
+                        navController.navigate(
+                            Route.CharacterSkillsAndTalents
+                        )
+                    },
+                )
+            }
+            composable<Route.CharacterSkillsAndTalents> {
+                val viewModel = koinViewModel<AndroidCharacterSkillsAndTalentsViewModel>()
+                CharacterSkillsAndTalentsScreenRoot(
+                    viewModel = viewModel,
+                    onNextClick = {
+                        navController.navigate(
+                            Route.CharacterTrappings
+                        )
+                    },
+                )
+            }
+            composable<Route.CharacterTrappings> {
+                val viewModel = koinViewModel<AndroidCharacterTrappingsViewModel>()
+                CharacterTrappingsScreenRoot(
                     viewModel = viewModel,
                     onNextClick = {
                     },

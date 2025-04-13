@@ -6,6 +6,8 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1cr
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_2species.CharacterSpeciesViewModel
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_3class_and_career.CharacterClassAndCareerViewModel
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_4attributes.CharacterAttributesViewModel
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.CharacterSkillsAndTalentsViewModel
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_6trappings.CharacterTrappingsViewModel
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.CharacterSheetViewModel
 import com.kaesik.tabletopwarhammer.core.data.local.DatabaseDriverFactory
 import com.kaesik.tabletopwarhammer.core.data.remote.HttpClientFactory
@@ -50,4 +52,6 @@ val sharedModule = module {
     viewModelOf(::CharacterSpeciesViewModel)
     viewModelOf(::CharacterClassAndCareerViewModel)
     viewModelOf(::CharacterAttributesViewModel)
+    viewModelOf(::CharacterSkillsAndTalentsViewModel)
+    viewModelOf(::CharacterTrappingsViewModel)
 }

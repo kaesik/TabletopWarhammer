@@ -1,43 +1,68 @@
 package com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.kaesik.tabletopwarhammer.character_creator.presentation.components.Button1
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.SkillsTable
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.SpeciesOrCareer
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.TalentsTable
+import com.kaesik.tabletopwarhammer.library.presentation.components.Button1
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun CharacterCreatorScreenRoot(
-    viewModel: AndroidCharacterSkillsAndTalentsViewModel = koinViewModel()
+fun CharacterSkillsAndTalentsScreenRoot(
+    viewModel: AndroidCharacterSkillsAndTalentsViewModel = koinViewModel(),
+    onNextClick: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    CharacterCreatorScreen(
+    LaunchedEffect(true) {
+        viewModel.onEvent(
+            CharacterSkillsAndTalentsEvent.InitSkillsList(
+                SpeciesOrCareer.SPECIES
+            )
+        )
+        viewModel.onEvent(
+            CharacterSkillsAndTalentsEvent.InitTalentsList(
+                SpeciesOrCareer.SPECIES
+            )
+        )
+    }
+    val skills = state.skillList
+    val talents = state.talentList
+    CharacterSkillsAndTalentsScreen(
         state = state,
         onEvent = { event ->
             when (event) {
+                is CharacterSkillsAndTalentsEvent.OnNextClick -> {
+                    onNextClick()
+                }
+
                 else -> Unit
             }
 
             viewModel.onEvent(event)
-        }
+        },
+        skills = skills,
+        talents = talents,
     )
 }
 
 @Composable
-fun CharacterCreatorScreen(
+fun CharacterSkillsAndTalentsScreen(
     state: CharacterSkillsAndTalentsState,
-    onEvent: (CharacterSkillsAndTalentsEvent) -> Unit
+    onEvent: (CharacterSkillsAndTalentsEvent) -> Unit,
+    skills: List<String>,
+    talents: List<String>,
 ) {
     Scaffold(
 
@@ -50,25 +75,26 @@ fun CharacterCreatorScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             item {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Text("Character Creator Screen")
-                    Button1(
-                        text = "Button 1",
-                        onClick = { }
-                    )
-                    Button1(
-                        text = "Button 2",
-                        onClick = { }
-                    )
-                    Button1(
-                        text = "Button 3",
-                        onClick = { }
-                    )
-                }
+                Text("Character SkillsAndTalents Screen")
+            }
+            item {
+                SkillsTable(
+                    skills = skills
+                )
+            }
+            item {
+                TalentsTable(
+                    talents = talents
+                )
+            }
+            item {
+                Button1(
+                    text = "Next",
+                    onClick = {
+                        println("CharacterSkillsAndTalentsScreen")
+                        onEvent(CharacterSkillsAndTalentsEvent.OnNextClick)
+                    }
+                )
             }
         }
 
@@ -77,9 +103,11 @@ fun CharacterCreatorScreen(
 
 @Preview
 @Composable
-fun CharacterCreatorScreenPreview() {
-    CharacterCreatorScreen(
+fun CharacterSkillsAndTalentsScreenPreview() {
+    CharacterSkillsAndTalentsScreen(
         state = CharacterSkillsAndTalentsState(),
-        onEvent = {}
+        onEvent = {},
+        skills = listOf("Skill 1", "Skill 2", "Skill 3"),
+        talents = listOf("Talent 1", "Talent 2", "Talent 3")
     )
 }

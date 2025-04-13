@@ -22,7 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.kaesik.tabletopwarhammer.character_creator.presentation.character_2species.CharacterSpeciesEvent
 import com.kaesik.tabletopwarhammer.library.presentation.components.Button1
 import org.koin.androidx.compose.koinViewModel
 

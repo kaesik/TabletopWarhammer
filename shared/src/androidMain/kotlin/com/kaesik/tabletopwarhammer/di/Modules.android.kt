@@ -4,6 +4,8 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1cr
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_2species.AndroidCharacterSpeciesViewModel
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_3class_and_career.AndroidCharacterClassAndCareerViewModel
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_4attributes.AndroidCharacterAttributesViewModel
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.AndroidCharacterSkillsAndTalentsViewModel
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_6trappings.AndroidCharacterTrappingsViewModel
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.AndroidCharacterSheetViewModel
 import com.kaesik.tabletopwarhammer.core.data.local.DatabaseDriverFactory
 import com.kaesik.tabletopwarhammer.library.presentation.library_1.AndroidLibraryViewModel
@@ -37,4 +39,6 @@ actual val platformModule: Module
         viewModelOf(::AndroidCharacterSpeciesViewModel)
         viewModelOf(::AndroidCharacterClassAndCareerViewModel)
         viewModelOf(::AndroidCharacterAttributesViewModel)
+        viewModelOf(::AndroidCharacterSkillsAndTalentsViewModel)
+        viewModelOf(::AndroidCharacterTrappingsViewModel)
     }

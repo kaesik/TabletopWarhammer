@@ -8,24 +8,40 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.CharacterSkillsAndTalentsEvent
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.SpeciesOrCareer
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_6trappings.components.ClassOrCareer
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.Button1
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun CharacterCreatorScreenRoot(
-    viewModel: AndroidCharacterTrappingsViewModel = koinViewModel()
+fun CharacterTrappingsScreenRoot(
+    viewModel: AndroidCharacterTrappingsViewModel = koinViewModel(),
+    onNextClick: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    CharacterCreatorScreen(
+    LaunchedEffect(true) {
+        viewModel.onEvent(
+            CharacterTrappingsEvent.InitTrappingsList(
+                ClassOrCareer.CAREER
+            )
+        )
+    }
+    CharacterTrappingsScreen(
         state = state,
         onEvent = { event ->
             when (event) {
+                is CharacterTrappingsEvent.OnNextClick -> {
+                    onNextClick()
+                }
+
                 else -> Unit
             }
 
@@ -35,7 +51,7 @@ fun CharacterCreatorScreenRoot(
 }
 
 @Composable
-fun CharacterCreatorScreen(
+fun CharacterTrappingsScreen(
     state: CharacterTrappingsState,
     onEvent: (CharacterTrappingsEvent) -> Unit
 ) {
@@ -50,25 +66,7 @@ fun CharacterCreatorScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             item {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Text("Character Creator Screen")
-                    Button1(
-                        text = "Button 1",
-                        onClick = { }
-                    )
-                    Button1(
-                        text = "Button 2",
-                        onClick = { }
-                    )
-                    Button1(
-                        text = "Button 3",
-                        onClick = { }
-                    )
-                }
+                Text("Character Trappings Screen")
             }
         }
 
@@ -77,8 +75,8 @@ fun CharacterCreatorScreen(
 
 @Preview
 @Composable
-fun CharacterCreatorScreenPreview() {
-    CharacterCreatorScreen(
+fun CharacterTrappingsScreenPreview() {
+    CharacterTrappingsScreen(
         state = CharacterTrappingsState(),
         onEvent = {}
     )

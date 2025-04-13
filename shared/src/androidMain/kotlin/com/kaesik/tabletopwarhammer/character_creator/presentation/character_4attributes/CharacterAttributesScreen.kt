@@ -15,6 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_4attributes.components.AttributesTable
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_4attributes.components.FateResilienceCard
 import com.kaesik.tabletopwarhammer.library.presentation.components.Button1
 import org.koin.androidx.compose.koinViewModel
 
@@ -75,11 +76,25 @@ fun CharacterAttributesScreen(
                 }
             }
             item {
+                FateResilienceCard(
+                    fatePoints = 10,
+                    resiliencePoints = 10,
+                    onFatePointsChange = {
+
+                    },
+                    onResiliencePointsChange = {
+
+                    },
+                    onNextClick = {
+                        onEvent(CharacterAttributesEvent.OnNextClick)
+                    }
+                )
+            }
+            item {
                 Button1(
-                    text = "Next",
+                    text = "distribute fate points",
                     onClick = {
                         println("CharacterClassAndCareerScreen")
-                        onEvent(CharacterAttributesEvent.OnNextClick)
                     }
                 )
             }

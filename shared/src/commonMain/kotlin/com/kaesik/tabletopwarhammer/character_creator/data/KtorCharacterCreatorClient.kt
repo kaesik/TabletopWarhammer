@@ -109,6 +109,7 @@ class KtorCharacterCreatorClient : CharacterCreatorClient {
                 "Agility",
                 "Strength",
                 "Intelligence",
+                "Random Talent",
             )
         } catch (e: Exception) {
             println("Error fetching talents list: ${e.message}")
