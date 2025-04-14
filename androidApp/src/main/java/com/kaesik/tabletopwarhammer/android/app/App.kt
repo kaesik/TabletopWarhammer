@@ -18,6 +18,8 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5sk
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.CharacterSkillsAndTalentsScreenRoot
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_6trappings.AndroidCharacterTrappingsViewModel
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_6trappings.CharacterTrappingsScreenRoot
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_7details.AndroidCharacterDetailsViewModel
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_7details.CharacterDetailsScreenRoot
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.AndroidCharacterSheetViewModel
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.CharacterSheetScreenRoot
 import com.kaesik.tabletopwarhammer.library.presentation.library_1.AndroidLibraryViewModel
@@ -185,6 +187,17 @@ fun App() {
             composable<Route.CharacterTrappings> {
                 val viewModel = koinViewModel<AndroidCharacterTrappingsViewModel>()
                 CharacterTrappingsScreenRoot(
+                    viewModel = viewModel,
+                    onNextClick = {
+                        navController.navigate(
+                            Route.CharacterDetails
+                        )
+                    },
+                )
+            }
+            composable<Route.CharacterDetails> {
+                val viewModel = koinViewModel<AndroidCharacterDetailsViewModel>()
+                CharacterDetailsScreenRoot(
                     viewModel = viewModel,
                     onNextClick = {
                     },

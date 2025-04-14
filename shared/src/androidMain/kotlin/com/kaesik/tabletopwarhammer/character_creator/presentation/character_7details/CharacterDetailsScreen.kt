@@ -14,18 +14,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_6trappings.CharacterTrappingsEvent
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_7details.components.DetailInput
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.Button1
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun CharacterCreatorScreenRoot(
-    viewModel: AndroidCharacterDetailsViewModel = koinViewModel()
+fun CharacterDetailsScreenRoot(
+    viewModel: AndroidCharacterDetailsViewModel = koinViewModel(),
+    onNextClick: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    CharacterCreatorScreen(
+    CharacterDetailsScreen(
         state = state,
         onEvent = { event ->
             when (event) {
+                is CharacterDetailsEvent.OnNextClick -> {
+                    onNextClick()
+                }
+
                 else -> Unit
             }
 
@@ -35,7 +42,7 @@ fun CharacterCreatorScreenRoot(
 }
 
 @Composable
-fun CharacterCreatorScreen(
+fun CharacterDetailsScreen(
     state: CharacterDetailsState,
     onEvent: (CharacterDetailsEvent) -> Unit
 ) {
@@ -50,25 +57,64 @@ fun CharacterCreatorScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             item {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Text("Character Creator Screen")
-                    Button1(
-                        text = "Button 1",
-                        onClick = { }
-                    )
-                    Button1(
-                        text = "Button 2",
-                        onClick = { }
-                    )
-                    Button1(
-                        text = "Button 3",
-                        onClick = { }
-                    )
-                }
+                Text("Character Creator Screen")
+            }
+            item {
+                DetailInput(
+                    label = "Name",
+                    value = "",
+                    onValueChange = { },
+                    onRandomClick = { },
+                )
+            }
+            item {
+                DetailInput(
+                    label = "Surname",
+                    value = "",
+                    onValueChange = { },
+                    onRandomClick = { },
+                )
+            }
+            item {
+                DetailInput(
+                    label = "Age",
+                    value = "",
+                    onValueChange = { },
+                    onRandomClick = { },
+                )
+            }
+            item {
+                DetailInput(
+                    label = "Eyes Color",
+                    value = "",
+                    onValueChange = { },
+                    onRandomClick = { },
+                )
+            }
+            item {
+                DetailInput(
+                    label = "Hair Color",
+                    value = "",
+                    onValueChange = { },
+                    onRandomClick = { },
+                )
+            }
+            item {
+                DetailInput(
+                    label = "Height",
+                    value = "",
+                    onValueChange = { },
+                    onRandomClick = { },
+                )
+            }
+            item {
+                Button1(
+                    text = "Next",
+                    onClick = {
+                        println("CharacterTrappingsScreen")
+                        onEvent(CharacterDetailsEvent.OnNextClick)
+                    }
+                )
             }
         }
 
@@ -77,8 +123,8 @@ fun CharacterCreatorScreen(
 
 @Preview
 @Composable
-fun CharacterCreatorScreenPreview() {
-    CharacterCreatorScreen(
+fun CharacterDetailsScreenPreview() {
+    CharacterDetailsScreen(
         state = CharacterDetailsState(),
         onEvent = {}
     )

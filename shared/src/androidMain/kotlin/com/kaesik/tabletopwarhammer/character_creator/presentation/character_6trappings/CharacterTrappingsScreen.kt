@@ -18,6 +18,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.CharacterSkillsAndTalentsEvent
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.SpeciesOrCareer
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_6trappings.components.ClassOrCareer
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_6trappings.components.TrappingsTable
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.Button1
 import org.koin.androidx.compose.koinViewModel
 
@@ -34,6 +35,7 @@ fun CharacterTrappingsScreenRoot(
             )
         )
     }
+    val trappings = state.trappingList
     CharacterTrappingsScreen(
         state = state,
         onEvent = { event ->
@@ -46,14 +48,16 @@ fun CharacterTrappingsScreenRoot(
             }
 
             viewModel.onEvent(event)
-        }
+        },
+        trappings = trappings,
     )
 }
 
 @Composable
 fun CharacterTrappingsScreen(
     state: CharacterTrappingsState,
-    onEvent: (CharacterTrappingsEvent) -> Unit
+    onEvent: (CharacterTrappingsEvent) -> Unit,
+    trappings:  List<String>,
 ) {
     Scaffold(
 
@@ -68,6 +72,20 @@ fun CharacterTrappingsScreen(
             item {
                 Text("Character Trappings Screen")
             }
+            item {
+                TrappingsTable(
+                    trappings = trappings
+                )
+            }
+            item {
+                Button1(
+                    text = "Next",
+                    onClick = {
+                        println("CharacterTrappingsScreen")
+                        onEvent(CharacterTrappingsEvent.OnNextClick)
+                    }
+                )
+            }
         }
 
     }
@@ -78,6 +96,18 @@ fun CharacterTrappingsScreen(
 fun CharacterTrappingsScreenPreview() {
     CharacterTrappingsScreen(
         state = CharacterTrappingsState(),
-        onEvent = {}
+        onEvent = {},
+        trappings = listOf(
+            "Trapping 1",
+            "Trapping 2",
+            "Trapping 3",
+            "Trapping 4",
+            "Trapping 5",
+            "Trapping 6",
+            "Trapping 7",
+            "Trapping 8",
+            "Trapping 9",
+            "Trapping 10"
+        )
     )
 }
