@@ -18,11 +18,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.kaesik.tabletopwarhammer.library.presentation.components.Button1
+import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorButton
+import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorTitle
+import com.kaesik.tabletopwarhammer.character_creator.presentation.components.DiceThrow
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -81,20 +84,20 @@ fun CharacterClassAndCareerScreen(
                 .padding(padding)
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             item {
-                Text("Character ClassAndCareer Screen")
+                CharacterCreatorTitle("Character ClassAndCareer Screen")
             }
             item {
-                Icon(
-                    imageVector = Icons.Default.Home,
-                    contentDescription = "Home Icon",
+                DiceThrow(
+                    onClick = {}
                 )
             }
             item {
                 var expanded by remember { mutableStateOf(false) }
                 Box() {
-                    Button1(
+                    CharacterCreatorButton(
                         text = "Select Class",
                         onClick = { expanded = !expanded }
                     )
@@ -113,8 +116,8 @@ fun CharacterClassAndCareerScreen(
             }
             item {
                 var expanded by remember { mutableStateOf(false) }
-                Box() {
-                    Button1(
+                Box {
+                    CharacterCreatorButton(
                         text = "Select Career",
                         onClick = { expanded = !expanded }
                     )
@@ -132,7 +135,7 @@ fun CharacterClassAndCareerScreen(
                 }
             }
             item {
-                Button1(
+                CharacterCreatorButton(
                     text = "Next",
                     onClick = {
                         println("CharacterClassAndCareerScreen")

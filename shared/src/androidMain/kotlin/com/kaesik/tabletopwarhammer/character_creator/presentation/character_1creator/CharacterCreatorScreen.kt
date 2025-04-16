@@ -1,19 +1,22 @@
 package com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.kaesik.tabletopwarhammer.character_creator.presentation.components.Button1
+import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorButton
+import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorTitle
+import com.kaesik.tabletopwarhammer.character_creator.presentation.components.DiceThrow
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -57,33 +60,41 @@ fun CharacterCreatorScreen(
                 .padding(padding)
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             item {
-                Text("Character Creator Screen")
+                CharacterCreatorTitle(
+                    "Character Creator Screen"
+                )
             }
             item {
-                Text("Lorem ipsum dolor sit amet")
-            }
-            item {
-                Text("Lorem ipsum dolor sit amet, impedit volumus vis te, cu eam ipsum saperet disputando. Eum nonumy corpora commune ne, graecis sententiae vix ad. Ei vel aperiam invidunt, ludus persius vix et. Dolorem complectitur mel in. In mel vide habeo, mei malorum indoctum intellegebat at, pri cibo minim ex. No pri case facer, cu vim dolorum impedit prodesset, ut justo phaedrum complectitur mel.")
-            }
-            item {
-                Row {
-                    Button1(
-                        text = "Losuj Postać",
-                        onClick = {
-                            println("CharacterCreatorScreen")
-                        }
-                    )
-                    Button1(
-                        text = "Stwórz Postać",
-                        onClick = {
-                            println("CharacterCreatorScreen")
-                            onEvent(
-                                CharacterCreatorEvent.OnCreateCharacterSelect
-                            )
-                        }
-                    )
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalArrangement = Arrangement.Center,
+                    ) {
+                        CharacterCreatorButton(
+                            modifier = Modifier.weight(1f),
+                            text = "Randomize",
+                            onClick = {
+                                println("CharacterCreatorScreen")
+                            }
+                        )
+                        CharacterCreatorButton(
+                            modifier = Modifier.weight(1f),
+                            text = "Create",
+                            onClick = {
+                                println("CharacterCreatorScreen")
+                                onEvent(
+                                    CharacterCreatorEvent.OnCreateCharacterSelect
+                                )
+                            }
+                        )
+                    }
                 }
             }
         }

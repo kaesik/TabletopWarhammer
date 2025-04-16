@@ -6,17 +6,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Card
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_4attributes.components.AttributesTable
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_4attributes.components.FateResilienceCard
-import com.kaesik.tabletopwarhammer.library.presentation.components.Button1
+import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorButton
+import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorTitle
+import com.kaesik.tabletopwarhammer.character_creator.presentation.components.DiceThrow
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -61,9 +63,15 @@ fun CharacterAttributesScreen(
                 .padding(padding)
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             item {
-                Text("Character Attributes Screen")
+                CharacterCreatorTitle("Character Attributes Screen")
+            }
+            item {
+                DiceThrow(
+                    onClick = {}
+                )
             }
             item {
                 Card {
@@ -71,7 +79,16 @@ fun CharacterAttributesScreen(
                         attributes = attributes,
                         diceThrow = listOf("1", "2", "3", "4", "5", "6", "7", "8"),
                         baseAttributeValue = listOf("10", "20", "30", "40", "50", "60", "70", "80"),
-                        totalAttributeValue = listOf("11", "22", "33", "44", "55", "66", "77", "88"),
+                        totalAttributeValue = listOf(
+                            "11",
+                            "22",
+                            "33",
+                            "44",
+                            "55",
+                            "66",
+                            "77",
+                            "88"
+                        ),
                     )
                 }
             }
@@ -91,7 +108,7 @@ fun CharacterAttributesScreen(
                 )
             }
             item {
-                Button1(
+                CharacterCreatorButton(
                     text = "distribute fate points",
                     onClick = {
                         println("CharacterClassAndCareerScreen")

@@ -1,7 +1,6 @@
 package com.kaesik.tabletopwarhammer.character_creator.presentation.character_7details
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -9,14 +8,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.kaesik.tabletopwarhammer.character_creator.presentation.character_6trappings.CharacterTrappingsEvent
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_7details.components.DetailInput
-import com.kaesik.tabletopwarhammer.character_creator.presentation.components.Button1
+import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorButton
+import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorTitle
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -57,7 +55,7 @@ fun CharacterDetailsScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             item {
-                Text("Character Creator Screen")
+                CharacterCreatorTitle("Character Creator Screen")
             }
             item {
                 DetailInput(
@@ -108,7 +106,7 @@ fun CharacterDetailsScreen(
                 )
             }
             item {
-                Button1(
+                CharacterCreatorButton(
                     text = "Next",
                     onClick = {
                         println("CharacterTrappingsScreen")

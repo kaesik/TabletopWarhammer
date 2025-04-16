@@ -10,11 +10,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.kaesik.tabletopwarhammer.character_creator.presentation.components.Button1
+import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorButton
+import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorTitle
+import com.kaesik.tabletopwarhammer.character_creator.presentation.components.DiceThrow
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -64,12 +67,18 @@ fun CharacterSpeciesScreen(
                 .padding(padding)
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             item {
-                Text("Character Species Screen")
+                CharacterCreatorTitle("Character Species Screen")
+            }
+            item {
+                DiceThrow(
+                    onClick = {}
+                )
             }
             items(species) {
-                Button1(
+                CharacterCreatorButton(
                     text = it,
                     onClick = {
                         println("CharacterSpeciesScreen: $it")
@@ -77,7 +86,7 @@ fun CharacterSpeciesScreen(
                 )
             }
             item {
-                Button1(
+                CharacterCreatorButton(
                     text = "Next",
                     onClick = {
                         println("CharacterSpeciesScreen")
