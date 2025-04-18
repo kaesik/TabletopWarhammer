@@ -8,10 +8,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.kaesik.tabletopwarhammer.core.domain.library.items.SkillItem
 
 @Composable
 fun SkillsTable(
-    skills: List<String>,
+    skills: List<SkillItem>,
 ) {
     LazyColumn(
         modifier = Modifier
@@ -21,7 +22,7 @@ fun SkillsTable(
     ) {
         items(skills.size) {
             SkillTableItem(
-                skill = skills[it],
+                skill = skills[it].name,
             )
         }
     }
@@ -30,15 +31,7 @@ fun SkillsTable(
 @Composable
 @Preview
 fun SkillsTablePreview() {
-    val skills = listOf(
-        "Skill 1",
-        "Skill 2",
-        "Skill 3",
-        "Skill 4",
-        "Skill 5",
-    )
-
     SkillsTable(
-        skills = skills,
+        skills = listOf(),
     )
 }

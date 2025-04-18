@@ -1,6 +1,6 @@
 package com.kaesik.tabletopwarhammer.android.app
 
-import com.kaesik.tabletopwarhammer.library.data.library.LibraryEnum
+import com.kaesik.tabletopwarhammer.core.data.library.LibraryEnum
 import kotlinx.serialization.Serializable
 
 sealed interface Route {

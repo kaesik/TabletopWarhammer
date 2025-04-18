@@ -5,11 +5,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,6 +23,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorButton
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorTitle
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.DiceThrow
+import com.kaesik.tabletopwarhammer.core.domain.library.items.CareerItem
+import com.kaesik.tabletopwarhammer.core.domain.library.items.ClassItem
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -38,6 +37,8 @@ fun CharacterClassAndCareerScreenRoot(
     val state by viewModel.state.collectAsStateWithLifecycle()
     LaunchedEffect(true) {
         viewModel.onEvent(CharacterClassAndCareerEvent.InitClassList)
+    }
+    LaunchedEffect(true) {
         viewModel.onEvent(CharacterClassAndCareerEvent.InitCareerList)
     }
     val classes = state.classList
@@ -72,8 +73,8 @@ fun CharacterClassAndCareerScreenRoot(
 fun CharacterClassAndCareerScreen(
     state: CharacterClassAndCareerState,
     onEvent: (CharacterClassAndCareerEvent) -> Unit,
-    classes: List<String>,
-    careers: List<String>,
+    classes: List<ClassItem>,
+    careers: List<CareerItem>,
 ) {
     Scaffold(
 
@@ -96,7 +97,7 @@ fun CharacterClassAndCareerScreen(
             }
             item {
                 var expanded by remember { mutableStateOf(false) }
-                Box() {
+                Box {
                     CharacterCreatorButton(
                         text = "Select Class",
                         onClick = { expanded = !expanded }
@@ -107,7 +108,7 @@ fun CharacterClassAndCareerScreen(
                     ) {
                         classes.forEach { className ->
                             DropdownMenuItem(
-                                text = { Text(className) },
+                                text = { Text(className.name) },
                                 onClick = { }
                             )
                         }
@@ -127,7 +128,7 @@ fun CharacterClassAndCareerScreen(
                     ) {
                         careers.forEach { careerName ->
                             DropdownMenuItem(
-                                text = { Text(careerName) },
+                                text = { Text(careerName.name) },
                                 onClick = { }
                             )
                         }
@@ -154,7 +155,7 @@ fun CharacterClassAndCareerScreenPreview() {
     CharacterClassAndCareerScreen(
         state = CharacterClassAndCareerState(),
         onEvent = {},
-        classes = listOf("Class 1", "Class 2", "Class 3"),
-        careers = listOf("Career 1", "Career 2", "Career 3"),
+        classes = listOf(),
+        careers = listOf(),
     )
 }

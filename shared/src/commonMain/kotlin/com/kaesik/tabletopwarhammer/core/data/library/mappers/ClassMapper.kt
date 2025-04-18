@@ -1,7 +1,7 @@
-package com.kaesik.tabletopwarhammer.library.data.library.mappers
+package com.kaesik.tabletopwarhammer.core.data.library.mappers
 
-import com.kaesik.tabletopwarhammer.library.data.library.dto.ClassDto
-import com.kaesik.tabletopwarhammer.library.domain.library.items.ClassItem
+import com.kaesik.tabletopwarhammer.core.data.library.dto.ClassDto
+import com.kaesik.tabletopwarhammer.core.domain.library.items.ClassItem
 
 fun ClassDto.toClassItem(): ClassItem {
     return ClassItem(

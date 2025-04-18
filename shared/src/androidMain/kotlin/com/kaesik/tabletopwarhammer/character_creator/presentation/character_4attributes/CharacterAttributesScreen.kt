@@ -19,6 +19,7 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.character_4at
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorButton
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorTitle
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.DiceThrow
+import com.kaesik.tabletopwarhammer.core.domain.library.items.AttributeItem
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -52,7 +53,7 @@ fun CharacterAttributesScreenRoot(
 fun CharacterAttributesScreen(
     state: CharacterAttributesState,
     onEvent: (CharacterAttributesEvent) -> Unit,
-    attributes: List<String>,
+    attributes: List<AttributeItem>,
 ) {
     Scaffold(
 
@@ -77,18 +78,9 @@ fun CharacterAttributesScreen(
                 Card {
                     AttributesTable(
                         attributes = attributes,
-                        diceThrow = listOf("1", "2", "3", "4", "5", "6", "7", "8"),
-                        baseAttributeValue = listOf("10", "20", "30", "40", "50", "60", "70", "80"),
-                        totalAttributeValue = listOf(
-                            "11",
-                            "22",
-                            "33",
-                            "44",
-                            "55",
-                            "66",
-                            "77",
-                            "88"
-                        ),
+                        diceThrow = List(attributes.size) { "1" },
+                        baseAttributeValue = List(attributes.size) { "10" },
+                        totalAttributeValue = List(attributes.size) { "11" },
                     )
                 }
             }
@@ -126,15 +118,6 @@ fun CharacterAttributesScreenPreview() {
     CharacterAttributesScreen(
         state = CharacterAttributesState(),
         onEvent = {},
-        attributes = listOf(
-            "Weapon Skill",
-            "Ballistic Skill",
-            "Strength",
-            "Toughness",
-            "Agility",
-            "Intelligence",
-            "Willpower",
-            "Fellowship"
-        )
+        attributes = listOf()
     )
 }

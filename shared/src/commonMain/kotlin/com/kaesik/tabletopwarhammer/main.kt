@@ -1,7 +1,7 @@
 package com.kaesik.tabletopwarhammer
 
+import com.kaesik.tabletopwarhammer.core.data.library.LibraryEnum
 import com.kaesik.tabletopwarhammer.library.data.library.KtorLibraryClient
-import com.kaesik.tabletopwarhammer.library.data.library.LibraryEnum
 import kotlinx.coroutines.runBlocking
 
 fun main() = runBlocking {

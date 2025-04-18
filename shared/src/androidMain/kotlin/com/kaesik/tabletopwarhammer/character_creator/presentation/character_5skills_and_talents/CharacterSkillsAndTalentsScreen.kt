@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -19,7 +18,8 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5sk
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.TalentsTable
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorButton
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorTitle
-import com.kaesik.tabletopwarhammer.character_creator.presentation.components.DiceThrow
+import com.kaesik.tabletopwarhammer.core.domain.library.items.SkillItem
+import com.kaesik.tabletopwarhammer.core.domain.library.items.TalentItem
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -64,8 +64,8 @@ fun CharacterSkillsAndTalentsScreenRoot(
 fun CharacterSkillsAndTalentsScreen(
     state: CharacterSkillsAndTalentsState,
     onEvent: (CharacterSkillsAndTalentsEvent) -> Unit,
-    skills: List<String>,
-    talents: List<String>,
+    skills: List<SkillItem>,
+    talents: List<TalentItem>,
 ) {
     Scaffold(
 
@@ -111,7 +111,7 @@ fun CharacterSkillsAndTalentsScreenPreview() {
     CharacterSkillsAndTalentsScreen(
         state = CharacterSkillsAndTalentsState(),
         onEvent = {},
-        skills = listOf("Skill 1", "Skill 2", "Skill 3"),
-        talents = listOf("Talent 1", "Talent 2", "Talent 3")
+        skills = listOf(),
+        talents = listOf()
     )
 }

@@ -1,13 +1,21 @@
 package com.kaesik.tabletopwarhammer.character_creator.domain
 
+import com.kaesik.tabletopwarhammer.core.domain.library.items.AttributeItem
+import com.kaesik.tabletopwarhammer.core.domain.library.items.CareerItem
+import com.kaesik.tabletopwarhammer.core.domain.library.items.ClassItem
+import com.kaesik.tabletopwarhammer.core.domain.library.items.ItemItem
+import com.kaesik.tabletopwarhammer.core.domain.library.items.SkillItem
+import com.kaesik.tabletopwarhammer.core.domain.library.items.SpeciesItem
+import com.kaesik.tabletopwarhammer.core.domain.library.items.TalentItem
+
 interface CharacterCreatorClient {
 
-    suspend fun getSpecies(): List<String>
-    suspend fun getClasses(): List<String>
-    suspend fun getCareers(): List<String>
-    suspend fun getSkills(): List<String>
-    suspend fun getTalents(): List<String>
-    suspend fun getTrappings(): List<String>
-    suspend fun getAttributes(): List<String>
+    suspend fun getSpecies(): List<SpeciesItem>
+    suspend fun getClasses(): List<ClassItem>
+    suspend fun getCareers(): List<CareerItem>
+    suspend fun getSkills(): List<SkillItem>
+    suspend fun getTalents(): List<TalentItem>
+    suspend fun getTrappings(): List<ItemItem>
+    suspend fun getAttributes(): List<AttributeItem>
 
 }

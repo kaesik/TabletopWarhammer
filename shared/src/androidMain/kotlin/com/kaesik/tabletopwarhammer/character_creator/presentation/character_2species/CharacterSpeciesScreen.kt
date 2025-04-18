@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -18,6 +17,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorButton
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorTitle
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.DiceThrow
+import com.kaesik.tabletopwarhammer.core.domain.library.items.SpeciesItem
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -56,7 +56,7 @@ fun CharacterSpeciesScreenRoot(
 fun CharacterSpeciesScreen(
     state: CharacterSpeciesState,
     onEvent: (CharacterSpeciesEvent) -> Unit,
-    species: List<String>
+    species: List<SpeciesItem>
 ) {
     Scaffold(
 
@@ -79,7 +79,7 @@ fun CharacterSpeciesScreen(
             }
             items(species) {
                 CharacterCreatorButton(
-                    text = it,
+                    text = it.name,
                     onClick = {
                         println("CharacterSpeciesScreen: $it")
                     }
@@ -105,6 +105,6 @@ fun CharacterSpeciesScreenPreview() {
     CharacterSpeciesScreen(
         state = CharacterSpeciesState(),
         onEvent = {},
-        species = listOf("Human", "Elf", "Dwarf", "Orc", "Goblin")
+        species = listOf()
     )
 }

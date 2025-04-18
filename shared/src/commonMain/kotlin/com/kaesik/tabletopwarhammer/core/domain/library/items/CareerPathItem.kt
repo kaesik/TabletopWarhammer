@@ -1,4 +1,6 @@
-package com.kaesik.tabletopwarhammer.library.domain.library.items
+package com.kaesik.tabletopwarhammer.core.domain.library.items
+
+import com.kaesik.tabletopwarhammer.library.domain.library.items.LibraryItem
 
 data class CareerPathItem(
     override val id: String,
@@ -7,4 +9,4 @@ data class CareerPathItem(
     val skills: String?,
     val trappings: String?,
     val talents: String?,
-): LibraryItem
+) : LibraryItem

@@ -1,20 +1,22 @@
-package com.kaesik.tabletopwarhammer.library.data.library.dto
+package com.kaesik.tabletopwarhammer.core.data.library.dto
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ClassDto(
+data class QualityFlawDto(
     @SerialName("id")
     val id: String,
     @SerialName("name")
     val name: String,
+    @SerialName("group")
+    val group: String?,
     @SerialName("description")
     val description: String?,
-    @SerialName("trappings")
-    val trappings: String?,
-    @SerialName("careers")
-    val careers: String?,
+    @SerialName("is_quality")
+    val isQuality: Boolean?,
+    @SerialName("source")
+    val source: String?,
     @SerialName("page")
     val page: Int?,
 )

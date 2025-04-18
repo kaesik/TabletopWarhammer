@@ -2,7 +2,7 @@ package com.kaesik.tabletopwarhammer.library.presentation.library_2list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kaesik.tabletopwarhammer.library.data.library.LibraryEnum
+import com.kaesik.tabletopwarhammer.core.data.library.LibraryEnum
 import com.kaesik.tabletopwarhammer.library.domain.library.LibraryClient
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow

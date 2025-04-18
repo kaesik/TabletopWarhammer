@@ -1,4 +1,6 @@
-package com.kaesik.tabletopwarhammer.library.domain.library.items
+package com.kaesik.tabletopwarhammer.core.domain.library.items
+
+import com.kaesik.tabletopwarhammer.library.domain.library.items.LibraryItem
 
 data class TalentItem(
     override val id: String,
@@ -8,4 +10,4 @@ data class TalentItem(
     val description: String?,
     val source: String?,
     val page: Int?,
-): LibraryItem
+) : LibraryItem

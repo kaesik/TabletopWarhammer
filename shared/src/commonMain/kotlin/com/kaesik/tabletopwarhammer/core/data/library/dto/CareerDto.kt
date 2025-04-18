@@ -1,4 +1,4 @@
-package com.kaesik.tabletopwarhammer.library.data.library.dto
+package com.kaesik.tabletopwarhammer.core.data.library.dto
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -29,4 +29,4 @@ data class CareerDto(
     val className: String?,
     @SerialName("page")
     val page: Int?,
-    )
+)

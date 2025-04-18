@@ -14,7 +14,8 @@ class CharacterSkillsAndTalentsViewModel(
     private val _state = MutableStateFlow(CharacterSkillsAndTalentsState())
     val state = _state.asStateFlow()
 
-    private var characterSkillsAndTalentsJob: Job? = null
+    private var skillsJob: Job? = null
+    private var talentsJob: Job? = null
 
     fun onEvent(event: CharacterSkillsAndTalentsEvent) {
         when (event) {
@@ -31,8 +32,8 @@ class CharacterSkillsAndTalentsViewModel(
     }
 
     private fun loadSkillsList() {
-        characterSkillsAndTalentsJob?.cancel()
-        characterSkillsAndTalentsJob = viewModelScope.launch {
+        skillsJob?.cancel()
+        skillsJob = viewModelScope.launch {
             val skillList = characterCreatorClient.getSkills()
             _state.value = state.value.copy(
                 skillList = skillList,
@@ -41,8 +42,8 @@ class CharacterSkillsAndTalentsViewModel(
     }
 
     private fun loadTalentsList() {
-        characterSkillsAndTalentsJob?.cancel()
-        characterSkillsAndTalentsJob = viewModelScope.launch {
+        talentsJob?.cancel()
+        talentsJob = viewModelScope.launch {
             val talentList = characterCreatorClient.getTalents()
             _state.value = state.value.copy(
                 talentList = talentList,

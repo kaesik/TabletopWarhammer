@@ -12,9 +12,9 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.character_7de
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.CharacterSheetViewModel
 import com.kaesik.tabletopwarhammer.core.data.local.DatabaseDriverFactory
 import com.kaesik.tabletopwarhammer.core.data.remote.HttpClientFactory
+import com.kaesik.tabletopwarhammer.core.domain.library.items.AttributeItem
 import com.kaesik.tabletopwarhammer.library.data.library.KtorLibraryClient
 import com.kaesik.tabletopwarhammer.library.domain.library.LibraryClient
-import com.kaesik.tabletopwarhammer.library.domain.library.items.AttributeItem
 import com.kaesik.tabletopwarhammer.library.domain.library.items.LibraryItem
 import com.kaesik.tabletopwarhammer.library.presentation.library_1.LibraryViewModel
 import com.kaesik.tabletopwarhammer.library.presentation.library_2list.LibraryListViewModel

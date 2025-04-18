@@ -1,4 +1,6 @@
-package com.kaesik.tabletopwarhammer.library.domain.library.items
+package com.kaesik.tabletopwarhammer.core.domain.library.items
+
+import com.kaesik.tabletopwarhammer.library.domain.library.items.LibraryItem
 
 data class SpeciesItem(
     override val id: String,

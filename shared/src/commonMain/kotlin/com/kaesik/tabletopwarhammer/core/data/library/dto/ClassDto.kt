@@ -1,22 +1,20 @@
-package com.kaesik.tabletopwarhammer.library.data.library.dto
+package com.kaesik.tabletopwarhammer.core.data.library.dto
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class TalentDto(
+data class ClassDto(
     @SerialName("id")
     val id: String,
     @SerialName("name")
     val name: String,
-    @SerialName("max")
-    val max: String?,
-    @SerialName("tests")
-    val tests: String?,
     @SerialName("description")
     val description: String?,
-    @SerialName("source")
-    val source: String?,
+    @SerialName("trappings")
+    val trappings: String?,
+    @SerialName("careers")
+    val careers: String?,
     @SerialName("page")
     val page: Int?,
 )

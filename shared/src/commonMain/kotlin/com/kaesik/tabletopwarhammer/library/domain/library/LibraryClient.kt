@@ -1,6 +1,6 @@
 package com.kaesik.tabletopwarhammer.library.domain.library
 
-import com.kaesik.tabletopwarhammer.library.data.library.LibraryEnum
+import com.kaesik.tabletopwarhammer.core.data.library.LibraryEnum
 import com.kaesik.tabletopwarhammer.library.domain.library.items.LibraryItem
 
 interface LibraryClient {

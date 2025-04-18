@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -17,6 +16,7 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.character_6tr
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_6trappings.components.TrappingsTable
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorButton
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorTitle
+import com.kaesik.tabletopwarhammer.core.domain.library.items.ItemItem
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -54,7 +54,7 @@ fun CharacterTrappingsScreenRoot(
 fun CharacterTrappingsScreen(
     state: CharacterTrappingsState,
     onEvent: (CharacterTrappingsEvent) -> Unit,
-    trappings: List<String>,
+    trappings: List<ItemItem>,
 ) {
     Scaffold(
 
@@ -94,17 +94,6 @@ fun CharacterTrappingsScreenPreview() {
     CharacterTrappingsScreen(
         state = CharacterTrappingsState(),
         onEvent = {},
-        trappings = listOf(
-            "Trapping 1",
-            "Trapping 2",
-            "Trapping 3",
-            "Trapping 4",
-            "Trapping 5",
-            "Trapping 6",
-            "Trapping 7",
-            "Trapping 8",
-            "Trapping 9",
-            "Trapping 10"
-        )
+        trappings = listOf()
     )
 }

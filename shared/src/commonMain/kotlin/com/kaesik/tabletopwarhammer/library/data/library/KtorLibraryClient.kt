@@ -1,25 +1,26 @@
 package com.kaesik.tabletopwarhammer.library.data.library
 
+import com.kaesik.tabletopwarhammer.core.data.library.LibraryEnum
+import com.kaesik.tabletopwarhammer.core.data.library.dto.AttributeDto
+import com.kaesik.tabletopwarhammer.core.data.library.dto.CareerDto
+import com.kaesik.tabletopwarhammer.core.data.library.dto.CareerPathDto
+import com.kaesik.tabletopwarhammer.core.data.library.dto.ClassDto
+import com.kaesik.tabletopwarhammer.core.data.library.dto.ItemDto
+import com.kaesik.tabletopwarhammer.core.data.library.dto.QualityFlawDto
+import com.kaesik.tabletopwarhammer.core.data.library.dto.SkillDto
+import com.kaesik.tabletopwarhammer.core.data.library.dto.SpeciesDto
+import com.kaesik.tabletopwarhammer.core.data.library.dto.TalentDto
+import com.kaesik.tabletopwarhammer.core.data.library.mappers.toAttributeItem
+import com.kaesik.tabletopwarhammer.core.data.library.mappers.toCareerItem
+import com.kaesik.tabletopwarhammer.core.data.library.mappers.toCareerPathItem
+import com.kaesik.tabletopwarhammer.core.data.library.mappers.toClassItem
+import com.kaesik.tabletopwarhammer.core.data.library.mappers.toItemItem
+import com.kaesik.tabletopwarhammer.core.data.library.mappers.toQualityFlawItem
+import com.kaesik.tabletopwarhammer.core.data.library.mappers.toSkillItem
+import com.kaesik.tabletopwarhammer.core.data.library.mappers.toSpeciesItem
+import com.kaesik.tabletopwarhammer.core.data.library.mappers.toTalentItem
 import com.kaesik.tabletopwarhammer.di.libraryList
 import com.kaesik.tabletopwarhammer.library.data.Const
-import com.kaesik.tabletopwarhammer.library.data.library.dto.AttributeDto
-import com.kaesik.tabletopwarhammer.library.data.library.dto.CareerDto
-import com.kaesik.tabletopwarhammer.library.data.library.dto.CareerPathDto
-import com.kaesik.tabletopwarhammer.library.data.library.dto.ClassDto
-import com.kaesik.tabletopwarhammer.library.data.library.dto.ItemDto
-import com.kaesik.tabletopwarhammer.library.data.library.dto.QualityFlawDto
-import com.kaesik.tabletopwarhammer.library.data.library.dto.SkillDto
-import com.kaesik.tabletopwarhammer.library.data.library.dto.SpeciesDto
-import com.kaesik.tabletopwarhammer.library.data.library.dto.TalentDto
-import com.kaesik.tabletopwarhammer.library.data.library.mappers.toAttributeItem
-import com.kaesik.tabletopwarhammer.library.data.library.mappers.toCareerItem
-import com.kaesik.tabletopwarhammer.library.data.library.mappers.toCareerPathItem
-import com.kaesik.tabletopwarhammer.library.data.library.mappers.toClassItem
-import com.kaesik.tabletopwarhammer.library.data.library.mappers.toItemItem
-import com.kaesik.tabletopwarhammer.library.data.library.mappers.toQualityFlawItem
-import com.kaesik.tabletopwarhammer.library.data.library.mappers.toSkillItem
-import com.kaesik.tabletopwarhammer.library.data.library.mappers.toSpeciesItem
-import com.kaesik.tabletopwarhammer.library.data.library.mappers.toTalentItem
 import com.kaesik.tabletopwarhammer.library.domain.library.LibraryClient
 import com.kaesik.tabletopwarhammer.library.domain.library.LibraryError
 import com.kaesik.tabletopwarhammer.library.domain.library.LibraryException
@@ -98,9 +99,6 @@ class KtorLibraryClient : LibraryClient {
                         .map { it.toTalentItem() }
                 }
 
-                else -> {
-                    throw LibraryException(LibraryError.UNKNOWN_ERROR)
-                }
             }
         } catch (e: Exception) {
             println("Error fetching library list: ${e.message}")

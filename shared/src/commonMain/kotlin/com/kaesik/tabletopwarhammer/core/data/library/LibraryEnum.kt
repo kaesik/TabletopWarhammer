@@ -1,4 +1,4 @@
-package com.kaesik.tabletopwarhammer.library.data.library
+package com.kaesik.tabletopwarhammer.core.data.library
 
 enum class LibraryEnum(
     val tableName: String
