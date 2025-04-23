@@ -20,31 +20,55 @@ class CharacterSkillsAndTalentsViewModel(
     fun onEvent(event: CharacterSkillsAndTalentsEvent) {
         when (event) {
             is CharacterSkillsAndTalentsEvent.InitSkillsList -> {
-                loadSkillsList()
+                loadSkillsList(
+                    speciesName = "Human",
+                    careerName = "Noble",
+                    careerPathName = "Scion",
+                )
             }
 
             is CharacterSkillsAndTalentsEvent.InitTalentsList -> {
-                loadTalentsList()
+                loadTalentsList(
+                    speciesName = "Human",
+                    careerName = "Noble",
+                    careerPathName = "Scion",
+                )
             }
 
             else -> Unit
         }
     }
 
-    private fun loadSkillsList() {
+    private fun loadSkillsList(
+        speciesName: String,
+        careerName: String,
+        careerPathName: String,
+    ) {
         skillsJob?.cancel()
         skillsJob = viewModelScope.launch {
-            val skillList = characterCreatorClient.getSkills()
+            val skillList = characterCreatorClient.getSkills(
+                speciesName = speciesName,
+                careerName = careerName,
+                careerPathName = careerPathName,
+            )
             _state.value = state.value.copy(
                 skillList = skillList,
             )
         }
     }
 
-    private fun loadTalentsList() {
+    private fun loadTalentsList(
+        speciesName: String,
+        careerName: String,
+        careerPathName: String,
+    ) {
         talentsJob?.cancel()
         talentsJob = viewModelScope.launch {
-            val talentList = characterCreatorClient.getTalents()
+            val talentList = characterCreatorClient.getTalents(
+                speciesName = speciesName,
+                careerName = careerName,
+                careerPathName = careerPathName,
+            )
             _state.value = state.value.copy(
                 talentList = talentList,
             )

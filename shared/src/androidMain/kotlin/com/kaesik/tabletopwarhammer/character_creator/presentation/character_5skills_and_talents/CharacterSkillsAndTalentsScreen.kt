@@ -18,8 +18,6 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5sk
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.TalentsTable
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorButton
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorTitle
-import com.kaesik.tabletopwarhammer.core.domain.library.items.SkillItem
-import com.kaesik.tabletopwarhammer.core.domain.library.items.TalentItem
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -42,6 +40,9 @@ fun CharacterSkillsAndTalentsScreenRoot(
     }
     val skills = state.skillList
     val talents = state.talentList
+    val speciesSkills = skills.getOrNull(0) ?: emptyList()
+    val speciesTalents = talents.getOrNull(0) ?: emptyList()
+
     CharacterSkillsAndTalentsScreen(
         state = state,
         onEvent = { event ->
@@ -55,8 +56,8 @@ fun CharacterSkillsAndTalentsScreenRoot(
 
             viewModel.onEvent(event)
         },
-        skills = skills,
-        talents = talents,
+        skills = speciesSkills,
+        talents = speciesTalents,
     )
 }
 
@@ -64,8 +65,8 @@ fun CharacterSkillsAndTalentsScreenRoot(
 fun CharacterSkillsAndTalentsScreen(
     state: CharacterSkillsAndTalentsState,
     onEvent: (CharacterSkillsAndTalentsEvent) -> Unit,
-    skills: List<SkillItem>,
-    talents: List<TalentItem>,
+    skills: List<String>,
+    talents: List<String>,
 ) {
     Scaffold(
 

@@ -12,7 +12,7 @@ import com.kaesik.tabletopwarhammer.core.domain.library.items.ItemItem
 
 @Composable
 fun TrappingsTable(
-    trappings: List<ItemItem>,
+    trappings: List<String>,
 ) {
     LazyColumn(
         modifier = Modifier
@@ -22,7 +22,7 @@ fun TrappingsTable(
     ) {
         items(trappings.size) {
             TrappingTableItem(
-                trapping = trappings[it].name,
+                trapping = trappings[it],
             )
         }
     }

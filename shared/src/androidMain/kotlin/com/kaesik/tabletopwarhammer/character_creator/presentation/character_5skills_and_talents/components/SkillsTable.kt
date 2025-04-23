@@ -12,7 +12,7 @@ import com.kaesik.tabletopwarhammer.core.domain.library.items.SkillItem
 
 @Composable
 fun SkillsTable(
-    skills: List<SkillItem>,
+    skills: List<String>,
 ) {
     LazyColumn(
         modifier = Modifier
@@ -22,7 +22,7 @@ fun SkillsTable(
     ) {
         items(skills.size) {
             SkillTableItem(
-                skill = skills[it].name,
+                skill = skills[it],
             )
         }
     }

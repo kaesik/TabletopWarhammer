@@ -20,7 +20,10 @@ class CharacterClassAndCareerViewModel(
     fun onEvent(event: CharacterClassAndCareerEvent) {
         when (event) {
             is CharacterClassAndCareerEvent.InitCareerList -> {
-                loadCareersList()
+                loadCareersList(
+                    speciesName = "Human",
+                    className = "Academics"
+                )
             }
 
             is CharacterClassAndCareerEvent.InitClassList -> {
@@ -42,10 +45,16 @@ class CharacterClassAndCareerViewModel(
     }
 
 
-    private fun loadCareersList() {
+    private fun loadCareersList(
+        speciesName: String,
+        className: String,
+    ) {
         careerJob?.cancel()
         careerJob = viewModelScope.launch {
-            val careerList = characterCreatorClient.getCareers()
+            val careerList = characterCreatorClient.getCareers(
+                speciesName = speciesName,
+                className = className,
+            )
             _state.value = state.value.copy(
                 careerList = careerList,
             )

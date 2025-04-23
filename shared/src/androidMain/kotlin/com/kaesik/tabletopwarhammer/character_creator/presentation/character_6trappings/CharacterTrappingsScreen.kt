@@ -16,7 +16,6 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.character_6tr
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_6trappings.components.TrappingsTable
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorButton
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorTitle
-import com.kaesik.tabletopwarhammer.core.domain.library.items.ItemItem
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -33,6 +32,7 @@ fun CharacterTrappingsScreenRoot(
         )
     }
     val trappings = state.trappingList
+    val classTrappings = trappings.getOrNull(0) ?: emptyList()
     CharacterTrappingsScreen(
         state = state,
         onEvent = { event ->
@@ -46,7 +46,7 @@ fun CharacterTrappingsScreenRoot(
 
             viewModel.onEvent(event)
         },
-        trappings = trappings,
+        trappings = classTrappings,
     )
 }
 
@@ -54,7 +54,7 @@ fun CharacterTrappingsScreenRoot(
 fun CharacterTrappingsScreen(
     state: CharacterTrappingsState,
     onEvent: (CharacterTrappingsEvent) -> Unit,
-    trappings: List<ItemItem>,
+    trappings: List<String>,
 ) {
     Scaffold(
 

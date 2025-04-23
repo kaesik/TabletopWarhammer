@@ -19,17 +19,26 @@ class CharacterTrappingsViewModel(
     fun onEvent(event: CharacterTrappingsEvent) {
         when (event) {
             is CharacterTrappingsEvent.InitTrappingsList -> {
-                loadTrappingsList()
+                loadTrappingsList(
+                    className = "Courtiers",
+                    careerPathName = "Scion"
+                )
             }
 
             else -> Unit
         }
     }
 
-    private fun loadTrappingsList() {
+    private fun loadTrappingsList(
+        className: String,
+        careerPathName: String
+    ) {
         characterTrappingsJob?.cancel()
         characterTrappingsJob = viewModelScope.launch {
-            val trappingList = characterCreatorClient.getTrappings()
+            val trappingList = characterCreatorClient.getTrappings(
+                className = className,
+                careerPathName = careerPathName
+            )
             _state.value = state.value.copy(
                 trappingList = trappingList,
             )
