@@ -23,32 +23,30 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun CharacterSpeciesScreenRoot(
     viewModel: AndroidCharacterSpeciesViewModel = koinViewModel(),
-    onSpeciesSelect: () -> Unit,
-    onNextClick: () -> Unit,
+    onSpeciesSelect: (String) -> Unit,
+    onNextClick: (String) -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     LaunchedEffect(true) {
         viewModel.onEvent(CharacterSpeciesEvent.InitSpeciesList)
     }
-    val species = state.speciesList
     CharacterSpeciesScreen(
         state = state,
         onEvent = { event ->
             when (event) {
                 is CharacterSpeciesEvent.OnSpeciesSelect -> {
-                    onSpeciesSelect()
+                    viewModel.onEvent(event)
+                    onSpeciesSelect(event.id)
                 }
 
                 is CharacterSpeciesEvent.OnNextClick -> {
-                    onNextClick()
+                    state.selectedSpecies?.id?.let(onNextClick)
                 }
 
                 else -> Unit
             }
-
-            viewModel.onEvent(event)
         },
-        species = species
+        species = state.speciesList
     )
 }
 
@@ -58,9 +56,7 @@ fun CharacterSpeciesScreen(
     onEvent: (CharacterSpeciesEvent) -> Unit,
     species: List<SpeciesItem>
 ) {
-    Scaffold(
-
-    ) { padding ->
+    Scaffold { padding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -81,6 +77,7 @@ fun CharacterSpeciesScreen(
                 CharacterCreatorButton(
                     text = it.name,
                     onClick = {
+                        onEvent(CharacterSpeciesEvent.OnSpeciesSelect(it.id))
                         println("CharacterSpeciesScreen: $it")
                     }
                 )
@@ -88,14 +85,11 @@ fun CharacterSpeciesScreen(
             item {
                 CharacterCreatorButton(
                     text = "Next",
-                    onClick = {
-                        println("CharacterSpeciesScreen")
-                        onEvent(CharacterSpeciesEvent.OnNextClick)
-                    }
+                    onClick = { onEvent(CharacterSpeciesEvent.OnNextClick) },
+                    enabled = state.selectedSpecies != null
                 )
             }
         }
-
     }
 }
 

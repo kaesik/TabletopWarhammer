@@ -35,16 +35,26 @@ sealed interface Route {
     data object CharacterSpecies : Route
 
     @Serializable
-    data object CharacterClassAndCareer : Route
+    data class CharacterClassAndCareer(
+        val characterSpecies: String
+    ) : Route
 
     @Serializable
-    data object CharacterAttributes : Route
+    data class CharacterAttributes(
+        val characterSpecies: String
+    ) : Route
 
     @Serializable
-    data object CharacterSkillsAndTalents : Route
+    data class CharacterSkillsAndTalents(
+        val characterSpecies: String,
+        val characterCareer: String,
+    ) : Route
 
     @Serializable
-    data object CharacterTrappings : Route
+    data class CharacterTrappings(
+        val characterSpecies: String,
+        val characterClass: String,
+    ) : Route
 
     @Serializable
     data object CharacterDetails : Route

@@ -30,16 +30,17 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun CharacterClassAndCareerScreenRoot(
     viewModel: AndroidCharacterClassAndCareerViewModel = koinViewModel(),
+    speciesName: String,
     onClassSelect: () -> Unit,
     onCareerSelect: () -> Unit,
-    onNextClick: () -> Unit,
+    onNextClick: (String) -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     LaunchedEffect(true) {
         viewModel.onEvent(CharacterClassAndCareerEvent.InitClassList)
     }
     LaunchedEffect(true) {
-        viewModel.onEvent(CharacterClassAndCareerEvent.InitCareerList)
+        viewModel.onEvent(CharacterClassAndCareerEvent.InitCareerList(speciesName))
     }
     val classes = state.classList
     val careers = state.careerList
@@ -56,7 +57,7 @@ fun CharacterClassAndCareerScreenRoot(
                 }
 
                 is CharacterClassAndCareerEvent.OnNextClick -> {
-                    onNextClick()
+                    state.selectedCareer?.id?.let(onNextClick)
                 }
 
                 else -> Unit
@@ -76,9 +77,7 @@ fun CharacterClassAndCareerScreen(
     classes: List<ClassItem>,
     careers: List<CareerItem>,
 ) {
-    Scaffold(
-
-    ) { padding ->
+    Scaffold { padding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -90,64 +89,76 @@ fun CharacterClassAndCareerScreen(
             item {
                 CharacterCreatorTitle("Character ClassAndCareer Screen")
             }
+
             item {
-                DiceThrow(
-                    onClick = {}
-                )
+                DiceThrow(onClick = {})
             }
+
             item {
                 var expanded by remember { mutableStateOf(false) }
                 Box {
                     CharacterCreatorButton(
-                        text = "Select Class",
-                        onClick = { expanded = !expanded }
+                        text = state.selectedClass?.name ?: "Select Class",
+                        onClick = { expanded = true },
+                        enabled = !state.isLoading
                     )
                     DropdownMenu(
                         expanded = expanded,
                         onDismissRequest = { expanded = false },
                     ) {
-                        classes.forEach { className ->
+                        classes.forEach { classItem ->
                             DropdownMenuItem(
-                                text = { Text(className.name) },
-                                onClick = { }
+                                text = { Text(classItem.name) },
+                                onClick = {
+                                    expanded = false
+                                    onEvent(CharacterClassAndCareerEvent.OnClassSelect(classItem.id))
+                                }
                             )
                         }
                     }
                 }
             }
+
             item {
                 var expanded by remember { mutableStateOf(false) }
                 Box {
                     CharacterCreatorButton(
-                        text = "Select Career",
-                        onClick = { expanded = !expanded }
+                        text = state.selectedCareer?.name ?: "Select Career",
+                        onClick = {
+                            if (state.selectedClass != null) expanded = true
+                        },
+                        enabled = !state.isLoading && state.selectedClass != null
                     )
                     DropdownMenu(
                         expanded = expanded,
                         onDismissRequest = { expanded = false },
                     ) {
-                        careers.forEach { careerName ->
+                        careers.forEach { careerItem ->
                             DropdownMenuItem(
-                                text = { Text(careerName.name) },
-                                onClick = { }
+                                text = { Text(careerItem.name) },
+                                onClick = {
+                                    expanded = false
+                                    onEvent(CharacterClassAndCareerEvent.OnCareerSelect(careerItem.id))
+                                }
                             )
                         }
                     }
                 }
             }
+
             item {
                 CharacterCreatorButton(
                     text = "Next",
                     onClick = {
-                        println("CharacterClassAndCareerScreen")
                         onEvent(CharacterClassAndCareerEvent.OnNextClick)
-                    }
+                    },
+                    enabled = !state.isLoading && state.selectedCareer != null
                 )
             }
         }
-
     }
 }
+
 
 @Preview
 @Composable

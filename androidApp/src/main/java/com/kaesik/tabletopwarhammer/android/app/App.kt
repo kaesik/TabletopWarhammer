@@ -140,35 +140,45 @@ fun App() {
                     viewModel = viewModel,
                     onSpeciesSelect = {
                     },
-                    onNextClick = {
+                    onNextClick = { selectedSpecies ->
                         navController.navigate(
-                            Route.CharacterClassAndCareer
+                            Route.CharacterClassAndCareer(
+                                characterSpecies = selectedSpecies
+                            )
                         )
-                    },
+                    }
                 )
             }
-            composable<Route.CharacterClassAndCareer> {
+            composable<Route.CharacterClassAndCareer> { backstackEntry ->
                 val viewModel = koinViewModel<AndroidCharacterClassAndCareerViewModel>()
+                val route = backstackEntry.toRoute<Route.CharacterClassAndCareer>()
                 CharacterClassAndCareerScreenRoot(
                     viewModel = viewModel,
+                    speciesName = route.characterSpecies,
                     onCareerSelect = {
                     },
                     onClassSelect = {
                     },
                     onNextClick = {
                         navController.navigate(
-                            Route.CharacterAttributes
+                            Route.CharacterAttributes(
+                                characterSpecies = route.characterSpecies
+                            )
                         )
                     },
                 )
             }
-            composable<Route.CharacterAttributes> {
+            composable<Route.CharacterAttributes> { backstackEntry ->
                 val viewModel = koinViewModel<AndroidCharacterAttributesViewModel>()
+                val route = backstackEntry.toRoute<Route.CharacterAttributes>()
                 CharacterAttributesScreenRoot(
                     viewModel = viewModel,
                     onNextClick = {
                         navController.navigate(
-                            Route.CharacterSkillsAndTalents
+                            Route.CharacterSkillsAndTalents(
+                                characterSpecies = route.characterSpecies,
+                                characterCareer = ""
+                            )
                         )
                     },
                 )
@@ -179,7 +189,10 @@ fun App() {
                     viewModel = viewModel,
                     onNextClick = {
                         navController.navigate(
-                            Route.CharacterTrappings
+                            Route.CharacterTrappings(
+                                characterSpecies = "",
+                                characterClass = ""
+                            )
                         )
                     },
                 )

@@ -2,10 +2,10 @@ package com.kaesik.tabletopwarhammer.character_creator.presentation.character_3c
 
 sealed class CharacterClassAndCareerEvent {
     data object InitClassList : CharacterClassAndCareerEvent()
-    data object InitCareerList : CharacterClassAndCareerEvent()
+    data class InitCareerList(val speciesName: String) : CharacterClassAndCareerEvent()
 
-    data object OnClassSelect : CharacterClassAndCareerEvent()
-    data object OnCareerSelect : CharacterClassAndCareerEvent()
+    data class OnClassSelect(val id: String) : CharacterClassAndCareerEvent()
+    data class OnCareerSelect(val id: String) : CharacterClassAndCareerEvent()
 
     data object OnNextClick : CharacterClassAndCareerEvent()
 }

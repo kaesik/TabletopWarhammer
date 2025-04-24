@@ -24,13 +24,20 @@ fun CharacterCreatorButton(
     text: String,
     isLoading: Boolean = false,
     onClick: () -> Unit,
+    enabled: Boolean = true,
     modifier: Modifier = Modifier
 ) {
+    val backgroundColor = if (enabled) {
+        MaterialTheme.colorScheme.primary
+    } else {
+        MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+    }
+
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(100))
-            .background(MaterialTheme.colorScheme.primary)
-            .clickable(onClick = onClick)
+            .background(backgroundColor)
+            .clickable(enabled = enabled, onClick = onClick)
             .width(200.dp)
             .height(40.dp)
             .padding(8.dp),

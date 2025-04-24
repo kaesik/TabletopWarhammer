@@ -22,6 +22,11 @@ class CharacterSpeciesViewModel(
                 loadSpeciesList()
             }
 
+            is CharacterSpeciesEvent.OnSpeciesSelect -> {
+                val selected = _state.value.speciesList.find { it.id == event.id }
+                _state.value = _state.value.copy(selectedSpecies = selected)
+            }
+            
             else -> Unit
         }
     }

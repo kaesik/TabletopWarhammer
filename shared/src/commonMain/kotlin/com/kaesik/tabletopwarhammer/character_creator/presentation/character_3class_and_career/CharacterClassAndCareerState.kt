@@ -6,6 +6,9 @@ import com.kaesik.tabletopwarhammer.core.domain.library.items.ClassItem
 data class CharacterClassAndCareerState(
     val error: String? = null,
     val isLoading: Boolean = false,
+    
+    val selectedClass: ClassItem? = null,
+    val selectedCareer: CareerItem? = null,
 
     val classList: List<ClassItem> = emptyList(),
     val careerList: List<CareerItem> = emptyList(),

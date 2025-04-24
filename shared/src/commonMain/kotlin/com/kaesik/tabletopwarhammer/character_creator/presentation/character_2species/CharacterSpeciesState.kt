@@ -6,5 +6,7 @@ data class CharacterSpeciesState(
     val error: String? = null,
     val isLoading: Boolean = false,
 
+    val selectedSpecies: SpeciesItem? = null,
+
     val speciesList: List<SpeciesItem> = emptyList(),
 )
