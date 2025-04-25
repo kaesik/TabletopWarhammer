@@ -11,12 +11,14 @@ import com.kaesik.tabletopwarhammer.core.data.library.dto.SpeciesDto
 import com.kaesik.tabletopwarhammer.core.data.library.dto.TalentDto
 import com.kaesik.tabletopwarhammer.core.data.library.mappers.toAttributeItem
 import com.kaesik.tabletopwarhammer.core.data.library.mappers.toCareerItem
+import com.kaesik.tabletopwarhammer.core.data.library.mappers.toCareerPathItem
 import com.kaesik.tabletopwarhammer.core.data.library.mappers.toClassItem
 import com.kaesik.tabletopwarhammer.core.data.library.mappers.toSkillItem
 import com.kaesik.tabletopwarhammer.core.data.library.mappers.toSpeciesItem
 import com.kaesik.tabletopwarhammer.core.data.library.mappers.toTalentItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.AttributeItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.CareerItem
+import com.kaesik.tabletopwarhammer.core.domain.library.items.CareerPathItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.ClassItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.ItemItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.SkillItem
@@ -138,6 +140,23 @@ class KtorCharacterCreatorClient : CharacterCreatorClient {
                 .toCareerItem()
         } catch (e: Exception) {
             println("Error fetching species list: ${e.message}")
+            handleException(e)
+        }
+    }
+
+    override suspend fun getCareerPath(pathName: String): CareerPathItem {
+        return try {
+            supabaseClient
+                .from(LibraryEnum.CAREER_PATH.tableName)
+                .select {
+                    filter {
+                        ilike("name", "%$pathName%")
+                    }
+                }
+                .decodeSingle<CareerPathDto>()
+                .toCareerPathItem()
+        } catch (e: Exception) {
+            println("Error fetching career path: ${e.message}")
             handleException(e)
         }
     }

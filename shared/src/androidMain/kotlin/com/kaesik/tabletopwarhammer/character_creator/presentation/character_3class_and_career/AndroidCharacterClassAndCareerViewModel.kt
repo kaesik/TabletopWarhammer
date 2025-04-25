@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.kaesik.tabletopwarhammer.character_creator.domain.CharacterCreatorClient
 
 class AndroidCharacterClassAndCareerViewModel(
-    private val characterCreatorClient: CharacterCreatorClient
+    val characterCreatorClient: CharacterCreatorClient
 ) : ViewModel() {
 
     private val viewModel by lazy {

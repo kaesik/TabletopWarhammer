@@ -14,59 +14,85 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator.AndroidCharacterCreatorViewModel
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator.CharacterCreatorEvent
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorButton
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorTitle
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.DiceThrow
 import com.kaesik.tabletopwarhammer.core.domain.library.items.CareerItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.ClassItem
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun CharacterClassAndCareerScreenRoot(
     viewModel: AndroidCharacterClassAndCareerViewModel = koinViewModel(),
+    creatorViewModel: AndroidCharacterCreatorViewModel = koinViewModel(),
     speciesName: String,
     onClassSelect: () -> Unit,
     onCareerSelect: () -> Unit,
-    onNextClick: (String) -> Unit,
+    onNextClick: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val coroutineScope = rememberCoroutineScope()
+
     LaunchedEffect(true) {
         viewModel.onEvent(CharacterClassAndCareerEvent.InitClassList)
-    }
-    LaunchedEffect(true) {
         viewModel.onEvent(CharacterClassAndCareerEvent.InitCareerList(speciesName))
     }
-    val classes = state.classList
-    val careers = state.careerList
+
     CharacterClassAndCareerScreen(
         state = state,
         onEvent = { event ->
             when (event) {
                 is CharacterClassAndCareerEvent.OnClassSelect -> {
-                    onClassSelect()
+                    viewModel.onEvent(event)
+                    state.classList.find { it.id == event.id }?.let { classItem ->
+                        creatorViewModel.onEvent(CharacterCreatorEvent.SetClass(classItem))
+                        onClassSelect()
+                    }
                 }
 
                 is CharacterClassAndCareerEvent.OnCareerSelect -> {
+                    val selectedCareer = state.careerList.find { it.id == event.id }
+                        ?: return@CharacterClassAndCareerScreen
+                    val firstCareerPathName = selectedCareer.careerPath
+                        ?.split(",")?.firstOrNull()?.trim()
+
+                    if (firstCareerPathName != null) {
+                        coroutineScope.launch {
+                            val careerPathItem = viewModel
+                                .characterCreatorClient
+                                .getCareerPath(pathName = firstCareerPathName)
+                            creatorViewModel.onEvent(
+                                CharacterCreatorEvent.SetCareer(
+                                    careerItem = selectedCareer,
+                                    careerPathItem = careerPathItem
+                                )
+                            )
+                        }
+                    }
+
+                    viewModel.onEvent(event)
                     onCareerSelect()
                 }
 
                 is CharacterClassAndCareerEvent.OnNextClick -> {
-                    state.selectedCareer?.id?.let(onNextClick)
+                    onNextClick()
                 }
 
                 else -> Unit
             }
-
-            viewModel.onEvent(event)
         },
-        classes = classes,
-        careers = careers,
+        classes = state.classList,
+        careers = state.careerList,
     )
 }
 

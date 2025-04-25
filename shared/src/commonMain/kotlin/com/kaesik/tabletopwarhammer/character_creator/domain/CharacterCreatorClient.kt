@@ -2,6 +2,7 @@ package com.kaesik.tabletopwarhammer.character_creator.domain
 
 import com.kaesik.tabletopwarhammer.core.domain.library.items.AttributeItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.CareerItem
+import com.kaesik.tabletopwarhammer.core.domain.library.items.CareerPathItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.ClassItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.ItemItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.SkillItem
@@ -30,6 +31,10 @@ interface CharacterCreatorClient {
     suspend fun getCareerDetails(
         careerName: String
     ): CareerItem
+
+    suspend fun getCareerPath(
+        pathName: String
+    ): CareerPathItem
 
     suspend fun getAttributes(): List<AttributeItem>
 

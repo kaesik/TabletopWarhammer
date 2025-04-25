@@ -31,6 +31,7 @@ import com.kaesik.tabletopwarhammer.library.presentation.library_3item.LibraryIt
 import com.kaesik.tabletopwarhammer.menu.presentation.AndroidMenuViewModel
 import com.kaesik.tabletopwarhammer.menu.presentation.MenuScreenRoot
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.getKoin
 
 @Composable
 fun App() {
@@ -130,75 +131,83 @@ fun App() {
                             Route.CharacterSpecies
                         )
                     },
-                    onRandomCharacterSelect = {
-                    },
+                    onRandomCharacterSelect = { },
                 )
             }
             composable<Route.CharacterSpecies> {
                 val viewModel = koinViewModel<AndroidCharacterSpeciesViewModel>()
+                val creatorViewModel = getKoin().get<AndroidCharacterCreatorViewModel>()
+
                 CharacterSpeciesScreenRoot(
                     viewModel = viewModel,
-                    onSpeciesSelect = {
-                    },
-                    onNextClick = { selectedSpecies ->
+                    creatorViewModel = creatorViewModel,
+                    onSpeciesSelect = { },
+                    onNextClick = {
                         navController.navigate(
                             Route.CharacterClassAndCareer(
-                                characterSpecies = selectedSpecies
+                                characterSpecies = creatorViewModel.state.value.character.species
                             )
                         )
                     }
                 )
             }
-            composable<Route.CharacterClassAndCareer> { backstackEntry ->
+
+            composable<Route.CharacterClassAndCareer> {
                 val viewModel = koinViewModel<AndroidCharacterClassAndCareerViewModel>()
-                val route = backstackEntry.toRoute<Route.CharacterClassAndCareer>()
+                val creatorViewModel = getKoin().get<AndroidCharacterCreatorViewModel>()
+
                 CharacterClassAndCareerScreenRoot(
                     viewModel = viewModel,
-                    speciesName = route.characterSpecies,
-                    onCareerSelect = {
-                    },
-                    onClassSelect = {
-                    },
+                    creatorViewModel = creatorViewModel,
+                    speciesName = creatorViewModel.state.value.character.species,
+                    onCareerSelect = { },
+                    onClassSelect = { },
                     onNextClick = {
                         navController.navigate(
                             Route.CharacterAttributes(
-                                characterSpecies = route.characterSpecies
+                                characterSpecies = creatorViewModel.state.value.character.species
                             )
                         )
-                    },
+                    }
                 )
             }
-            composable<Route.CharacterAttributes> { backstackEntry ->
+
+            composable<Route.CharacterAttributes> {
                 val viewModel = koinViewModel<AndroidCharacterAttributesViewModel>()
-                val route = backstackEntry.toRoute<Route.CharacterAttributes>()
+                val creatorViewModel = getKoin().get<AndroidCharacterCreatorViewModel>()
+
                 CharacterAttributesScreenRoot(
                     viewModel = viewModel,
                     onNextClick = {
                         navController.navigate(
                             Route.CharacterSkillsAndTalents(
-                                characterSpecies = route.characterSpecies,
-                                characterCareer = ""
+                                characterSpecies = creatorViewModel.state.value.character.species,
+                                characterCareer = creatorViewModel.state.value.character.career
                             )
                         )
-                    },
+                    }
                 )
             }
             composable<Route.CharacterSkillsAndTalents> {
                 val viewModel = koinViewModel<AndroidCharacterSkillsAndTalentsViewModel>()
+                val creatorViewModel = getKoin().get<AndroidCharacterCreatorViewModel>()
+
                 CharacterSkillsAndTalentsScreenRoot(
                     viewModel = viewModel,
                     onNextClick = {
                         navController.navigate(
                             Route.CharacterTrappings(
-                                characterSpecies = "",
-                                characterClass = ""
+                                characterSpecies = creatorViewModel.state.value.character.species,
+                                characterClass = creatorViewModel.state.value.character.cLass
                             )
                         )
-                    },
+                    }
                 )
             }
+
             composable<Route.CharacterTrappings> {
                 val viewModel = koinViewModel<AndroidCharacterTrappingsViewModel>()
+                val creatorViewModel = getKoin().get<AndroidCharacterCreatorViewModel>()
                 CharacterTrappingsScreenRoot(
                     viewModel = viewModel,
                     onNextClick = {
@@ -210,10 +219,10 @@ fun App() {
             }
             composable<Route.CharacterDetails> {
                 val viewModel = koinViewModel<AndroidCharacterDetailsViewModel>()
+                val creatorViewModel = getKoin().get<AndroidCharacterCreatorViewModel>()
                 CharacterDetailsScreenRoot(
                     viewModel = viewModel,
-                    onNextClick = {
-                    },
+                    onNextClick = { },
                 )
             }
         }

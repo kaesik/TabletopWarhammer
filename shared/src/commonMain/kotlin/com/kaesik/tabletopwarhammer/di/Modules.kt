@@ -49,7 +49,7 @@ val sharedModule = module {
     viewModelOf(::CharacterSheetViewModel)
 
     single { KtorCharacterCreatorClient() as CharacterCreatorClient }
-    viewModelOf(::CharacterCreatorViewModel)
+    single { CharacterCreatorViewModel() }
     viewModelOf(::CharacterSpeciesViewModel)
     viewModelOf(::CharacterClassAndCareerViewModel)
     viewModelOf(::CharacterAttributesViewModel)

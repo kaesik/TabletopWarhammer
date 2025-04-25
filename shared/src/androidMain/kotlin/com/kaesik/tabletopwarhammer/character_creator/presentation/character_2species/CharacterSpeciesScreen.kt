@@ -14,6 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator.AndroidCharacterCreatorViewModel
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator.CharacterCreatorEvent
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorButton
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorTitle
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.DiceThrow
@@ -23,6 +25,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun CharacterSpeciesScreenRoot(
     viewModel: AndroidCharacterSpeciesViewModel = koinViewModel(),
+    creatorViewModel: AndroidCharacterCreatorViewModel = koinViewModel(),
     onSpeciesSelect: (String) -> Unit,
     onNextClick: (String) -> Unit,
 ) {
@@ -36,7 +39,11 @@ fun CharacterSpeciesScreenRoot(
             when (event) {
                 is CharacterSpeciesEvent.OnSpeciesSelect -> {
                     viewModel.onEvent(event)
-                    onSpeciesSelect(event.id)
+                    val selectedSpecies = state.speciesList.find { it.id == event.id }
+                    if (selectedSpecies != null) {
+                        onSpeciesSelect(selectedSpecies.id)
+                        creatorViewModel.onEvent(CharacterCreatorEvent.SetSpecies(selectedSpecies))
+                    }
                 }
 
                 is CharacterSpeciesEvent.OnNextClick -> {
@@ -69,9 +76,7 @@ fun CharacterSpeciesScreen(
                 CharacterCreatorTitle("Character Species Screen")
             }
             item {
-                DiceThrow(
-                    onClick = {}
-                )
+                DiceThrow(onClick = {})
             }
             items(species) {
                 CharacterCreatorButton(

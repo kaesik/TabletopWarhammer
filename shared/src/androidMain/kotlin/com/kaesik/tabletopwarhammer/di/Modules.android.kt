@@ -36,7 +36,7 @@ actual val platformModule: Module
 
         viewModelOf(::AndroidCharacterSheetViewModel)
 
-        viewModelOf(::AndroidCharacterCreatorViewModel)
+        single { AndroidCharacterCreatorViewModel() }
         viewModelOf(::AndroidCharacterSpeciesViewModel)
         viewModelOf(::AndroidCharacterClassAndCareerViewModel)
         viewModelOf(::AndroidCharacterAttributesViewModel)
