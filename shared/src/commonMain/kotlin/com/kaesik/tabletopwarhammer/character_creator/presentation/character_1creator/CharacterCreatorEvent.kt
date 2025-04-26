@@ -9,11 +9,20 @@ sealed class CharacterCreatorEvent {
     data object OnCreateCharacterSelect : CharacterCreatorEvent()
     data object OnRandomCharacterSelect : CharacterCreatorEvent()
 
+    data class ShowMessage(val message: String) : CharacterCreatorEvent()
+    data object ClearMessage : CharacterCreatorEvent()
+
     data class SetSpecies(val speciesItem: SpeciesItem) : CharacterCreatorEvent()
     data class SetClass(val classItem: ClassItem) : CharacterCreatorEvent()
     data class SetCareer(
         val careerItem: CareerItem,
         val careerPathItem: CareerPathItem
+    ) : CharacterCreatorEvent()
+
+    data class SetAttributes(
+        val totalAttributes: List<Int>,
+        val fatePoints: Int,
+        val resiliencePoints: Int,
     ) : CharacterCreatorEvent()
 
 }

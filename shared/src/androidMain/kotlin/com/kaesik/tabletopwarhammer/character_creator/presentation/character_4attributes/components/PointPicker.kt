@@ -1,18 +1,9 @@
 package com.kaesik.tabletopwarhammer.character_creator.presentation.character_4attributes.components
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material3.Card
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
@@ -28,52 +19,55 @@ import androidx.compose.ui.unit.dp
 fun PointPicker(
     name: String,
     value: Int,
-    onValueChange: () -> Unit
+    onIncrease: () -> Unit,
+    onDecrease: () -> Unit,
+    canIncrease: Boolean,
+    canDecrease: Boolean,
 ) {
     ElevatedCard(
         modifier = Modifier
-            .width(300.dp),
+            .width(200.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
+                .padding(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(text = name)
 
-            Spacer(modifier = Modifier.height(8.dp))
-
             Row(
+                modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
+                horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
+                IconButton(
+                    onClick = { onDecrease() },
+                    enabled = canDecrease // <- blokada zmniejszania
                 ) {
-                    IconButton(onClick = { onValueChange() }) {
-                        Icon(
-                            imageVector = Icons.Default.KeyboardArrowUp,
-                            contentDescription = ""
-                        )
-                    }
+                    Icon(
+                        imageVector = Icons.Filled.KeyboardArrowLeft,
+                        contentDescription = "Decrease $name"
+                    )
+                }
 
-                    Text(text = value.toString())
+                Text(text = value.toString())
 
-                    IconButton(onClick = { onValueChange() }) {
-                        Icon(
-                            imageVector = Icons.Default.KeyboardArrowDown,
-                            contentDescription = ""
-                        )
-                    }
+                IconButton(
+                    onClick = { onIncrease() },
+                    enabled = canIncrease // <- blokada zwiększania
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.KeyboardArrowRight,
+                        contentDescription = "Increase $name"
+                    )
                 }
             }
         }
     }
 }
-
 
 @Composable
 @Preview
@@ -81,6 +75,9 @@ fun PointPickerPreview() {
     PointPicker(
         name = "Test",
         value = 10,
-        onValueChange = {}
+        onIncrease = {},
+        onDecrease = {},
+        canIncrease = true,
+        canDecrease = false,
     )
 }

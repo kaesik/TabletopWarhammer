@@ -7,6 +7,8 @@ import com.kaesik.tabletopwarhammer.core.domain.library.items.SpeciesItem
 
 data class CharacterCreatorState(
     val error: String? = null,
+    val message: String? = null,
+    val isError: Boolean? = null,
     val isLoading: Boolean = false,
 
     val character: CharacterItem = CharacterItem.default(),

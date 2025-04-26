@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,8 +25,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator.AndroidCharacterCreatorViewModel
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator.CharacterCreatorEvent
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorButton
+import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorSnackbarHost
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorTitle
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.DiceThrow
+import com.kaesik.tabletopwarhammer.character_creator.presentation.components.SnackbarType
+import com.kaesik.tabletopwarhammer.character_creator.presentation.components.showCharacterCreatorSnackbar
 import com.kaesik.tabletopwarhammer.core.domain.library.items.CareerItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.ClassItem
 import kotlinx.coroutines.launch
@@ -36,13 +40,24 @@ fun CharacterClassAndCareerScreenRoot(
     viewModel: AndroidCharacterClassAndCareerViewModel = koinViewModel(),
     creatorViewModel: AndroidCharacterCreatorViewModel = koinViewModel(),
     speciesName: String,
-    onClassSelect: () -> Unit,
-    onCareerSelect: () -> Unit,
+    onClassSelect: (ClassItem) -> Unit,
+    onCareerSelect: (CareerItem) -> Unit,
     onNextClick: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val creatorState by creatorViewModel.state.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
+    LaunchedEffect(creatorState.message, creatorState.isError) {
+        creatorState.message?.let { message ->
+            snackbarHostState.showCharacterCreatorSnackbar(
+                message = message,
+                type = if (creatorState.isError == true) SnackbarType.Error else SnackbarType.Success
+            )
+            creatorViewModel.onEvent(CharacterCreatorEvent.ClearMessage)
+        }
+    }
     LaunchedEffect(true) {
         viewModel.onEvent(CharacterClassAndCareerEvent.InitClassList)
         viewModel.onEvent(CharacterClassAndCareerEvent.InitCareerList(speciesName))
@@ -56,7 +71,7 @@ fun CharacterClassAndCareerScreenRoot(
                     viewModel.onEvent(event)
                     state.classList.find { it.id == event.id }?.let { classItem ->
                         creatorViewModel.onEvent(CharacterCreatorEvent.SetClass(classItem))
-                        onClassSelect()
+                        onClassSelect(classItem)
                     }
                 }
 
@@ -66,22 +81,28 @@ fun CharacterClassAndCareerScreenRoot(
                     val firstCareerPathName = selectedCareer.careerPath
                         ?.split(",")?.firstOrNull()?.trim()
 
-                    if (firstCareerPathName != null) {
-                        coroutineScope.launch {
-                            val careerPathItem = viewModel
-                                .characterCreatorClient
-                                .getCareerPath(pathName = firstCareerPathName)
-                            creatorViewModel.onEvent(
-                                CharacterCreatorEvent.SetCareer(
-                                    careerItem = selectedCareer,
-                                    careerPathItem = careerPathItem
+                    coroutineScope.launch {
+                        if (!firstCareerPathName.isNullOrEmpty()) {
+                            try {
+                                val careerPathItem = viewModel
+                                    .characterCreatorClient
+                                    .getCareerPath(pathName = firstCareerPathName)
+                                creatorViewModel.onEvent(
+                                    CharacterCreatorEvent.SetCareer(
+                                        careerItem = selectedCareer,
+                                        careerPathItem = careerPathItem
+                                    )
                                 )
-                            )
+                            } catch (e: Exception) {
+                                println("Error fetching career path: ${e.message}")
+                            }
+                        } else {
+                            println("CareerPath jest puste, nie szukamy w bazie.")
                         }
-                    }
 
-                    viewModel.onEvent(event)
-                    onCareerSelect()
+                        viewModel.onEvent(event)
+                        onCareerSelect(selectedCareer)
+                    }
                 }
 
                 is CharacterClassAndCareerEvent.OnNextClick -> {
@@ -93,6 +114,7 @@ fun CharacterClassAndCareerScreenRoot(
         },
         classes = state.classList,
         careers = state.careerList,
+        snackbarHostState = snackbarHostState
     )
 }
 
@@ -102,8 +124,11 @@ fun CharacterClassAndCareerScreen(
     onEvent: (CharacterClassAndCareerEvent) -> Unit,
     classes: List<ClassItem>,
     careers: List<CareerItem>,
+    snackbarHostState: SnackbarHostState,
 ) {
-    Scaffold { padding ->
+    Scaffold(
+        snackbarHost = { CharacterCreatorSnackbarHost(snackbarHostState) }
+    ) { padding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -194,5 +219,6 @@ fun CharacterClassAndCareerScreenPreview() {
         onEvent = {},
         classes = listOf(),
         careers = listOf(),
+        snackbarHostState = remember { SnackbarHostState() }
     )
 }

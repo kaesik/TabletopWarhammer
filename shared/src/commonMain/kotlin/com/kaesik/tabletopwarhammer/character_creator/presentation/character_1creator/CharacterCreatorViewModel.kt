@@ -18,7 +18,8 @@ class CharacterCreatorViewModel : ViewModel() {
                     )
                     val updated = current.copy(
                         selectedSpecies = event.speciesItem,
-                        character = updatedCharacter
+                        character = updatedCharacter,
+                        message = "Selected species: ${event.speciesItem.name}"
                     )
                     println("Updated CharacterItem: $updatedCharacter")
                     updated
@@ -32,7 +33,8 @@ class CharacterCreatorViewModel : ViewModel() {
                     )
                     val updated = current.copy(
                         selectedClass = event.classItem,
-                        character = updatedCharacter
+                        character = updatedCharacter,
+                        message = "Selected class: ${event.classItem.name}"
                     )
                     println("Updated CharacterItem: $updatedCharacter")
                     updated
@@ -48,16 +50,92 @@ class CharacterCreatorViewModel : ViewModel() {
                     )
                     val updated = current.copy(
                         selectedCareer = event.careerItem,
-                        character = updatedCharacter
+                        character = updatedCharacter,
+                        message = "Selected career: ${event.careerItem.name}"
                     )
                     println("Updated CharacterItem: $updatedCharacter")
                     updated
                 }
             }
 
+            is CharacterCreatorEvent.SetAttributes -> {
+                _state.update { current ->
+                    val character = current.character
+
+                    val updatedCharacter = character.copy(
+                        weaponSkill = listOf(
+                            event.totalAttributes.getOrNull(0) ?: character.weaponSkill[0],
+                            0,
+                            event.totalAttributes.getOrNull(0) ?: character.weaponSkill[0]
+                        ),
+                        ballisticSkill = listOf(
+                            event.totalAttributes.getOrNull(1) ?: character.ballisticSkill[0],
+                            0,
+                            event.totalAttributes.getOrNull(1) ?: character.ballisticSkill[0]
+                        ),
+                        strength = listOf(
+                            event.totalAttributes.getOrNull(2) ?: character.strength[0],
+                            0,
+                            event.totalAttributes.getOrNull(2) ?: character.strength[0]
+                        ),
+                        toughness = listOf(
+                            event.totalAttributes.getOrNull(3) ?: character.toughness[0],
+                            0,
+                            event.totalAttributes.getOrNull(3) ?: character.toughness[0]
+                        ),
+                        initiative = listOf(
+                            event.totalAttributes.getOrNull(4) ?: character.initiative[0],
+                            0,
+                            event.totalAttributes.getOrNull(4) ?: character.initiative[0]
+                        ),
+                        agility = listOf(
+                            event.totalAttributes.getOrNull(5) ?: character.agility[0],
+                            0,
+                            event.totalAttributes.getOrNull(5) ?: character.agility[0]
+                        ),
+                        dexterity = listOf(
+                            event.totalAttributes.getOrNull(6) ?: character.dexterity[0],
+                            0,
+                            event.totalAttributes.getOrNull(6) ?: character.dexterity[0]
+                        ),
+                        intelligence = listOf(
+                            event.totalAttributes.getOrNull(7) ?: character.intelligence[0],
+                            0,
+                            event.totalAttributes.getOrNull(7) ?: character.intelligence[0]
+                        ),
+                        willPower = listOf(
+                            event.totalAttributes.getOrNull(8) ?: character.willPower[0],
+                            0,
+                            event.totalAttributes.getOrNull(8) ?: character.willPower[0]
+                        ),
+                        fellowship = listOf(
+                            event.totalAttributes.getOrNull(9) ?: character.fellowship[0],
+                            0,
+                            event.totalAttributes.getOrNull(9) ?: character.fellowship[0]
+                        ),
+                        fate = event.fatePoints,
+                        fortune = event.fatePoints,
+                        resilience = event.resiliencePoints,
+                        resolve = 0
+                    )
+                    val updated = current.copy(
+                        character = updatedCharacter,
+                        message = "Attributes and fate points set!"
+                    )
+                    println("Updated CharacterItem: $updatedCharacter")
+                    updated
+                }
+            }
+
+            is CharacterCreatorEvent.ShowMessage -> {
+                _state.update { it.copy(message = event.message) }
+            }
+
+            is CharacterCreatorEvent.ClearMessage -> {
+                _state.update { it.copy(message = null) }
+            }
+
             else -> Unit
         }
     }
-
-
 }

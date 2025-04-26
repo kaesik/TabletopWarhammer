@@ -141,7 +141,9 @@ fun App() {
                 CharacterSpeciesScreenRoot(
                     viewModel = viewModel,
                     creatorViewModel = creatorViewModel,
-                    onSpeciesSelect = { },
+                    onSpeciesSelect = { speciesItem ->
+                        println("Selected species: ${speciesItem.name}")
+                    },
                     onNextClick = {
                         navController.navigate(
                             Route.CharacterClassAndCareer(
@@ -160,8 +162,12 @@ fun App() {
                     viewModel = viewModel,
                     creatorViewModel = creatorViewModel,
                     speciesName = creatorViewModel.state.value.character.species,
-                    onCareerSelect = { },
-                    onClassSelect = { },
+                    onCareerSelect = { careerItem ->
+                        println("Selected career: ${careerItem.name}")
+                    },
+                    onClassSelect = { classItem ->
+                        println("Selected class: ${classItem.name}")
+                    },
                     onNextClick = {
                         navController.navigate(
                             Route.CharacterAttributes(
@@ -178,6 +184,7 @@ fun App() {
 
                 CharacterAttributesScreenRoot(
                     viewModel = viewModel,
+                    creatorViewModel = creatorViewModel,
                     onNextClick = {
                         navController.navigate(
                             Route.CharacterSkillsAndTalents(
@@ -185,9 +192,11 @@ fun App() {
                                 characterCareer = creatorViewModel.state.value.character.career
                             )
                         )
-                    }
+                    },
+                    characterSpecies = creatorViewModel.state.value.character.species,
                 )
             }
+
             composable<Route.CharacterSkillsAndTalents> {
                 val viewModel = koinViewModel<AndroidCharacterSkillsAndTalentsViewModel>()
                 val creatorViewModel = getKoin().get<AndroidCharacterCreatorViewModel>()
