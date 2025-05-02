@@ -2,14 +2,17 @@ package com.kaesik.tabletopwarhammer.character_creator.presentation.character_5s
 
 import androidx.lifecycle.ViewModel
 import com.kaesik.tabletopwarhammer.character_creator.domain.CharacterCreatorClient
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator.CharacterCreatorViewModel
 
 class AndroidCharacterSkillsAndTalentsViewModel(
-    private val characterCreatorClient: CharacterCreatorClient
+    private val characterCreatorClient: CharacterCreatorClient,
+    private val characterCreatorViewModel: CharacterCreatorViewModel,
 ) : ViewModel() {
 
     private val viewModel by lazy {
         CharacterSkillsAndTalentsViewModel(
-            characterCreatorClient = characterCreatorClient
+            characterCreatorClient = characterCreatorClient,
+            characterCreatorViewModel = characterCreatorViewModel,
         )
     }
 

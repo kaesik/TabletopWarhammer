@@ -197,9 +197,8 @@ class KtorCharacterCreatorClient : CharacterCreatorClient {
 
     override suspend fun getSkills(
         speciesName: String,
-        careerName: String,
         careerPathName: String
-    ): List<List<String>> {
+    ): List<List<SkillItem>> {
         return try {
             val speciesResult = supabaseClient
                 .from(LibraryEnum.SPECIES.tableName)
@@ -223,8 +222,19 @@ class KtorCharacterCreatorClient : CharacterCreatorClient {
                     ?: emptyList()
             }
 
-            val speciesSkills = extract(speciesResult.skills)
-            val careerSkills = extract(careerPathResult.skills)
+            val speciesSkillsNames = extract(speciesResult.skills)
+            val careerSkillsNames = extract(careerPathResult.skills)
+
+            val allSkillDtos = supabaseClient
+                .from(LibraryEnum.SKILL.tableName)
+                .select()
+                .decodeList<SkillDto>()
+
+            val allSkills = allSkillDtos.map { it.toSkillItem() }
+                .filter { it.name in (speciesSkillsNames + careerSkillsNames) }
+
+            val speciesSkills = allSkills.filter { it.name in speciesSkillsNames }
+            val careerSkills = allSkills.filter { it.name in careerSkillsNames }
 
             listOf(speciesSkills, careerSkills)
 
@@ -255,9 +265,8 @@ class KtorCharacterCreatorClient : CharacterCreatorClient {
 
     override suspend fun getTalents(
         speciesName: String,
-        careerName: String,
         careerPathName: String
-    ): List<List<String>> {
+    ): List<List<TalentItem>> {
         return try {
             val speciesResult = supabaseClient
                 .from(LibraryEnum.SPECIES.tableName)
@@ -281,8 +290,19 @@ class KtorCharacterCreatorClient : CharacterCreatorClient {
                     ?: emptyList()
             }
 
-            val speciesTalents = extract(speciesResult.talents)
-            val careerTalents = extract(careerPathResult.talents)
+            val speciesTalentsNames = extract(speciesResult.talents)
+            val careerTalentsNames = extract(careerPathResult.talents)
+
+            val allTalentDtos = supabaseClient
+                .from(LibraryEnum.TALENT.tableName)
+                .select()
+                .decodeList<TalentDto>()
+
+            val allTalents = allTalentDtos.map { it.toTalentItem() }
+                .filter { it.name in (speciesTalentsNames + careerTalentsNames) }
+
+            val speciesTalents = allTalents.filter { it.name in speciesTalentsNames }
+            val careerTalents = allTalents.filter { it.name in careerTalentsNames }
 
             listOf(speciesTalents, careerTalents)
 

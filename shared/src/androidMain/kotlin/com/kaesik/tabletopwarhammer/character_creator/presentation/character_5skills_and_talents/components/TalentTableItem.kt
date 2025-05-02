@@ -14,10 +14,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.kaesik.tabletopwarhammer.core.domain.library.items.TalentItem
 
 @Composable
 fun TalentTableItem(
-    talent: String,
+    talent: TalentItem,
 ) {
     Surface(
         modifier = Modifier,
@@ -29,16 +30,16 @@ fun TalentTableItem(
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    text = talent,
+                    text = talent.name,
                 )
             }
             Box(
                 modifier = Modifier.weight(1f)
             ) {
                 Row {
-                    if (talent == "Random Talent") {
+                    if (talent.name == "Random Talent") {
                         IconButton(
-                            onClick = {  }
+                            onClick = { }
                         ) {
                             Icon(
                                 imageVector = Icons.Default.AddCircle,
@@ -48,7 +49,7 @@ fun TalentTableItem(
                     } else {
                         Checkbox(
                             checked = false,
-                            onCheckedChange = {  },
+                            onCheckedChange = { },
                         )
                     }
                 }
@@ -61,6 +62,14 @@ fun TalentTableItem(
 @Preview
 fun TalentTableItemPreview() {
     TalentTableItem(
-        talent = "Talent Name",
+        talent = TalentItem(
+            name = "Random Talent",
+            description = "Random Talent Description",
+            id = TODO(),
+            max = TODO(),
+            tests = TODO(),
+            source = TODO(),
+            page = TODO(),
+        )
     )
 }

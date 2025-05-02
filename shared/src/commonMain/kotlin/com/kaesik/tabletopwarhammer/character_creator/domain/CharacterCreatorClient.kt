@@ -44,9 +44,8 @@ interface CharacterCreatorClient {
 
     suspend fun getSkills(
         speciesName: String,
-        careerName: String,
         careerPathName: String
-    ): List<List<String>>
+    ): List<List<SkillItem>>
 
     suspend fun getSkillsDetails(
         skillName: String
@@ -54,9 +53,8 @@ interface CharacterCreatorClient {
 
     suspend fun getTalents(
         speciesName: String,
-        careerName: String,
         careerPathName: String
-    ): List<List<String>>
+    ): List<List<TalentItem>>
 
     suspend fun getTalentsDetails(
         talentName: String

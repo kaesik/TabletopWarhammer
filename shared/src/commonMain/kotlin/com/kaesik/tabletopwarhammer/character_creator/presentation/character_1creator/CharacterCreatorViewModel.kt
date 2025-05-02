@@ -11,6 +11,14 @@ class CharacterCreatorViewModel : ViewModel() {
 
     fun onEvent(event: CharacterCreatorEvent) {
         when (event) {
+            is CharacterCreatorEvent.ShowMessage -> {
+                _state.update { it.copy(message = event.message) }
+            }
+
+            is CharacterCreatorEvent.ClearMessage -> {
+                _state.update { it.copy(message = null) }
+            }
+
             is CharacterCreatorEvent.SetSpecies -> {
                 _state.update { current ->
                     val updatedCharacter = current.character.copy(
@@ -127,12 +135,20 @@ class CharacterCreatorViewModel : ViewModel() {
                 }
             }
 
-            is CharacterCreatorEvent.ShowMessage -> {
-                _state.update { it.copy(message = event.message) }
-            }
-
-            is CharacterCreatorEvent.ClearMessage -> {
-                _state.update { it.copy(message = null) }
+            is CharacterCreatorEvent.SetSkillsAndTalents -> {
+                _state.update { current ->
+                    val updatedCharacter = current.character.copy(
+                        basicSkills = event.basicSkills,
+                        advancedSkills = event.advancedSkills,
+                        talents = event.talents,
+                    )
+                    val updated = current.copy(
+                        character = updatedCharacter,
+                        message = "Skills and talents selected!"
+                    )
+                    println("Updated CharacterItem: $updatedCharacter")
+                    updated
+                }
             }
 
             else -> Unit
