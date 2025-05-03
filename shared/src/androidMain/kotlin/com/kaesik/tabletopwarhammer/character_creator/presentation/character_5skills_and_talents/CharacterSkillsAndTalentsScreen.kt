@@ -13,6 +13,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.kaesik.tabletopwarhammer.character_creator.domain.CharacterItem
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator.AndroidCharacterCreatorViewModel
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator.CharacterCreatorEvent
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.SkillsTable
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.SpeciesOrCareer
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.TalentsTable
@@ -25,13 +28,27 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun CharacterSkillsAndTalentsScreenRoot(
     viewModel: AndroidCharacterSkillsAndTalentsViewModel = koinViewModel(),
+    creatorViewModel: AndroidCharacterCreatorViewModel,
     onNextClick: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val character = creatorViewModel.state.value.character
 
     LaunchedEffect(true) {
-        viewModel.onEvent(CharacterSkillsAndTalentsEvent.InitSkillsList(SpeciesOrCareer.SPECIES))
-        viewModel.onEvent(CharacterSkillsAndTalentsEvent.InitTalentsList(SpeciesOrCareer.SPECIES))
+        viewModel.onEvent(
+            CharacterSkillsAndTalentsEvent.InitSkillsList(
+                from = SpeciesOrCareer.SPECIES,
+                speciesName = character.species,
+                careerPathName = character.careerPath
+            )
+        )
+        viewModel.onEvent(
+            CharacterSkillsAndTalentsEvent.InitTalentsList(
+                from = SpeciesOrCareer.SPECIES,
+                speciesName = character.species,
+                careerPathName = character.careerPath
+            )
+        )
     }
 
     val skills = state.skillList
@@ -54,12 +71,67 @@ fun CharacterSkillsAndTalentsScreenRoot(
         },
         onEvent = { event ->
             when (event) {
-                is CharacterSkillsAndTalentsEvent.OnNextClick -> onNextClick()
-                else -> Unit
+                is CharacterSkillsAndTalentsEvent.OnNextClick -> {
+                    val allSkills = state.skillList.flatten()
+                    val allTalents = state.talentList.flatten()
+
+                    val basicSkills = allSkills
+                        .filter { it.isBasic == true }
+                        .map {
+                            listOf(
+                                it.name,
+                                it.attribute.orEmpty(),
+                                "0",
+                                getAttributeValue(character, it.attribute.orEmpty()).toString()
+                            )
+                        }
+
+                    val advancedSkills = allSkills
+                        .filter { it.isBasic != true }
+                        .map {
+                            listOf(
+                                it.name,
+                                it.attribute.orEmpty(),
+                                "0",
+                                getAttributeValue(character, it.attribute.orEmpty()).toString()
+                            )
+                        }
+
+                    val mappedTalents = allTalents.map {
+                        listOf(it.name, it.source.orEmpty(), it.page?.toString() ?: "")
+                    }
+
+                    creatorViewModel.onEvent(
+                        CharacterCreatorEvent.SetSkillsAndTalents(
+                            basicSkills = basicSkills,
+                            advancedSkills = advancedSkills,
+                            talents = mappedTalents
+                        )
+                    )
+
+                    onNextClick()
+                }
+
+                else -> viewModel.onEvent(event)
             }
-            viewModel.onEvent(event)
         }
     )
+}
+
+private fun getAttributeValue(character: CharacterItem, attributeName: String): Int {
+    return when (attributeName) {
+        "Weapon Skill" -> character.weaponSkill.firstOrNull() ?: 0
+        "Ballistic Skill" -> character.ballisticSkill.firstOrNull() ?: 0
+        "Strength" -> character.strength.firstOrNull() ?: 0
+        "Toughness" -> character.toughness.firstOrNull() ?: 0
+        "Initiative" -> character.initiative.firstOrNull() ?: 0
+        "Agility" -> character.agility.firstOrNull() ?: 0
+        "Dexterity" -> character.dexterity.firstOrNull() ?: 0
+        "Intelligence" -> character.intelligence.firstOrNull() ?: 0
+        "Willpower" -> character.willPower.firstOrNull() ?: 0
+        "Fellowship" -> character.fellowship.firstOrNull() ?: 0
+        else -> 0
+    }
 }
 
 @Composable

@@ -203,6 +203,7 @@ fun App() {
 
                 CharacterSkillsAndTalentsScreenRoot(
                     viewModel = viewModel,
+                    creatorViewModel = creatorViewModel,
                     onNextClick = {
                         navController.navigate(
                             Route.CharacterTrappings(
@@ -226,6 +227,7 @@ fun App() {
                     },
                 )
             }
+
             composable<Route.CharacterDetails> {
                 val viewModel = koinViewModel<AndroidCharacterDetailsViewModel>()
                 val creatorViewModel = getKoin().get<AndroidCharacterCreatorViewModel>()

@@ -8,9 +8,15 @@ data class CharacterSkillsAndTalentsState(
     val error: String? = null,
     val isLoading: Boolean = false,
 
-    val skillList: List<List<SkillItem>> = emptyList(),
-    val talentList: List<List<TalentItem>> = emptyList(),
-
-    val selectedSkills: List<SkillItem> = emptyList(),
     val speciesOrCareer: SpeciesOrCareer = SpeciesOrCareer.SPECIES,
+
+    val speciesSkillsList: List<List<SkillItem>> = emptyList(),
+    val careerSkillsList: List<List<SkillItem>> = emptyList(),
+    val skillList: List<List<SkillItem>> = emptyList(),
+    val selectedSkills: List<SkillItem> = emptyList(),
+
+    val speciesTalentsList: List<List<TalentItem>> = emptyList(),
+    val careerTalentsList: List<List<TalentItem>> = emptyList(),
+    val talentList: List<List<TalentItem>> = emptyList(),
+    val selectedTalents: List<TalentItem> = emptyList(),
 )

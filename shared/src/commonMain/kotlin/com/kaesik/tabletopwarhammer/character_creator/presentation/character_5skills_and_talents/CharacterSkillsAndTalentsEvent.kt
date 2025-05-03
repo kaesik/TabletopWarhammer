@@ -4,8 +4,17 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5sk
 import com.kaesik.tabletopwarhammer.core.domain.library.items.SkillItem
 
 sealed class CharacterSkillsAndTalentsEvent {
-    data class InitSkillsList(val from: SpeciesOrCareer) : CharacterSkillsAndTalentsEvent()
-    data class InitTalentsList(val from: SpeciesOrCareer) : CharacterSkillsAndTalentsEvent()
+    data class InitSkillsList(
+        val from: SpeciesOrCareer,
+        val speciesName: String,
+        val careerPathName: String,
+    ) : CharacterSkillsAndTalentsEvent()
+
+    data class InitTalentsList(
+        val from: SpeciesOrCareer,
+        val speciesName: String,
+        val careerPathName: String,
+    ) : CharacterSkillsAndTalentsEvent()
 
     data class OnSkillChecked(
         val skill: SkillItem,
