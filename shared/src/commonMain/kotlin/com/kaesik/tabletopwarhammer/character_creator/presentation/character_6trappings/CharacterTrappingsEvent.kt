@@ -3,7 +3,11 @@ package com.kaesik.tabletopwarhammer.character_creator.presentation.character_6t
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_6trappings.components.ClassOrCareer
 
 sealed class CharacterTrappingsEvent {
-    data class InitTrappingsList(val from: ClassOrCareer) : CharacterTrappingsEvent()
+    data class InitTrappingsList(
+        val from: ClassOrCareer,
+        val className: String,
+        val careerPathName: String,
+    ) : CharacterTrappingsEvent()
 
     data object OnNextClick : CharacterTrappingsEvent()
 }

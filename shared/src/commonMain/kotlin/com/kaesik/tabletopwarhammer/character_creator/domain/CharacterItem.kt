@@ -75,8 +75,8 @@ data class CharacterItem(
     val weapons: List<List<String>>,
 
     // TRAPPINGS
-    // TRAPPINGS[NAME[ENC]
-    val trappings: List<List<String>>,
+    // TRAPPINGS[NAME]
+    val trappings: List<String>,
 
     // PSYCHOLOGY & MUTATIONS
     val psychology: List<String>,

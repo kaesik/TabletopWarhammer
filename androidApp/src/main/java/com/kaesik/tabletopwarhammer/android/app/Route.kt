@@ -52,8 +52,8 @@ sealed interface Route {
 
     @Serializable
     data class CharacterTrappings(
-        val characterSpecies: String,
         val characterClass: String,
+        val characterCareerPath: String,
     ) : Route
 
     @Serializable

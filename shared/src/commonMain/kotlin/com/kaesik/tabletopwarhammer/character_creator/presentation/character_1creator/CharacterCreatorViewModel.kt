@@ -151,6 +151,20 @@ class CharacterCreatorViewModel : ViewModel() {
                 }
             }
 
+            is CharacterCreatorEvent.SetTrappings -> {
+                _state.update { current ->
+                    val updatedCharacter = current.character.copy(
+                        trappings = event.trappings
+                    )
+                    val updated = current.copy(
+                        character = updatedCharacter,
+                        message = "Trappings selected!"
+                    )
+                    println("Updated CharacterItem: $updatedCharacter")
+                    updated
+                }
+            }
+
             else -> Unit
         }
     }

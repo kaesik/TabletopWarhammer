@@ -207,8 +207,8 @@ fun App() {
                     onNextClick = {
                         navController.navigate(
                             Route.CharacterTrappings(
-                                characterSpecies = creatorViewModel.state.value.character.species,
-                                characterClass = creatorViewModel.state.value.character.cLass
+                                characterClass = creatorViewModel.state.value.character.cLass,
+                                characterCareerPath = creatorViewModel.state.value.character.careerPath,
                             )
                         )
                     }
@@ -220,6 +220,7 @@ fun App() {
                 val creatorViewModel = getKoin().get<AndroidCharacterCreatorViewModel>()
                 CharacterTrappingsScreenRoot(
                     viewModel = viewModel,
+                    creatorViewModel = creatorViewModel,
                     onNextClick = {
                         navController.navigate(
                             Route.CharacterDetails

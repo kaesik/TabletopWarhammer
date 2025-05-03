@@ -63,7 +63,7 @@ interface CharacterCreatorClient {
     suspend fun getTrappings(
         className: String,
         careerPathName: String
-    ): List<List<String>>
+    ): List<List<ItemItem>>
 
     suspend fun getTrappingsDetails(
         className: String,

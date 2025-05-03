@@ -36,7 +36,8 @@ class CharacterSkillsAndTalentsViewModel(
             )
 
             is CharacterSkillsAndTalentsEvent.OnSpeciesOrCareerClick -> toggleSpeciesOrCareer()
-            is CharacterSkillsAndTalentsEvent.OnNextClick -> {}
+
+            else -> Unit
         }
     }
 
@@ -65,7 +66,10 @@ class CharacterSkillsAndTalentsViewModel(
     ) {
         skillsJob?.cancel()
         skillsJob = viewModelScope.launch {
-            val result = characterCreatorClient.getSkills(speciesName, careerPathName)
+            val result = characterCreatorClient.getSkills(
+                speciesName = speciesName,
+                careerPathName = careerPathName
+            )
             _state.update {
                 when (from) {
                     SpeciesOrCareer.SPECIES -> it.copy(speciesSkillsList = result)
@@ -91,5 +95,4 @@ class CharacterSkillsAndTalentsViewModel(
             }
         }
     }
-
 }

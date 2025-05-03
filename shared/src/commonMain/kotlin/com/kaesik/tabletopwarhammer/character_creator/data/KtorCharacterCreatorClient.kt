@@ -6,6 +6,7 @@ import com.kaesik.tabletopwarhammer.core.data.library.dto.AttributeDto
 import com.kaesik.tabletopwarhammer.core.data.library.dto.CareerDto
 import com.kaesik.tabletopwarhammer.core.data.library.dto.CareerPathDto
 import com.kaesik.tabletopwarhammer.core.data.library.dto.ClassDto
+import com.kaesik.tabletopwarhammer.core.data.library.dto.ItemDto
 import com.kaesik.tabletopwarhammer.core.data.library.dto.SkillDto
 import com.kaesik.tabletopwarhammer.core.data.library.dto.SpeciesDto
 import com.kaesik.tabletopwarhammer.core.data.library.dto.TalentDto
@@ -13,6 +14,7 @@ import com.kaesik.tabletopwarhammer.core.data.library.mappers.toAttributeItem
 import com.kaesik.tabletopwarhammer.core.data.library.mappers.toCareerItem
 import com.kaesik.tabletopwarhammer.core.data.library.mappers.toCareerPathItem
 import com.kaesik.tabletopwarhammer.core.data.library.mappers.toClassItem
+import com.kaesik.tabletopwarhammer.core.data.library.mappers.toItemItem
 import com.kaesik.tabletopwarhammer.core.data.library.mappers.toSkillItem
 import com.kaesik.tabletopwarhammer.core.data.library.mappers.toSpeciesItem
 import com.kaesik.tabletopwarhammer.core.data.library.mappers.toTalentItem
@@ -334,7 +336,7 @@ class KtorCharacterCreatorClient : CharacterCreatorClient {
     override suspend fun getTrappings(
         className: String,
         careerPathName: String
-    ): List<List<String>> {
+    ): List<List<ItemItem>> {
         return try {
             val classResult = supabaseClient
                 .from(LibraryEnum.CLASS.tableName)
@@ -351,19 +353,69 @@ class KtorCharacterCreatorClient : CharacterCreatorClient {
                 .decodeSingle<CareerPathDto>()
 
             fun extractTrappings(raw: String?): List<String> {
-                return raw
-                    ?.replace(" and ", ",")
-                    ?.split(",")
-                    ?.map { it.trim() }
-                    ?.filter { it.isNotEmpty() }
-                    ?: emptyList()
+                if (raw.isNullOrBlank()) return emptyList()
+
+                return raw.split(",")
+                    .flatMap { part ->
+                        val trimmed = part.trim()
+                        if (trimmed.contains(" containing ", ignoreCase = true)) {
+                            val (main, contained) = trimmed.split(" containing ", limit = 2)
+                            val containedItems = contained
+                                .replace(" and ", ",")
+                                .split(",")
+                                .map { it.trim() }
+                            listOf(main.trim()) + containedItems
+                        } else {
+                            listOf(trimmed)
+                        }
+                    }
+                    .filter { it.isNotEmpty() }
             }
 
-            val classTrappings = extractTrappings(classResult.trappings)
-            val careerTrappings = extractTrappings(careerPathResult.trappings)
+            println("classResult ${classResult.trappings}")
+            println("careerPathResult ${careerPathResult.trappings}")
+            val classTrappingNames = extractTrappings(classResult.trappings)
+            val careerTrappingNames = extractTrappings(careerPathResult.trappings)
+
+            val allItemDto = supabaseClient
+                .from(LibraryEnum.ITEM.tableName)
+                .select()
+                .decodeList<ItemDto>()
+
+            val allItems = allItemDto.map { it.toItemItem() }
+
+            fun resolveItems(names: List<String>): List<ItemItem> {
+                return names.map { name ->
+                    allItems.find { it.name.equals(name, ignoreCase = true) }
+                        ?: ItemItem(
+                            id = "",
+                            name = name,
+                            group = null,
+                            source = null,
+                            ap = null,
+                            availability = null,
+                            carries = null,
+                            damage = null,
+                            description = name,
+                            encumbrance = null,
+                            isTwoHanded = null,
+                            locations = null,
+                            penalty = null,
+                            price = null,
+                            qualitiesAndFlaws = null,
+                            quantity = null,
+                            range = null,
+                            meeleRanged = null,
+                            type = null,
+                            page = null
+                        )
+                }
+            }
+
+            val classTrappings = resolveItems(classTrappingNames)
+            val careerTrappings = resolveItems(careerTrappingNames)
 
             listOf(classTrappings, careerTrappings)
-
         } catch (e: Exception) {
             println("Error fetching trappings: ${e.message}")
             handleException(e)
