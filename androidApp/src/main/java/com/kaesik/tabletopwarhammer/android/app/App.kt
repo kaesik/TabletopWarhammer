@@ -234,6 +234,7 @@ fun App() {
                 val creatorViewModel = getKoin().get<AndroidCharacterCreatorViewModel>()
                 CharacterDetailsScreenRoot(
                     viewModel = viewModel,
+                    creatorViewModel = creatorViewModel,
                     onNextClick = { },
                 )
             }

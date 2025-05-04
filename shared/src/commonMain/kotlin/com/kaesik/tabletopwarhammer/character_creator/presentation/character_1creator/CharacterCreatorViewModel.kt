@@ -165,6 +165,24 @@ class CharacterCreatorViewModel : ViewModel() {
                 }
             }
 
+            is CharacterCreatorEvent.SetCharacterDetails -> {
+                _state.update { current ->
+                    val updatedCharacter = current.character.copy(
+                        name = event.name,
+                        age = event.age,
+                        height = event.height,
+                        hair = event.hairColor,
+                        eyes = event.eyeColor,
+                    )
+                    val updated = current.copy(
+                        character = updatedCharacter,
+                        message = "Character details set!"
+                    )
+                    println("Updated CharacterItem: $updatedCharacter")
+                    updated
+                }
+            }
+
             else -> Unit
         }
     }

@@ -34,4 +34,12 @@ sealed class CharacterCreatorEvent {
     data class SetTrappings(
         val trappings: List<String>,
     ) : CharacterCreatorEvent()
+
+    data class SetCharacterDetails(
+        val name: String,
+        val age: String,
+        val height: String,
+        val hairColor: String,
+        val eyeColor: String,
+    ) : CharacterCreatorEvent()
 }
