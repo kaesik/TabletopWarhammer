@@ -34,11 +34,12 @@ import com.kaesik.tabletopwarhammer.core.domain.library.items.CareerItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.ClassItem
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.getKoin
 
 @Composable
 fun CharacterClassAndCareerScreenRoot(
     viewModel: AndroidCharacterClassAndCareerViewModel = koinViewModel(),
-    creatorViewModel: AndroidCharacterCreatorViewModel = koinViewModel(),
+    creatorViewModel: AndroidCharacterCreatorViewModel = getKoin().get(),
     speciesName: String,
     onClassSelect: (ClassItem) -> Unit,
     onCareerSelect: (CareerItem) -> Unit,
@@ -58,9 +59,29 @@ fun CharacterClassAndCareerScreenRoot(
             creatorViewModel.onEvent(CharacterCreatorEvent.ClearMessage)
         }
     }
-    LaunchedEffect(true) {
+    LaunchedEffect(creatorState.selectedClass, creatorState.selectedCareer) {
         viewModel.onEvent(CharacterClassAndCareerEvent.InitClassList)
-        viewModel.onEvent(CharacterClassAndCareerEvent.InitCareerList(speciesName))
+
+        creatorState.selectedClass?.let { classItem ->
+            viewModel.onEvent(CharacterClassAndCareerEvent.SetSelectedClass(classItem))
+            viewModel.onEvent(
+                CharacterClassAndCareerEvent.InitCareerList(
+                    speciesName = creatorViewModel.state.value.character.species,
+                    className = classItem.name
+                )
+            )
+        }
+
+        creatorState.selectedCareer?.let { careerItem ->
+            viewModel.onEvent(CharacterClassAndCareerEvent.SetSelectedCareer(careerItem))
+        }
+    }
+
+
+    LaunchedEffect(true) {
+        println("CharacterSpeciesScreenRoot: cLass = ${creatorState.character.cLass}")
+        println("CharacterSpeciesScreenRoot: career = ${creatorState.character.career}")
+        println("CharacterSpeciesScreenRoot: careerPath = ${creatorState.character.careerPath}")
     }
 
     CharacterClassAndCareerScreen(
@@ -71,8 +92,16 @@ fun CharacterClassAndCareerScreenRoot(
                     viewModel.onEvent(event)
                     state.classList.find { it.id == event.id }?.let { classItem ->
                         creatorViewModel.onEvent(CharacterCreatorEvent.SetClass(classItem))
+                        creatorViewModel.onEvent(CharacterCreatorEvent.SetCareer(null, null))
+                        viewModel.onEvent(
+                            CharacterClassAndCareerEvent.InitCareerList(
+                                speciesName = creatorViewModel.state.value.character.species,
+                                className = classItem.name
+                            )
+                        )
                         onClassSelect(classItem)
                     }
+
                 }
 
                 is CharacterClassAndCareerEvent.OnCareerSelect -> {

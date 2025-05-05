@@ -5,12 +5,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator.AndroidCharacterCreatorViewModel
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator.CharacterCreatorEvent
@@ -20,11 +23,12 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.components.Ch
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorTitle
 import com.kaesik.tabletopwarhammer.core.domain.library.items.ItemItem
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.getKoin
 
 @Composable
 fun CharacterTrappingsScreenRoot(
     viewModel: AndroidCharacterTrappingsViewModel = koinViewModel(),
-    creatorViewModel: AndroidCharacterCreatorViewModel,
+    creatorViewModel: AndroidCharacterCreatorViewModel = getKoin().get(),
     onNextClick: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -39,6 +43,14 @@ fun CharacterTrappingsScreenRoot(
                 careerPathName = character.careerPath
             )
         )
+
+        if (viewModel.state.value.wealth.isEmpty()) {
+            viewModel.onEvent(
+                CharacterTrappingsEvent.InitWealthList(
+                    careerPathName = character.careerPath
+                )
+            )
+        }
     }
 
     val trappings = state.trappingList
@@ -56,6 +68,12 @@ fun CharacterTrappingsScreenRoot(
                 creatorViewModel.onEvent(
                     CharacterCreatorEvent.SetTrappings(
                         trappings = mergedTrappings
+                    )
+                )
+
+                creatorViewModel.onEvent(
+                    CharacterCreatorEvent.SetWealth(
+                        wealth = state.wealth
                     )
                 )
 
@@ -97,6 +115,17 @@ fun CharacterTrappingsScreen(
                 TrappingsTable(trappings = careerTrappings)
             }
             item {
+                CharacterCreatorTitle("Starting Wealth")
+            }
+
+            item {
+                Text(
+                    text = formatWealth(state.wealth),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium
+                )
+            }
+            item {
                 CharacterCreatorButton(
                     text = "Next",
                     onClick = {
@@ -106,6 +135,15 @@ fun CharacterTrappingsScreen(
             }
         }
     }
+}
+
+fun formatWealth(wealth: List<Int>): String {
+    val (brass, silver, gold) = wealth + List(3 - wealth.size) { 0 }
+    return buildList {
+        if (brass > 0) add("$brass Brass pennies")
+        if (silver > 0) add("$silver Silver shillings")
+        if (gold > 0) add("$gold Gold crowns")
+    }.ifEmpty { listOf("No starting wealth") }.joinToString(", ")
 }
 
 @Preview

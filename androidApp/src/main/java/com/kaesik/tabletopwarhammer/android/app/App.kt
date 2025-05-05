@@ -223,7 +223,9 @@ fun App() {
                     creatorViewModel = creatorViewModel,
                     onNextClick = {
                         navController.navigate(
-                            Route.CharacterDetails
+                            Route.CharacterDetails(
+                                characterSpecies = creatorViewModel.state.value.character.species,
+                            )
                         )
                     },
                 )

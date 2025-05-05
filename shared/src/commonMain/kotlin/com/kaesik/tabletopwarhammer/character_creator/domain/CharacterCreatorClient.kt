@@ -69,4 +69,8 @@ interface CharacterCreatorClient {
         className: String,
         careerPathName: String
     ): ItemItem
+
+    suspend fun getWealth(
+        careerPathName: String
+    ): List<Int>
 }

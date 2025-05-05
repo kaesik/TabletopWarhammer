@@ -26,11 +26,12 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.components.Sn
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.showCharacterCreatorSnackbar
 import com.kaesik.tabletopwarhammer.core.domain.library.items.SpeciesItem
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.getKoin
 
 @Composable
 fun CharacterSpeciesScreenRoot(
     viewModel: AndroidCharacterSpeciesViewModel = koinViewModel(),
-    creatorViewModel: AndroidCharacterCreatorViewModel = koinViewModel(),
+    creatorViewModel: AndroidCharacterCreatorViewModel = getKoin().get(),
     onSpeciesSelect: (SpeciesItem) -> Unit,
     onNextClick: () -> Unit,
 ) {
@@ -50,6 +51,14 @@ fun CharacterSpeciesScreenRoot(
 
     LaunchedEffect(true) {
         viewModel.onEvent(CharacterSpeciesEvent.InitSpeciesList)
+        val alreadySelectedSpecies = creatorViewModel.state.value.selectedSpecies
+        if (alreadySelectedSpecies != null) {
+            viewModel.onEvent(CharacterSpeciesEvent.OnSpeciesSelect(alreadySelectedSpecies.id))
+        }
+    }
+
+    LaunchedEffect(true) {
+        println("CharacterSpeciesScreenRoot: species = ${creatorState.character.species}")
     }
 
     CharacterSpeciesScreen(
@@ -60,13 +69,20 @@ fun CharacterSpeciesScreenRoot(
                     viewModel.onEvent(event)
 
                     val selectedSpecies = state.speciesList.find { it.id == event.id }
-                    if (selectedSpecies != null) {
+                    val currentSpeciesId = creatorState.selectedSpecies?.id
+
+                    if (selectedSpecies != null && selectedSpecies.id != currentSpeciesId) {
                         onSpeciesSelect(selectedSpecies)
                         creatorViewModel.onEvent(CharacterCreatorEvent.SetSpecies(selectedSpecies))
                     }
                 }
 
                 is CharacterSpeciesEvent.OnNextClick -> {
+                    val selected = state.selectedSpecies
+                    if (selected != null && selected.id != creatorState.selectedSpecies?.id) {
+                        creatorViewModel.onEvent(CharacterCreatorEvent.SetSpecies(selected))
+                        onSpeciesSelect(selected)
+                    }
                     onNextClick()
                 }
 

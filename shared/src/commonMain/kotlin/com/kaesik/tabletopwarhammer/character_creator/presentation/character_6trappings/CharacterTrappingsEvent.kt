@@ -9,5 +9,7 @@ sealed class CharacterTrappingsEvent {
         val careerPathName: String,
     ) : CharacterTrappingsEvent()
 
+    data class InitWealthList(val careerPathName: String) : CharacterTrappingsEvent()
+
     data object OnNextClick : CharacterTrappingsEvent()
 }

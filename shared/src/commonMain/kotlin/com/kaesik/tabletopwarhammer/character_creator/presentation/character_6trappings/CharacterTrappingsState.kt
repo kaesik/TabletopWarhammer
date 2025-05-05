@@ -12,4 +12,6 @@ data class CharacterTrappingsState(
     val classTrappingList: List<List<ItemItem>> = emptyList(),
     val careerTrappingList: List<List<ItemItem>> = emptyList(),
     val trappingList: List<List<ItemItem>> = emptyList(),
+
+    val wealth: List<Int> = emptyList(),
 )

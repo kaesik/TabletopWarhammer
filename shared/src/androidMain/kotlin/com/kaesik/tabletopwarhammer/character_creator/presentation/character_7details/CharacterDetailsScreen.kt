@@ -22,11 +22,12 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.character_7de
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorButton
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorTitle
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.getKoin
 
 @Composable
 fun CharacterDetailsScreenRoot(
     viewModel: AndroidCharacterDetailsViewModel = koinViewModel(),
-    creatorViewModel: AndroidCharacterCreatorViewModel,
+    creatorViewModel: AndroidCharacterCreatorViewModel = getKoin().get(),
     onNextClick: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()

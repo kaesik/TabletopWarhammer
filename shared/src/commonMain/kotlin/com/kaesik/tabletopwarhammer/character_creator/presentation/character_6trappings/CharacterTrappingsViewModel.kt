@@ -17,12 +17,17 @@ class CharacterTrappingsViewModel(
     val state = _state.asStateFlow()
 
     private var trappingsJob: Job? = null
+    private var wealthJob: Job? = null
 
     fun onEvent(event: CharacterTrappingsEvent) {
         when (event) {
-            is CharacterTrappingsEvent.InitTrappingsList -> loadTrappingsList(
-                event.from, event.className, event.careerPathName
-            )
+            is CharacterTrappingsEvent.InitTrappingsList -> {
+                loadTrappingsList(
+                    event.from, event.className, event.careerPathName
+                )
+            }
+
+            is CharacterTrappingsEvent.InitWealthList -> loadWealthList(event.careerPathName)
 
             else -> Unit
         }
@@ -45,6 +50,18 @@ class CharacterTrappingsViewModel(
                     ClassOrCareer.CAREER -> it.copy(careerTrappingList = result)
                 }.copy(trappingList = result)
             }
+        }
+    }
+
+    private fun loadWealthList(
+        careerPathName: String
+    ) {
+        wealthJob?.cancel()
+        wealthJob = viewModelScope.launch {
+            val result = characterCreatorClient.getWealth(
+                careerPathName = careerPathName
+            )
+            _state.update { it.copy(wealth = result) }
         }
     }
 }

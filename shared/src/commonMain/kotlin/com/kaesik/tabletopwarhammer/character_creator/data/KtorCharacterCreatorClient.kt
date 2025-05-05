@@ -31,6 +31,7 @@ import com.kaesik.tabletopwarhammer.library.data.library.handleException
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.from
+import kotlin.coroutines.cancellation.CancellationException
 
 class KtorCharacterCreatorClient : CharacterCreatorClient {
     private val supabaseClient = createSupabaseClient(
@@ -81,6 +82,9 @@ class KtorCharacterCreatorClient : CharacterCreatorClient {
                 .map { it.toClassItem() }
             println("classList $classList")
             classList
+        } catch (e: CancellationException) {
+            println("Classes fetch cancelled")
+            throw e
         } catch (e: Exception) {
             println("Error fetching classes list: ${e.message}")
             handleException(e)
@@ -121,6 +125,9 @@ class KtorCharacterCreatorClient : CharacterCreatorClient {
                 .map { it.toCareerItem() }
             println("careerList $careerList")
             careerList
+        } catch (e: CancellationException) {
+            println("Careers fetch cancelled")
+            throw e
         } catch (e: Exception) {
             println("Error fetching careers list: ${e.message}")
             handleException(e)
@@ -239,7 +246,9 @@ class KtorCharacterCreatorClient : CharacterCreatorClient {
             val careerSkills = allSkills.filter { it.name in careerSkillsNames }
 
             listOf(speciesSkills, careerSkills)
-
+        } catch (e: CancellationException) {
+            println("Skills fetch cancelled")
+            throw e
         } catch (e: Exception) {
             println("Error fetching skills: ${e.message}")
             handleException(e)
@@ -428,4 +437,28 @@ class KtorCharacterCreatorClient : CharacterCreatorClient {
     ): ItemItem {
         TODO("Not yet implemented")
     }
+
+    override suspend fun getWealth(careerPathName: String): List<Int> {
+        val careerPath = supabaseClient
+            .from("careerpath")
+            .select()
+            .decodeList<CareerPathDto>()
+            .firstOrNull { it.name == careerPathName }
+
+        val status = careerPath?.status ?: return listOf(0, 0, 0)
+
+        val parts = status.trim().split(" ")
+        if (parts.size != 2) return listOf(0, 0, 0)
+
+        val tier = parts[0].lowercase()
+        val level = parts[1].toIntOrNull() ?: return listOf(0, 0, 0)
+
+        return when (tier) {
+            "brass" -> listOf((1..2).sumOf { (1..10).random() } * level, 0, 0)
+            "silver" -> listOf(0, (1..10).sumOf { (1..10).random() } * level, 0)
+            "gold" -> listOf(0, 0, level)
+            else -> listOf(0, 0, 0)
+        }
+    }
+
 }

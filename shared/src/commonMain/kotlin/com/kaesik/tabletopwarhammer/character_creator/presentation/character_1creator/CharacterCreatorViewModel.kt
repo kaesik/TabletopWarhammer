@@ -9,6 +9,10 @@ class CharacterCreatorViewModel : ViewModel() {
     private val _state = MutableStateFlow(CharacterCreatorState())
     val state = _state.asStateFlow()
 
+    init {
+        println("CharacterCreatorViewModel initialized!")
+    }
+
     fun onEvent(event: CharacterCreatorEvent) {
         when (event) {
             is CharacterCreatorEvent.ShowMessage -> {
@@ -21,13 +25,22 @@ class CharacterCreatorViewModel : ViewModel() {
 
             is CharacterCreatorEvent.SetSpecies -> {
                 _state.update { current ->
+                    val newSpecies = event.speciesItem.name
+                    val resetClassAndCareer = current.character.species != newSpecies
                     val updatedCharacter = current.character.copy(
-                        species = event.speciesItem.name
+                        species = newSpecies,
+                        cLass = if (resetClassAndCareer) "" else current.character.cLass,
+                        career = if (resetClassAndCareer) "" else current.character.career,
+                        careerLevel = if (resetClassAndCareer) "" else current.character.careerLevel,
+                        careerPath = if (resetClassAndCareer) "" else current.character.careerPath,
+                        status = if (resetClassAndCareer) "" else current.character.status
                     )
                     val updated = current.copy(
                         selectedSpecies = event.speciesItem,
+                        selectedClass = if (resetClassAndCareer) null else current.selectedClass,
+                        selectedCareer = if (resetClassAndCareer) null else current.selectedCareer,
                         character = updatedCharacter,
-                        message = "Selected species: ${event.speciesItem.name}"
+                        message = "Selected species: $newSpecies"
                     )
                     println("Updated CharacterItem: $updatedCharacter")
                     updated
@@ -52,14 +65,15 @@ class CharacterCreatorViewModel : ViewModel() {
             is CharacterCreatorEvent.SetCareer -> {
                 _state.update { current ->
                     val updatedCharacter = current.character.copy(
-                        career = event.careerItem.name,
-                        careerPath = event.careerPathItem.name,
-                        careerLevel = event.careerPathItem.name
+                        career = event.careerItem?.name ?: "",
+                        careerPath = event.careerPathItem?.name ?: "",
+                        careerLevel = event.careerPathItem?.name ?: "",
+                        status = event.careerPathItem?.status ?: "",
                     )
                     val updated = current.copy(
                         selectedCareer = event.careerItem,
                         character = updatedCharacter,
-                        message = "Selected career: ${event.careerItem.name}"
+                        message = "Selected career: ${event.careerItem?.name ?: ""}"
                     )
                     println("Updated CharacterItem: $updatedCharacter")
                     updated
@@ -159,6 +173,20 @@ class CharacterCreatorViewModel : ViewModel() {
                     val updated = current.copy(
                         character = updatedCharacter,
                         message = "Trappings selected!"
+                    )
+                    println("Updated CharacterItem: $updatedCharacter")
+                    updated
+                }
+            }
+
+            is CharacterCreatorEvent.SetWealth -> {
+                _state.update { current ->
+                    val updatedCharacter = current.character.copy(
+                        wealth = event.wealth
+                    )
+                    val updated = current.copy(
+                        character = updatedCharacter,
+                        message = "Wealth selected!"
                     )
                     println("Updated CharacterItem: $updatedCharacter")
                     updated

@@ -7,6 +7,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class CharacterClassAndCareerViewModel(
@@ -23,7 +24,7 @@ class CharacterClassAndCareerViewModel(
             is CharacterClassAndCareerEvent.InitCareerList -> {
                 loadCareersList(
                     speciesName = event.speciesName,
-                    className = ""
+                    className = event.className
                 )
             }
 
@@ -37,15 +38,19 @@ class CharacterClassAndCareerViewModel(
                     selectedClass = selected,
                     selectedCareer = null
                 )
-
-                selected?.let {
-                    loadCareersList(speciesName = "Human", className = it.name)
-                }
             }
 
             is CharacterClassAndCareerEvent.OnCareerSelect -> {
                 val selected = state.value.careerList.find { it.id == event.id }
                 _state.value = state.value.copy(selectedCareer = selected)
+            }
+
+            is CharacterClassAndCareerEvent.SetSelectedClass -> {
+                _state.update { it.copy(selectedClass = event.classItem) }
+            }
+
+            is CharacterClassAndCareerEvent.SetSelectedCareer -> {
+                _state.update { it.copy(selectedCareer = event.careerItem) }
             }
 
             else -> Unit
@@ -55,27 +60,34 @@ class CharacterClassAndCareerViewModel(
     private fun loadClassesList() {
         classJob?.cancel()
         classJob = viewModelScope.launch {
-            _state.value = state.value.copy(isLoading = true)
+            _state.update { it.copy(isLoading = true) }
+
             try {
                 val classList = characterCreatorClient.getClasses()
-                _state.value = state.value.copy(
-                    classList = classList,
-                    error = null,
-                    isLoading = false
-                )
+
+                _state.update {
+                    it.copy(
+                        classList = classList,
+                        error = null,
+                        isLoading = false
+                    )
+                }
+
             } catch (e: CancellationException) {
-                println("Classes fetch cancelled")
-                _state.value = state.value.copy(isLoading = false)
+                println("Classes fetch cancelled normally")
+                _state.update { it.copy(isLoading = false) }
+
             } catch (e: Exception) {
                 e.printStackTrace()
-                _state.value = state.value.copy(
-                    error = "Nie udało się załadować klas: ${e.message}",
-                    isLoading = false
-                )
+                _state.update {
+                    it.copy(
+                        error = "Nie udało się załadować klas: ${e.message}",
+                        isLoading = false
+                    )
+                }
             }
         }
     }
-
 
     private fun loadCareersList(
         speciesName: String,
@@ -83,27 +95,36 @@ class CharacterClassAndCareerViewModel(
     ) {
         careerJob?.cancel()
         careerJob = viewModelScope.launch {
-            _state.value = state.value.copy(isLoading = true)
+            _state.update { it.copy(isLoading = true) }
+
             try {
                 val careerList = characterCreatorClient.getCareers(
                     speciesName = speciesName,
                     className = className,
                 )
-                _state.value = state.value.copy(
-                    careerList = careerList,
-                    error = null,
-                    isLoading = false
-                )
+
+                _state.update {
+                    it.copy(
+                        careerList = careerList,
+                        error = null,
+                        isLoading = false
+                    )
+                }
+
             } catch (e: CancellationException) {
-                println("Careers fetch cancelled")
-                _state.value = state.value.copy(isLoading = false)
+                println("Careers fetch cancelled normally")
+                _state.update { it.copy(isLoading = false) }
+
             } catch (e: Exception) {
                 e.printStackTrace()
-                _state.value = state.value.copy(
-                    error = "Nie udało się załadować karier: ${e.message}",
-                    isLoading = false
-                )
+                _state.update {
+                    it.copy(
+                        error = "Nie udało się załadować karier: ${e.message}",
+                        isLoading = false
+                    )
+                }
             }
         }
     }
+
 }

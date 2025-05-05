@@ -15,8 +15,8 @@ sealed class CharacterCreatorEvent {
     data class SetSpecies(val speciesItem: SpeciesItem) : CharacterCreatorEvent()
     data class SetClass(val classItem: ClassItem) : CharacterCreatorEvent()
     data class SetCareer(
-        val careerItem: CareerItem,
-        val careerPathItem: CareerPathItem
+        val careerItem: CareerItem?,
+        val careerPathItem: CareerPathItem?
     ) : CharacterCreatorEvent()
 
     data class SetAttributes(
@@ -33,6 +33,10 @@ sealed class CharacterCreatorEvent {
 
     data class SetTrappings(
         val trappings: List<String>,
+    ) : CharacterCreatorEvent()
+
+    data class SetWealth(
+        val wealth: List<Int>,
     ) : CharacterCreatorEvent()
 
     data class SetCharacterDetails(
