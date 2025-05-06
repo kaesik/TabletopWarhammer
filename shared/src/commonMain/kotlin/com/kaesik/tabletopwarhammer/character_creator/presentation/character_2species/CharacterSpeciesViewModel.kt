@@ -26,7 +26,18 @@ class CharacterSpeciesViewModel(
                 val selected = _state.value.speciesList.find { it.id == event.id }
                 _state.value = _state.value.copy(selectedSpecies = selected)
             }
-            
+
+            is CharacterSpeciesEvent.RollRandomSpecies -> {
+                val list = _state.value.speciesList
+                if (list.isNotEmpty()) {
+                    val random = list.random()
+                    _state.value = _state.value.copy(
+                        selectedSpecies = random,
+                        hasRolledSpecies = true
+                    )
+                }
+            }
+
             else -> Unit
         }
     }

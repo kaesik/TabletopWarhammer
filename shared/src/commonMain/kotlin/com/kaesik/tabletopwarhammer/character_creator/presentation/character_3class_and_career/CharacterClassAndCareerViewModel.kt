@@ -53,6 +53,10 @@ class CharacterClassAndCareerViewModel(
                 _state.update { it.copy(selectedCareer = event.careerItem) }
             }
 
+            is CharacterClassAndCareerEvent.SetHasRolledClassAndCareer -> {
+                _state.update { it.copy(hasRolledClassAndCareer = true) }
+            }
+
             else -> Unit
         }
     }

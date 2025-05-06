@@ -23,6 +23,26 @@ class CharacterCreatorViewModel : ViewModel() {
                 _state.update { it.copy(message = null) }
             }
 
+            is CharacterCreatorEvent.AddExperience -> {
+                _state.update { current ->
+                    val (currentExp, spentExp, totalExp) = current.character.experience
+
+                    val updatedCharacter = current.character.copy(
+                        experience = listOf(
+                            currentExp + event.experience,
+                            spentExp,
+                            totalExp + event.experience
+                        )
+                    )
+                    val updated = current.copy(
+                        character = updatedCharacter,
+                        message = "Experience added: ${event.experience}"
+                    )
+                    println("Updated CharacterItem: $updatedCharacter")
+                    updated
+                }
+            }
+
             is CharacterCreatorEvent.SetSpecies -> {
                 _state.update { current ->
                     val newSpecies = event.speciesItem.name

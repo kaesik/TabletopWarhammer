@@ -134,6 +134,61 @@ fun CharacterClassAndCareerScreenRoot(
                     }
                 }
 
+                is CharacterClassAndCareerEvent.RollRandomClassAndCareer -> {
+                    val classList = state.classList
+                    if (classList.isEmpty()) return@CharacterClassAndCareerScreen
+
+                    val randomClass = classList.random()
+
+                    coroutineScope.launch {
+                        val careers = viewModel.characterCreatorClient.getCareers(
+                            speciesName,
+                            randomClass.name
+                        )
+                        if (careers.isEmpty()) return@launch
+
+                        val randomCareer = careers.random()
+                        val firstCareerPath =
+                            randomCareer.careerPath?.split(",")?.firstOrNull()?.trim()
+
+                        val careerPathItem = if (!firstCareerPath.isNullOrEmpty()) {
+                            try {
+                                viewModel.characterCreatorClient.getCareerPath(firstCareerPath)
+                            } catch (e: Exception) {
+                                null
+                            }
+                        } else null
+
+                        creatorViewModel.onEvent(CharacterCreatorEvent.SetClass(randomClass))
+                        creatorViewModel.onEvent(
+                            CharacterCreatorEvent.SetCareer(
+                                randomCareer,
+                                careerPathItem
+                            )
+                        )
+                        creatorViewModel.onEvent(CharacterCreatorEvent.AddExperience(35))
+                        creatorViewModel.onEvent(CharacterCreatorEvent.ShowMessage("Randomly selected class & career: ${randomClass.name} / ${randomCareer.name} (+35 XP)"))
+
+                        viewModel.onEvent(CharacterClassAndCareerEvent.SetSelectedClass(randomClass))
+                        viewModel.onEvent(
+                            CharacterClassAndCareerEvent.SetSelectedCareer(
+                                randomCareer
+                            )
+                        )
+                        viewModel.onEvent(
+                            CharacterClassAndCareerEvent.InitCareerList(
+                                speciesName,
+                                randomClass.name
+                            )
+                        )
+                        viewModel.onEvent(CharacterClassAndCareerEvent.SetHasRolledClassAndCareer)
+
+                        onClassSelect(randomClass)
+                        onCareerSelect(randomCareer)
+                    }
+                }
+
+
                 is CharacterClassAndCareerEvent.OnNextClick -> {
                     onNextClick()
                 }
@@ -169,11 +224,11 @@ fun CharacterClassAndCareerScreen(
             item {
                 CharacterCreatorTitle("Character ClassAndCareer Screen")
             }
-
-            item {
-                DiceThrow(onClick = {})
+            if (!state.hasRolledClassAndCareer) {
+                item {
+                    DiceThrow(onClick = { onEvent(CharacterClassAndCareerEvent.RollRandomClassAndCareer) })
+                }
             }
-
             item {
                 var expanded by remember { mutableStateOf(false) }
                 Box {
@@ -198,7 +253,6 @@ fun CharacterClassAndCareerScreen(
                     }
                 }
             }
-
             item {
                 var expanded by remember { mutableStateOf(false) }
                 Box {
@@ -225,7 +279,6 @@ fun CharacterClassAndCareerScreen(
                     }
                 }
             }
-
             item {
                 CharacterCreatorButton(
                     text = "Next",
@@ -238,7 +291,6 @@ fun CharacterClassAndCareerScreen(
         }
     }
 }
-
 
 @Preview
 @Composable

@@ -15,7 +15,7 @@ class CharacterAttributesViewModel(
     private val _state = MutableStateFlow(CharacterAttributesState())
     val state = _state.asStateFlow()
 
-    private var characterAttributeJob: Job? = null
+    private var attributeJob: Job? = null
     fun onEvent(event: CharacterAttributesEvent) {
         when (event) {
             is CharacterAttributesEvent.InitAttributesList -> loadAttributesList(event.speciesName)
@@ -64,13 +64,17 @@ class CharacterAttributesViewModel(
                 }
             }
 
+            is CharacterAttributesEvent.RollAllDice -> {
+                rollAllDice()
+            }
+
             else -> {}
         }
     }
 
     private fun loadAttributesList(speciesName: String) {
-        characterAttributeJob?.cancel()
-        characterAttributeJob = viewModelScope.launch {
+        attributeJob?.cancel()
+        attributeJob = viewModelScope.launch {
             try {
                 _state.value = state.value.copy(isLoading = true)
 
@@ -96,8 +100,10 @@ class CharacterAttributesViewModel(
                 _state.value = state.value.copy(
                     attributeList = attributeList,
                     species = species,
-                    totalAttributeValues = baseAttributes,
+                    baseAttributeValues = baseAttributes,
                     diceThrows = diceThrows,
+                    rolledDiceResults = List(baseAttributes.size) { 0 },
+                    totalAttributeValues = baseAttributes,
                     isLoading = false,
                     error = null
                 )
@@ -130,5 +136,30 @@ class CharacterAttributesViewModel(
                 _state.value = state.value.copy(error = e.message)
             }
         }
+    }
+
+    private fun rollAllDice() {
+        val baseValues = state.value.baseAttributeValues
+        val diceNotations = state.value.diceThrows
+
+        fun rollDiceSum(diceNotation: String): Int {
+            val regex = Regex("(\\d+)d(\\d+)")
+            val match = regex.find(diceNotation)
+            return if (match != null) {
+                val (count, sides) = match.destructured
+                (1..count.toInt()).sumOf { (1..sides.toInt()).random() }
+            } else {
+                0
+            }
+        }
+
+        val rolledSums = diceNotations.map { rollDiceSum(it) }
+        val totalValues = baseValues.zip(rolledSums) { base, roll -> base + roll }
+
+        _state.value = state.value.copy(
+            rolledDiceResults = rolledSums,
+            totalAttributeValues = totalValues,
+            hasRolledDice = true,
+        )
     }
 }

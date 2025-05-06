@@ -86,6 +86,20 @@ fun CharacterSpeciesScreenRoot(
                     onNextClick()
                 }
 
+                is CharacterSpeciesEvent.RollRandomSpecies -> {
+                    viewModel.onEvent(event)
+
+                    val randomSpecies = viewModel.state.value.selectedSpecies
+                    val currentSpeciesId = creatorState.selectedSpecies?.id
+
+                    if (randomSpecies != null && randomSpecies.id != currentSpeciesId) {
+                        onSpeciesSelect(randomSpecies)
+                        creatorViewModel.onEvent(CharacterCreatorEvent.SetSpecies(randomSpecies))
+                        creatorViewModel.onEvent(CharacterCreatorEvent.AddExperience(25))
+                        creatorViewModel.onEvent(CharacterCreatorEvent.ShowMessage("Randomly selected species: ${randomSpecies.name} (+25 XP)"))
+                    }
+                }
+
                 else -> Unit
             }
         },
@@ -115,8 +129,10 @@ fun CharacterSpeciesScreen(
             item {
                 CharacterCreatorTitle("Character Species Screen")
             }
-            item {
-                DiceThrow(onClick = {})
+            if (!state.hasRolledSpecies) {
+                item {
+                    DiceThrow(onClick = { onEvent(CharacterSpeciesEvent.RollRandomSpecies) })
+                }
             }
             items(species) { speciesItem ->
                 CharacterCreatorButton(

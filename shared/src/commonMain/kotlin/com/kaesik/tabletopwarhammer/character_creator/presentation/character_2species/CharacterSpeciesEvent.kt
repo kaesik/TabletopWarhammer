@@ -4,6 +4,7 @@ sealed class CharacterSpeciesEvent {
     data object InitSpeciesList : CharacterSpeciesEvent()
 
     data class OnSpeciesSelect(val id: String) : CharacterSpeciesEvent()
+    data object RollRandomSpecies : CharacterSpeciesEvent()
 
     data object OnNextClick : CharacterSpeciesEvent()
 }

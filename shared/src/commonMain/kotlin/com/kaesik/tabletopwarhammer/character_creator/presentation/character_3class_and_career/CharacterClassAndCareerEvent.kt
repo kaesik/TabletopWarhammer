@@ -16,6 +16,8 @@ sealed class CharacterClassAndCareerEvent {
     data class SetSelectedCareer(val careerItem: CareerItem) : CharacterClassAndCareerEvent()
     data class OnCareerSelect(val id: String) : CharacterClassAndCareerEvent()
 
+    data object RollRandomClassAndCareer : CharacterClassAndCareerEvent()
+    data object SetHasRolledClassAndCareer : CharacterClassAndCareerEvent()
 
     data object OnNextClick : CharacterClassAndCareerEvent()
 }

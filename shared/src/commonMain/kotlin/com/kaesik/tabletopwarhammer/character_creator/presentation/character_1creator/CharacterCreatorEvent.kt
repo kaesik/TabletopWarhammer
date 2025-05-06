@@ -12,6 +12,8 @@ sealed class CharacterCreatorEvent {
     data class ShowMessage(val message: String) : CharacterCreatorEvent()
     data object ClearMessage : CharacterCreatorEvent()
 
+    data class AddExperience(val experience: Int) : CharacterCreatorEvent()
+
     data class SetSpecies(val speciesItem: SpeciesItem) : CharacterCreatorEvent()
     data class SetClass(val classItem: ClassItem) : CharacterCreatorEvent()
     data class SetCareer(

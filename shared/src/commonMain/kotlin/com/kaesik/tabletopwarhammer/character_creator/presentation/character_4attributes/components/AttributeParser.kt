@@ -9,7 +9,11 @@ fun parseAttributeFormula(formula: String?): AttributeRoll {
     if (formula.isNullOrBlank()) return AttributeRoll(diceThrow = "0d0", baseValue = 0)
 
     val parts = formula.split("+")
-    val dice = parts[0].trim()
+    val dice = parts.getOrNull(0)?.trim() ?: "0d0"
     val base = parts.getOrNull(1)?.trim()?.toIntOrNull() ?: 0
-    return AttributeRoll(diceThrow = dice, baseValue = base)
+
+    return AttributeRoll(
+        diceThrow = dice,
+        baseValue = base
+    )
 }
