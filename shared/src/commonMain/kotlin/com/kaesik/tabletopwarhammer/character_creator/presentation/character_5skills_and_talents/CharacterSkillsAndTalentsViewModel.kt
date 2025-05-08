@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kaesik.tabletopwarhammer.character_creator.domain.CharacterCreatorClient
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.SpeciesOrCareer
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.mapSpecializedSkills
 import com.kaesik.tabletopwarhammer.core.domain.library.items.SkillItem
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,6 +33,14 @@ class CharacterSkillsAndTalentsViewModel(
             )
 
             is CharacterSkillsAndTalentsEvent.OnSkillChecked -> updateSelectedSkills(
+                event.skill, event.isChecked
+            )
+
+            is CharacterSkillsAndTalentsEvent.OnSkillChecked3 -> updateSelectedSkills3(
+                event.skill, event.isChecked
+            )
+
+            is CharacterSkillsAndTalentsEvent.OnSkillChecked5 -> updateSelectedSkills5(
                 event.skill, event.isChecked
             )
 
@@ -70,11 +79,12 @@ class CharacterSkillsAndTalentsViewModel(
                 speciesName = speciesName,
                 careerPathName = careerPathName
             )
+            val mapped = mapSpecializedSkills(result)
             _state.update {
                 when (from) {
-                    SpeciesOrCareer.SPECIES -> it.copy(speciesSkillsList = result)
-                    SpeciesOrCareer.CAREER -> it.copy(careerSkillsList = result)
-                }.copy(skillList = result)
+                    SpeciesOrCareer.SPECIES -> it.copy(speciesSkillsList = mapped)
+                    SpeciesOrCareer.CAREER -> it.copy(careerSkillsList = mapped)
+                }.copy(skillList = mapped)
             }
         }
     }
@@ -93,6 +103,30 @@ class CharacterSkillsAndTalentsViewModel(
                     SpeciesOrCareer.CAREER -> it.copy(careerTalentsList = result)
                 }.copy(talentList = result)
             }
+        }
+    }
+
+    private fun updateSelectedSkills3(skill: SkillItem, isChecked: Boolean) {
+        _state.update { current ->
+            val removedFrom5 = current.selectedSkills5.filterNot { it.name == skill.name }
+            val updated3 = if (isChecked) current.selectedSkills3 + skill
+            else current.selectedSkills3.filterNot { it.name == skill.name }
+            current.copy(
+                selectedSkills3 = updated3,
+                selectedSkills5 = removedFrom5
+            )
+        }
+    }
+
+    private fun updateSelectedSkills5(skill: SkillItem, isChecked: Boolean) {
+        _state.update { current ->
+            val removedFrom3 = current.selectedSkills3.filterNot { it.name == skill.name }
+            val updated5 = if (isChecked) current.selectedSkills5 + skill
+            else current.selectedSkills5.filterNot { it.name == skill.name }
+            current.copy(
+                selectedSkills3 = removedFrom3,
+                selectedSkills5 = updated5
+            )
         }
     }
 }

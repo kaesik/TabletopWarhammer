@@ -21,6 +21,17 @@ sealed class CharacterSkillsAndTalentsEvent {
         val isChecked: Boolean
     ) : CharacterSkillsAndTalentsEvent()
 
+    data class OnSkillChecked3(
+        val skill: SkillItem,
+        val isChecked: Boolean
+    ) : CharacterSkillsAndTalentsEvent()
+
+    data class OnSkillChecked5(
+        val skill: SkillItem,
+        val isChecked: Boolean
+    ) : CharacterSkillsAndTalentsEvent()
+
+
     data object OnSpeciesOrCareerClick : CharacterSkillsAndTalentsEvent()
     data object OnNextClick : CharacterSkillsAndTalentsEvent()
 }

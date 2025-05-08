@@ -1,6 +1,7 @@
 package com.kaesik.tabletopwarhammer.character_creator.data
 
 import com.kaesik.tabletopwarhammer.character_creator.domain.CharacterCreatorClient
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.extractTalents
 import com.kaesik.tabletopwarhammer.core.data.library.LibraryEnum
 import com.kaesik.tabletopwarhammer.core.data.library.dto.AttributeDto
 import com.kaesik.tabletopwarhammer.core.data.library.dto.CareerDto
@@ -238,12 +239,27 @@ class KtorCharacterCreatorClient : CharacterCreatorClient {
                 .from(LibraryEnum.SKILL.tableName)
                 .select()
                 .decodeList<SkillDto>()
-
             val allSkills = allSkillDtos.map { it.toSkillItem() }
-                .filter { it.name in (speciesSkillsNames + careerSkillsNames) }
 
-            val speciesSkills = allSkills.filter { it.name in speciesSkillsNames }
-            val careerSkills = allSkills.filter { it.name in careerSkillsNames }
+            fun findSkill(name: String): SkillItem? {
+                val baseName = name.substringBefore(" (").trim()
+                val specialization = name.substringAfter(" (", "").removeSuffix(")").trim()
+
+                val match = allSkills.find { it.name == baseName }
+
+                return if (match != null && specialization.isNotEmpty()) {
+                    match.copy(
+                        name = "$baseName ($specialization)",
+                        specialization = specialization,
+                        isBasic = false
+                    )
+                } else {
+                    allSkills.find { it.name == name }
+                }
+            }
+
+            val speciesSkills = speciesSkillsNames.mapNotNull(::findSkill)
+            val careerSkills = careerSkillsNames.mapNotNull(::findSkill)
 
             listOf(speciesSkills, careerSkills)
         } catch (e: CancellationException) {
@@ -293,16 +309,8 @@ class KtorCharacterCreatorClient : CharacterCreatorClient {
                 }
                 .decodeSingle<CareerPathDto>()
 
-            fun extract(raw: String?): List<String> {
-                return raw
-                    ?.split(",")
-                    ?.map { it.trim() }
-                    ?.filter { it.isNotEmpty() }
-                    ?: emptyList()
-            }
-
-            val speciesTalentsNames = extract(speciesResult.talents)
-            val careerTalentsNames = extract(careerPathResult.talents)
+            val speciesTalentGroups = extractTalents(speciesResult.talents)
+            val careerTalentGroups = extractTalents(careerPathResult.talents)
 
             val allTalentDtos = supabaseClient
                 .from(LibraryEnum.TALENT.tableName)
@@ -310,12 +318,15 @@ class KtorCharacterCreatorClient : CharacterCreatorClient {
                 .decodeList<TalentDto>()
 
             val allTalents = allTalentDtos.map { it.toTalentItem() }
-                .filter { it.name in (speciesTalentsNames + careerTalentsNames) }
 
-            val speciesTalents = allTalents.filter { it.name in speciesTalentsNames }
-            val careerTalents = allTalents.filter { it.name in careerTalentsNames }
+            fun resolveTalentGroup(group: List<String>): List<TalentItem> {
+                return allTalents.filter { it.name in group }
+            }
 
-            listOf(speciesTalents, careerTalents)
+            val speciesTalents = speciesTalentGroups.map(::resolveTalentGroup)
+            val careerTalents = careerTalentGroups.map(::resolveTalentGroup)
+
+            listOf(speciesTalents.flatten(), careerTalents.flatten())
 
         } catch (e: Exception) {
             println("Error fetching talents: ${e.message}")
