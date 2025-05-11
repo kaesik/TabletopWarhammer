@@ -2,6 +2,7 @@ package com.kaesik.tabletopwarhammer.character_creator.presentation.character_5s
 
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.SpeciesOrCareer
 import com.kaesik.tabletopwarhammer.core.domain.library.items.SkillItem
+import com.kaesik.tabletopwarhammer.core.domain.library.items.TalentItem
 
 sealed class CharacterSkillsAndTalentsEvent {
     data class InitSkillsList(
@@ -31,7 +32,12 @@ sealed class CharacterSkillsAndTalentsEvent {
         val isChecked: Boolean
     ) : CharacterSkillsAndTalentsEvent()
 
+    data class OnTalentChecked(
+        val talent: TalentItem,
+        val isChecked: Boolean
+    ) : CharacterSkillsAndTalentsEvent()
 
+    data object OnSaveSkillsAndTalents : CharacterSkillsAndTalentsEvent()
     data object OnSpeciesOrCareerClick : CharacterSkillsAndTalentsEvent()
     data object OnNextClick : CharacterSkillsAndTalentsEvent()
 }

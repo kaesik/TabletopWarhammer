@@ -6,6 +6,7 @@ import com.kaesik.tabletopwarhammer.character_creator.domain.CharacterCreatorCli
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.SpeciesOrCareer
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.mapSpecializedSkills
 import com.kaesik.tabletopwarhammer.core.domain.library.items.SkillItem
+import com.kaesik.tabletopwarhammer.core.domain.library.items.TalentItem
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -33,20 +34,40 @@ class CharacterSkillsAndTalentsViewModel(
             )
 
             is CharacterSkillsAndTalentsEvent.OnSkillChecked -> updateSelectedSkills(
-                event.skill, event.isChecked
+                event.skill,
+                event.isChecked
             )
 
             is CharacterSkillsAndTalentsEvent.OnSkillChecked3 -> updateSelectedSkills3(
-                event.skill, event.isChecked
+                event.skill,
+                event.isChecked
             )
 
             is CharacterSkillsAndTalentsEvent.OnSkillChecked5 -> updateSelectedSkills5(
-                event.skill, event.isChecked
+                event.skill,
+                event.isChecked
+            )
+
+            is CharacterSkillsAndTalentsEvent.OnTalentChecked -> handleTalentChecked(
+                event.talent,
+                event.isChecked
             )
 
             is CharacterSkillsAndTalentsEvent.OnSpeciesOrCareerClick -> toggleSpeciesOrCareer()
 
             else -> Unit
+        }
+    }
+
+    private fun handleTalentChecked(talent: TalentItem, isChecked: Boolean) {
+        _state.update { current ->
+            val baseName = talent.name.substringBefore(" or ").trim()
+            val updatedTalents = if (isChecked) {
+                current.selectedTalents.filterNot { it.name.startsWith(baseName) } + talent
+            } else {
+                current.selectedTalents - talent
+            }
+            current.copy(selectedTalents = updatedTalents)
         }
     }
 
@@ -61,9 +82,7 @@ class CharacterSkillsAndTalentsViewModel(
         _state.update {
             it.copy(
                 speciesOrCareer = if (it.speciesOrCareer == SpeciesOrCareer.SPECIES)
-                    SpeciesOrCareer.CAREER
-                else
-                    SpeciesOrCareer.SPECIES
+                    SpeciesOrCareer.CAREER else SpeciesOrCareer.SPECIES
             )
         }
     }
@@ -97,11 +116,40 @@ class CharacterSkillsAndTalentsViewModel(
         talentsJob?.cancel()
         talentsJob = viewModelScope.launch {
             val result = characterCreatorClient.getTalents(speciesName, careerPathName)
-            _state.update {
-                when (from) {
-                    SpeciesOrCareer.SPECIES -> it.copy(speciesTalentsList = result)
-                    SpeciesOrCareer.CAREER -> it.copy(careerTalentsList = result)
-                }.copy(talentList = result)
+            println("Fetched talents: $result")
+
+            val speciesTalentGroups = result.getOrNull(0) ?: emptyList()
+            val careerTalentGroups = result.getOrNull(1) ?: emptyList()
+
+            fun processTalentGroups(talentGroups: List<List<TalentItem>>): List<List<TalentItem>> {
+                return talentGroups.map { group ->
+                    if (group.size == 1 && " or " in group[0].name) {
+                        // Rozbij tylko jeśli jest pojedynczy element z "or" w nazwie
+                        group[0].name.split(" or ").map { option ->
+                            group[0].copy(name = option.trim())
+                        }
+                    } else group // Jeśli więcej niż 1 talent lub nie ma "or", zostaw jak jest
+                }
+            }
+
+            val processedSpeciesTalents = processTalentGroups(speciesTalentGroups)
+            val processedCareerTalents = processTalentGroups(careerTalentGroups)
+
+            val autoSelectedTalents = (speciesTalentGroups + careerTalentGroups).flatMap { group ->
+                when {
+                    group.all { it.name == "Random Talent" } -> emptyList()
+                    group.size > 1 -> listOf(group.first())
+                    else -> group
+                }
+            }
+
+            _state.update { current ->
+                current.copy(
+                    speciesTalentsList = processedSpeciesTalents,
+                    careerTalentsList = processedCareerTalents,
+                    talentList = processedSpeciesTalents + processedCareerTalents,
+                    selectedTalents = autoSelectedTalents
+                )
             }
         }
     }
@@ -111,10 +159,7 @@ class CharacterSkillsAndTalentsViewModel(
             val removedFrom5 = current.selectedSkills5.filterNot { it.name == skill.name }
             val updated3 = if (isChecked) current.selectedSkills3 + skill
             else current.selectedSkills3.filterNot { it.name == skill.name }
-            current.copy(
-                selectedSkills3 = updated3,
-                selectedSkills5 = removedFrom5
-            )
+            current.copy(selectedSkills3 = updated3, selectedSkills5 = removedFrom5)
         }
     }
 
@@ -123,10 +168,7 @@ class CharacterSkillsAndTalentsViewModel(
             val removedFrom3 = current.selectedSkills3.filterNot { it.name == skill.name }
             val updated5 = if (isChecked) current.selectedSkills5 + skill
             else current.selectedSkills5.filterNot { it.name == skill.name }
-            current.copy(
-                selectedSkills3 = removedFrom3,
-                selectedSkills5 = updated5
-            )
+            current.copy(selectedSkills3 = removedFrom3, selectedSkills5 = updated5)
         }
     }
 }

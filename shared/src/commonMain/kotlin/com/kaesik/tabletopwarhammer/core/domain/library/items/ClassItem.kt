@@ -5,8 +5,8 @@ import com.kaesik.tabletopwarhammer.library.domain.library.items.LibraryItem
 data class ClassItem(
     override val id: String,
     override val name: String,
-    val description: String?,
-    val trappings: String?,
-    val careers: String?,
-    val page: Int?,
+    val description: String? = null,
+    val trappings: String? = null,
+    val careers: String? = null,
+    val page: Int? = null,
 ) : LibraryItem

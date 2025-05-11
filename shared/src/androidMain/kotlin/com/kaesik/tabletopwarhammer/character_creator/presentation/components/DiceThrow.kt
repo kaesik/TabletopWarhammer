@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Casino
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
@@ -41,7 +42,7 @@ fun DiceThrow(
                 onClick = onClick,
             ) {
                 Icon(
-                    imageVector = Icons.Default.Refresh,
+                    imageVector = Icons.Default.Casino,
                     contentDescription = "Throw dice"
                 )
             }

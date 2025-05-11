@@ -293,20 +293,16 @@ class KtorCharacterCreatorClient : CharacterCreatorClient {
     override suspend fun getTalents(
         speciesName: String,
         careerPathName: String
-    ): List<List<TalentItem>> {
+    ): List<List<List<TalentItem>>> {
         return try {
             val speciesResult = supabaseClient
                 .from(LibraryEnum.SPECIES.tableName)
-                .select {
-                    filter { ilike("name", "%$speciesName%") }
-                }
+                .select { filter { ilike("name", "%$speciesName%") } }
                 .decodeSingle<SpeciesDto>()
 
             val careerPathResult = supabaseClient
                 .from(LibraryEnum.CAREER_PATH.tableName)
-                .select {
-                    filter { ilike("name", "%$careerPathName%") }
-                }
+                .select { filter { ilike("name", "%$careerPathName%") } }
                 .decodeSingle<CareerPathDto>()
 
             val speciesTalentGroups = extractTalents(speciesResult.talents)
@@ -320,14 +316,16 @@ class KtorCharacterCreatorClient : CharacterCreatorClient {
             val allTalents = allTalentDtos.map { it.toTalentItem() }
 
             fun resolveTalentGroup(group: List<String>): List<TalentItem> {
-                return allTalents.filter { it.name in group }
+                return group.map { rawName ->
+                    allTalents.find { it.name == rawName.trim() }
+                        ?: TalentItem(name = rawName.trim(), id = "")
+                }
             }
 
             val speciesTalents = speciesTalentGroups.map(::resolveTalentGroup)
             val careerTalents = careerTalentGroups.map(::resolveTalentGroup)
 
-            listOf(speciesTalents.flatten(), careerTalents.flatten())
-
+            listOf(speciesTalents, careerTalents)
         } catch (e: Exception) {
             println("Error fetching talents: ${e.message}")
             handleException(e)

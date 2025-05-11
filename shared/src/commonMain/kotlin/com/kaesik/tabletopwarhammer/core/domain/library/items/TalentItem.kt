@@ -5,9 +5,9 @@ import com.kaesik.tabletopwarhammer.library.domain.library.items.LibraryItem
 data class TalentItem(
     override val id: String,
     override val name: String,
-    val max: String?,
-    val tests: String?,
-    val description: String?,
-    val source: String?,
-    val page: Int?,
+    val max: String? = null,
+    val tests: String? = null,
+    val description: String? = null,
+    val source: String? = null,
+    val page: Int? = null,
 ) : LibraryItem

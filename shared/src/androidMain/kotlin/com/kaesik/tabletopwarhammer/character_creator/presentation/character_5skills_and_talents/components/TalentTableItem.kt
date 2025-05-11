@@ -1,9 +1,7 @@
-package com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components
-
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.Casino
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -19,38 +17,41 @@ import com.kaesik.tabletopwarhammer.core.domain.library.items.TalentItem
 @Composable
 fun TalentTableItem(
     talent: TalentItem,
+    isSelected: Boolean,
+    onTalentChecked: (TalentItem, Boolean) -> Unit,
+    onRandomTalentRoll: (TalentItem) -> Unit = {}
 ) {
-    Surface(
-        modifier = Modifier,
-        shadowElevation = 4.dp,
-    ) {
+    Surface(shadowElevation = 4.dp) {
         Row {
             Box(
                 modifier = Modifier.weight(2f),
-                contentAlignment = Alignment.Center,
+                contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = talent.name,
-                )
+                Text(text = talent.name)
             }
             Box(
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                contentAlignment = Alignment.Center
             ) {
-                Row {
-                    if (talent.name == "Random Talent") {
-                        IconButton(
-                            onClick = { }
-                        ) {
+                when {
+                    talent.name == "Random Talent" -> {
+                        IconButton(onClick = { onRandomTalentRoll(talent) }) {
                             Icon(
-                                imageVector = Icons.Default.AddCircle,
-                                contentDescription = "Random",
+                                imageVector = Icons.Default.Casino,
+                                contentDescription = "Roll Random Talent"
                             )
                         }
-                    } else {
+                    }
+
+                    " or " in talent.name -> {
                         Checkbox(
-                            checked = false,
-                            onCheckedChange = { },
+                            checked = isSelected,
+                            onCheckedChange = { isChecked -> onTalentChecked(talent, isChecked) }
                         )
+                    }
+
+                    else -> {
+                        // Automatyczny talent, brak akcji, brak checkboxa
                     }
                 }
             }
@@ -62,14 +63,9 @@ fun TalentTableItem(
 @Preview
 fun TalentTableItemPreview() {
     TalentTableItem(
-        talent = TalentItem(
-            name = "Random Talent",
-            description = "Random Talent Description",
-            id = TODO(),
-            max = TODO(),
-            tests = TODO(),
-            source = TODO(),
-            page = TODO(),
-        )
+        talent = TalentItem(name = "Random Talent", id = ""),
+        isSelected = false,
+        onTalentChecked = { _, _ -> },
+        onRandomTalentRoll = { println("Roll talent!") }
     )
 }

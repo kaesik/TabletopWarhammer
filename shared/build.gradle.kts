@@ -80,6 +80,7 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
+            implementation(libs.androidx.compose.material.icons.extended)
 
             implementation(libs.compose.ui)
             implementation(libs.compose.ui.tooling)
@@ -89,7 +90,6 @@ kotlin {
             implementation(libs.compose.runtime)
 
             implementation(libs.ktor.android)
-
             implementation(libs.sqldelight.android.driver)
 
             implementation(libs.koin.android)
