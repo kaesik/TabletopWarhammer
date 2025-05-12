@@ -113,6 +113,8 @@ fun CharacterSkillsAndTalentsScreenRoot(
     CharacterSkillsAndTalentsScreen(
         state = state,
         skills = currentSkills,
+        speciesLabel = character.species,
+        careerLabel = character.careerPath,
         onEvent = { event ->
             when (event) {
                 is CharacterSkillsAndTalentsEvent.OnSkillChecked3 -> {
@@ -192,6 +194,8 @@ private fun getAttributeValue(character: CharacterItem, attributeName: String): 
 fun CharacterSkillsAndTalentsScreen(
     state: CharacterSkillsAndTalentsState,
     skills: List<SkillItem>,
+    speciesLabel: String,
+    careerLabel: String,
     onEvent: (CharacterSkillsAndTalentsEvent) -> Unit,
 ) {
     Scaffold { padding ->
@@ -226,11 +230,23 @@ fun CharacterSkillsAndTalentsScreen(
                         SpeciesOrCareer.CAREER -> state.careerTalentsList
                     },
                     selectedTalents = state.selectedTalents,
+                    rolledTalents = state.rolledTalents,
+                    speciesName = speciesLabel,
+                    careerName = careerLabel,
+                    isSpeciesMode = state.speciesOrCareer == SpeciesOrCareer.SPECIES,
                     onTalentChecked = { talent, isChecked ->
                         onEvent(CharacterSkillsAndTalentsEvent.OnTalentChecked(talent, isChecked))
+                    },
+                    onRandomTalentRolled = { groupIndex, talentIndex, rolledName ->
+                        onEvent(
+                            CharacterSkillsAndTalentsEvent.OnRandomTalentRolled(
+                                groupIndex, talentIndex, rolledName
+                            )
+                        )
                     }
                 )
             }
+
             item {
                 if (state.speciesOrCareer == SpeciesOrCareer.CAREER) {
                     CharacterCreatorButton(
@@ -271,6 +287,8 @@ fun CharacterSkillsAndTalentsScreenPreview() {
     CharacterSkillsAndTalentsScreen(
         state = CharacterSkillsAndTalentsState(),
         skills = listOf(),
+        speciesLabel = "Species",
+        careerLabel = "Career",
         onEvent = { }
     )
 }

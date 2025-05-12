@@ -53,6 +53,16 @@ class CharacterSkillsAndTalentsViewModel(
                 event.isChecked
             )
 
+            is CharacterSkillsAndTalentsEvent.OnRandomTalentRolled -> {
+                _state.update { current ->
+                    val updatedMap = current.rolledTalents + (Pair(
+                        event.groupIndex,
+                        event.talentIndex
+                    ) to event.rolledName)
+                    current.copy(rolledTalents = updatedMap)
+                }
+            }
+
             is CharacterSkillsAndTalentsEvent.OnSpeciesOrCareerClick -> toggleSpeciesOrCareer()
 
             else -> Unit
@@ -79,10 +89,22 @@ class CharacterSkillsAndTalentsViewModel(
     }
 
     private fun toggleSpeciesOrCareer() {
-        _state.update {
-            it.copy(
-                speciesOrCareer = if (it.speciesOrCareer == SpeciesOrCareer.SPECIES)
-                    SpeciesOrCareer.CAREER else SpeciesOrCareer.SPECIES
+        _state.update { current ->
+            val updatedState = when (current.speciesOrCareer) {
+                SpeciesOrCareer.SPECIES -> current.copy(
+                    selectedSpeciesTalents = current.selectedTalents
+                )
+
+                SpeciesOrCareer.CAREER -> current.copy(
+                    selectedCareerTalents = current.selectedTalents
+                )
+            }
+
+            updatedState.copy(
+                speciesOrCareer = if (current.speciesOrCareer == SpeciesOrCareer.SPECIES)
+                    SpeciesOrCareer.CAREER else SpeciesOrCareer.SPECIES,
+                selectedTalents = if (current.speciesOrCareer == SpeciesOrCareer.SPECIES)
+                    current.selectedCareerTalents else current.selectedSpeciesTalents
             )
         }
     }

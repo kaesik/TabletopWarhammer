@@ -37,6 +37,12 @@ sealed class CharacterSkillsAndTalentsEvent {
         val isChecked: Boolean
     ) : CharacterSkillsAndTalentsEvent()
 
+    data class OnRandomTalentRolled(
+        val groupIndex: Int,
+        val talentIndex: Int,
+        val rolledName: String
+    ) : CharacterSkillsAndTalentsEvent()
+
     data object OnSaveSkillsAndTalents : CharacterSkillsAndTalentsEvent()
     data object OnSpeciesOrCareerClick : CharacterSkillsAndTalentsEvent()
     data object OnNextClick : CharacterSkillsAndTalentsEvent()
