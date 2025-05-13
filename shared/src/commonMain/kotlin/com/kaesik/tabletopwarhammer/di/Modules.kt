@@ -2,6 +2,7 @@ package com.kaesik.tabletopwarhammer.di
 
 import com.kaesik.tabletopwarhammer.character_creator.data.KtorCharacterCreatorClient
 import com.kaesik.tabletopwarhammer.character_creator.domain.CharacterCreatorClient
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_10final.CharacterFinalViewModel
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator.CharacterCreatorViewModel
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_2species.CharacterSpeciesViewModel
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_3class_and_career.CharacterClassAndCareerViewModel
@@ -56,4 +57,6 @@ val sharedModule = module {
     viewModelOf(::CharacterSkillsAndTalentsViewModel)
     viewModelOf(::CharacterTrappingsViewModel)
     viewModelOf(::CharacterDetailsViewModel)
+    viewModelOf(::CharacterFinalViewModel)
+
 }

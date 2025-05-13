@@ -1,5 +1,6 @@
 package com.kaesik.tabletopwarhammer.di
 
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_10final.AndroidCharacterFinalViewModel
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator.AndroidCharacterCreatorViewModel
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_2species.AndroidCharacterSpeciesViewModel
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_3class_and_career.AndroidCharacterClassAndCareerViewModel
@@ -43,4 +44,5 @@ actual val platformModule: Module
         viewModelOf(::AndroidCharacterSkillsAndTalentsViewModel)
         viewModelOf(::AndroidCharacterTrappingsViewModel)
         viewModelOf(::AndroidCharacterDetailsViewModel)
+        viewModelOf(::AndroidCharacterFinalViewModel)
     }

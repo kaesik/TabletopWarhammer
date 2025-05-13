@@ -6,6 +6,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_10final.AndroidCharacterFinalViewModel
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_10final.CharacterFinalScreenRoot
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator.AndroidCharacterCreatorViewModel
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator.CharacterCreatorScreenRoot
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_2species.AndroidCharacterSpeciesViewModel
@@ -153,7 +155,6 @@ fun App() {
                     }
                 )
             }
-
             composable<Route.CharacterClassAndCareer> {
                 val viewModel = koinViewModel<AndroidCharacterClassAndCareerViewModel>()
                 val creatorViewModel = getKoin().get<AndroidCharacterCreatorViewModel>()
@@ -177,7 +178,6 @@ fun App() {
                     }
                 )
             }
-
             composable<Route.CharacterAttributes> {
                 val viewModel = koinViewModel<AndroidCharacterAttributesViewModel>()
                 val creatorViewModel = getKoin().get<AndroidCharacterCreatorViewModel>()
@@ -196,7 +196,6 @@ fun App() {
                     characterSpecies = creatorViewModel.state.value.character.species,
                 )
             }
-
             composable<Route.CharacterSkillsAndTalents> {
                 val viewModel = koinViewModel<AndroidCharacterSkillsAndTalentsViewModel>()
                 val creatorViewModel = getKoin().get<AndroidCharacterCreatorViewModel>()
@@ -214,7 +213,6 @@ fun App() {
                     }
                 )
             }
-
             composable<Route.CharacterTrappings> {
                 val viewModel = koinViewModel<AndroidCharacterTrappingsViewModel>()
                 val creatorViewModel = getKoin().get<AndroidCharacterCreatorViewModel>()
@@ -230,14 +228,26 @@ fun App() {
                     },
                 )
             }
-
             composable<Route.CharacterDetails> {
                 val viewModel = koinViewModel<AndroidCharacterDetailsViewModel>()
                 val creatorViewModel = getKoin().get<AndroidCharacterCreatorViewModel>()
                 CharacterDetailsScreenRoot(
                     viewModel = viewModel,
                     creatorViewModel = creatorViewModel,
-                    onNextClick = { },
+                    onNextClick = {
+                        navController.navigate(
+                            Route.CharacterFinal
+                        )
+                    },
+                )
+            }
+            composable<Route.CharacterFinal> {
+                val viewModel = koinViewModel<AndroidCharacterFinalViewModel>()
+                val creatorViewModel = getKoin().get<AndroidCharacterCreatorViewModel>()
+                CharacterFinalScreenRoot(
+                    viewModel = viewModel,
+                    creatorViewModel = creatorViewModel,
+                    onSaveClick = { }
                 )
             }
         }

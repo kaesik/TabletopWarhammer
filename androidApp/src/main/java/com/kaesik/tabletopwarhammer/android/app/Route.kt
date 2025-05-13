@@ -66,4 +66,7 @@ sealed interface Route {
 
     @Serializable
     data object CharacterAdvancement : Route
+    
+    @Serializable
+    data object CharacterFinal : Route
 }
