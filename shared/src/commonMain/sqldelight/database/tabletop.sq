@@ -1,0 +1,147 @@
+CREATE TABLE characterEntity (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    -- CHARACTER
+    name TEXT NOT NULL,
+    species TEXT NOT NULL,
+    class TEXT NOT NULL,
+    career TEXT NOT NULL,
+    careerLevel TEXT NOT NULL,
+    careerPath TEXT NOT NULL,
+    status TEXT NOT NULL,
+    age TEXT NOT NULL,
+    height TEXT NOT NULL,
+    hair TEXT NOT NULL,
+    eyes TEXT NOT NULL,
+
+    -- CHARACTERISTICS (JSON Arrays as TEXT)
+    weaponSkill TEXT NOT NULL,
+    ballisticSkill TEXT NOT NULL,
+    strength TEXT NOT NULL,
+    toughness TEXT NOT NULL,
+    initiative TEXT NOT NULL,
+    agility TEXT NOT NULL,
+    dexterity TEXT NOT NULL,
+    intelligence TEXT NOT NULL,
+    willPower TEXT NOT NULL,
+    fellowship TEXT NOT NULL,
+
+    -- FATE & RESILIENCE
+    fate INTEGER NOT NULL,
+    fortune INTEGER NOT NULL,
+    resilience INTEGER NOT NULL,
+    resolve INTEGER NOT NULL,
+    motivation TEXT NOT NULL,
+
+    -- EXPERIENCE
+    experience TEXT NOT NULL,
+
+    -- MOVEMENT
+    movement INTEGER NOT NULL,
+    walk INTEGER NOT NULL,
+    run INTEGER NOT NULL,
+
+    -- SKILLS & TALENTS (JSON Arrays as TEXT)
+    basicSkills TEXT NOT NULL,
+    advancedSkills TEXT NOT NULL,
+    talents TEXT NOT NULL,
+
+    -- AMBITIONS
+    ambitionShortTerm TEXT NOT NULL,
+    ambitionLongTerm TEXT NOT NULL,
+
+    -- PARTY
+    partyName TEXT NOT NULL,
+    partyAmbitionShortTerm TEXT NOT NULL,
+    partyAmbitionLongTerm TEXT NOT NULL,
+    partyMembers TEXT NOT NULL,
+
+    -- ARMOUR & WEAPONS (JSON Arrays as TEXT)
+    armour TEXT NOT NULL,
+    weapons TEXT NOT NULL,
+
+    -- TRAPPINGS, PSYCHOLOGY, MUTATIONS
+    trappings TEXT NOT NULL,
+    psychology TEXT NOT NULL,
+    mutations TEXT NOT NULL,
+
+    -- WEALTH, ENCUMBRANCE, WOUNDS (JSON Arrays as TEXT)
+    wealth TEXT NOT NULL,
+    encumbrance TEXT NOT NULL,
+    wounds TEXT NOT NULL,
+
+    -- SPELLS & PRAYERS
+    spells TEXT NOT NULL,
+    prayers TEXT NOT NULL,
+
+    -- SIN
+    sin INTEGER NOT NULL
+);
+
+getCharacterEntity:
+SELECT * FROM characterEntity ORDER BY id DESC;
+
+insertCharacterEntity:
+INSERT OR REPLACE
+INTO characterEntity (
+    id,
+    name,
+    species,
+    class,
+    career,
+    careerLevel,
+    careerPath,
+    status,
+    age,
+    height,
+    hair,
+    eyes,
+    weaponSkill,
+    ballisticSkill,
+    strength,
+    toughness,
+    initiative,
+    agility,
+    dexterity,
+    intelligence,
+    willPower,
+    fellowship,
+    fate,
+    fortune,
+    resilience,
+    resolve,
+    motivation,
+    experience,
+    movement,
+    walk,
+    run,
+    basicSkills,
+    advancedSkills,
+    talents,
+    ambitionShortTerm,
+    ambitionLongTerm,
+    partyName,
+    partyAmbitionShortTerm,
+    partyAmbitionLongTerm,
+    partyMembers,
+    armour,
+    weapons,
+    trappings,
+    psychology,
+    mutations,
+    wealth,
+    encumbrance,
+    wounds,
+    spells,
+    prayers,
+    sin
+)
+VALUES (
+    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+    ?, ?, ?, ?, ?, ?, ?, ?,
+    ?, ?, ?, ?, ?, ?, ?, ?,
+    ?, ?, ?, ?, ?, ?, ?, ?,
+    ?, ?, ?, ?, ?,
+    ?, ?, ?, ?, ?, ?, ?,
+    ?, ?, ?, ?, ?
+    );

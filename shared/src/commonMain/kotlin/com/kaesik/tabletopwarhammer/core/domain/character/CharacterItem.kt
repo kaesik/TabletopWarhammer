@@ -1,4 +1,4 @@
-package com.kaesik.tabletopwarhammer.character_creator.domain
+package com.kaesik.tabletopwarhammer.core.domain.character
 
 data class CharacterItem(
     val id: Int,

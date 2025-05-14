@@ -11,6 +11,7 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5sk
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_6trappings.CharacterTrappingsViewModel
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_7details.CharacterDetailsViewModel
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.CharacterSheetViewModel
+import com.kaesik.tabletopwarhammer.core.data.character.SqlDelightCharacterDataSource
 import com.kaesik.tabletopwarhammer.core.data.local.DatabaseDriverFactory
 import com.kaesik.tabletopwarhammer.core.data.remote.HttpClientFactory
 import com.kaesik.tabletopwarhammer.core.domain.library.items.AttributeItem
@@ -35,6 +36,7 @@ expect val platformModule: Module
 val sharedModule = module {
     single { HttpClientFactory.create(get()) }
     single { get<DatabaseDriverFactory>().create() }
+    single { SqlDelightCharacterDataSource(get()) }
 
     viewModelOf(::MenuViewModel)
 
