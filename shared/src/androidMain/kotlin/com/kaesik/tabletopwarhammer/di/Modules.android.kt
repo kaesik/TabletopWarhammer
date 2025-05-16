@@ -9,7 +9,10 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5sk
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_6trappings.AndroidCharacterTrappingsViewModel
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_7details.AndroidCharacterDetailsViewModel
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.AndroidCharacterSheetViewModel
+import com.kaesik.tabletopwarhammer.core.data.character.SqlDelightCharacterDataSource
 import com.kaesik.tabletopwarhammer.core.data.local.DatabaseDriverFactory
+import com.kaesik.tabletopwarhammer.core.domain.character.CharacterDataSource
+import com.kaesik.tabletopwarhammer.database.TabletopWarhammerDatabase
 import com.kaesik.tabletopwarhammer.library.presentation.library_1.AndroidLibraryViewModel
 import com.kaesik.tabletopwarhammer.library.presentation.library_2list.AndroidLibraryListViewModel
 import com.kaesik.tabletopwarhammer.library.presentation.library_3item.AndroidLibraryItemViewModel
@@ -27,6 +30,9 @@ actual val platformModule: Module
     get() = module {
         single<HttpClientEngine> { OkHttp.create() }
         single { DatabaseDriverFactory(androidApplication()) }
+
+        single { TabletopWarhammerDatabase(get()) }
+        single<CharacterDataSource> { SqlDelightCharacterDataSource(get()) }
 
         viewModelOf(::AndroidMenuViewModel)
 

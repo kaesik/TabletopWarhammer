@@ -14,7 +14,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -24,6 +26,7 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1cr
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorButton
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.SnackbarType
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.showCharacterCreatorSnackbar
+import com.kaesik.tabletopwarhammer.core.domain.character.CharacterDataSource
 import com.kaesik.tabletopwarhammer.core.domain.character.CharacterItem
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.getKoin
@@ -32,12 +35,13 @@ import org.koin.compose.getKoin
 fun CharacterFinalScreenRoot(
     viewModel: AndroidCharacterFinalViewModel = koinViewModel(),
     creatorViewModel: AndroidCharacterCreatorViewModel = getKoin().get(),
+    characterDataSource: CharacterDataSource = getKoin().get(),
     onSaveClick: () -> Unit,
-
-    ) {
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val creatorState by creatorViewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+    var saveRequest by remember { mutableStateOf(false) }
     val character = creatorViewModel.state.value.character
 
     LaunchedEffect(creatorState.message, creatorState.isError) {
@@ -50,15 +54,34 @@ fun CharacterFinalScreenRoot(
         }
     }
 
+    LaunchedEffect(saveRequest) {
+        if (saveRequest) {
+            try {
+                println("DEBUG: Attempting to save character: ${character.name}")
+                characterDataSource.insertCharacter(character)
+                println("DEBUG: Character inserted into DB successfully.")
+
+                snackbarHostState.showCharacterCreatorSnackbar(
+                    message = "Character saved successfully! [${character.name}]",
+                    type = SnackbarType.Success
+                )
+                onSaveClick()
+            } catch (e: Exception) {
+                snackbarHostState.showCharacterCreatorSnackbar(
+                    message = "Error saving character: ${e.localizedMessage}",
+                    type = SnackbarType.Error
+                )
+            } finally {
+                saveRequest = false
+            }
+        }
+    }
+
     CharacterFinalScreen(
         character = character,
         onEvent = { event ->
-            when (event) {
-                is CharacterFinalEvent.OnSaveClick -> {
-                    onSaveClick()
-                }
-
-                else -> Unit
+            if (event is CharacterFinalEvent.OnSaveClick) {
+                saveRequest = true
             }
         }
     )

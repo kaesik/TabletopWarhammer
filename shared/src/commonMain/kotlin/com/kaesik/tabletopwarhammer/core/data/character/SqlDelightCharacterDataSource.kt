@@ -8,6 +8,9 @@ import com.kaesik.tabletopwarhammer.core.domain.util.CommonFlow
 import com.kaesik.tabletopwarhammer.core.domain.util.toCommonFlow
 import com.kaesik.tabletopwarhammer.database.TabletopWarhammerDatabase
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.builtins.serializer
+import kotlinx.serialization.json.Json
 import kotlin.coroutines.CoroutineContext
 
 class SqlDelightCharacterDataSource(
@@ -28,8 +31,9 @@ class SqlDelightCharacterDataSource(
     }
 
     override suspend fun insertCharacter(characterItem: CharacterItem) {
+        val json = Json { prettyPrint = false }
+
         queries.insertCharacterEntity(
-            id = characterItem.id.toLong(),
             name = characterItem.name,
             species = characterItem.species,
             class_ = characterItem.cLass,
@@ -41,44 +45,110 @@ class SqlDelightCharacterDataSource(
             height = characterItem.height,
             hair = characterItem.hair,
             eyes = characterItem.eyes,
-            weaponSkill = characterItem.weaponSkill.joinToString(","),
-            ballisticSkill = characterItem.ballisticSkill.joinToString(","),
-            strength = characterItem.strength.joinToString(","),
-            toughness = characterItem.toughness.joinToString(","),
-            initiative = characterItem.initiative.joinToString(","),
-            agility = characterItem.agility.joinToString(","),
-            dexterity = characterItem.dexterity.joinToString(","),
-            intelligence = characterItem.intelligence.joinToString(","),
-            willPower = characterItem.willPower.joinToString(","),
-            fellowship = characterItem.fellowship.joinToString(","),
+            weaponSkill = json.encodeToString(
+                ListSerializer(Int.serializer()),
+                characterItem.weaponSkill
+            ),
+            ballisticSkill = json.encodeToString(
+                ListSerializer(Int.serializer()),
+                characterItem.ballisticSkill
+            ),
+            strength = json.encodeToString(
+                ListSerializer(Int.serializer()),
+                characterItem.strength
+            ),
+            toughness = json.encodeToString(
+                ListSerializer(Int.serializer()),
+                characterItem.toughness
+            ),
+            initiative = json.encodeToString(
+                ListSerializer(Int.serializer()),
+                characterItem.initiative
+            ),
+            agility = json.encodeToString(ListSerializer(Int.serializer()), characterItem.agility),
+            dexterity = json.encodeToString(
+                ListSerializer(Int.serializer()),
+                characterItem.dexterity
+            ),
+            intelligence = json.encodeToString(
+                ListSerializer(Int.serializer()),
+                characterItem.intelligence
+            ),
+            willPower = json.encodeToString(
+                ListSerializer(Int.serializer()),
+                characterItem.willPower
+            ),
+            fellowship = json.encodeToString(
+                ListSerializer(Int.serializer()),
+                characterItem.fellowship
+            ),
             fate = characterItem.fate.toLong(),
             fortune = characterItem.fortune.toLong(),
             resilience = characterItem.resilience.toLong(),
             resolve = characterItem.resolve.toLong(),
             motivation = characterItem.motivation,
-            experience = characterItem.experience.toString(),
+            experience = json.encodeToString(
+                ListSerializer(Int.serializer()),
+                characterItem.experience
+            ),
             movement = characterItem.movement.toLong(),
             walk = characterItem.walk.toLong(),
             run = characterItem.run.toLong(),
-            basicSkills = characterItem.basicSkills.joinToString(","),
-            advancedSkills = characterItem.advancedSkills.joinToString(","),
-            talents = characterItem.talents.joinToString(","),
+            basicSkills = json.encodeToString(
+                ListSerializer(ListSerializer(String.serializer())),
+                characterItem.basicSkills
+            ),
+            advancedSkills = json.encodeToString(
+                ListSerializer(ListSerializer(String.serializer())),
+                characterItem.advancedSkills
+            ),
+            talents = json.encodeToString(
+                ListSerializer(ListSerializer(String.serializer())),
+                characterItem.talents
+            ),
             ambitionShortTerm = characterItem.ambitionShortTerm,
             ambitionLongTerm = characterItem.ambitionLongTerm,
             partyName = characterItem.partyName,
             partyAmbitionShortTerm = characterItem.partyAmbitionShortTerm,
             partyAmbitionLongTerm = characterItem.partyAmbitionLongTerm,
-            partyMembers = characterItem.partyMembers.joinToString(","),
-            armour = characterItem.armour.joinToString(","),
-            weapons = characterItem.weapons.joinToString(","),
-            trappings = characterItem.trappings.joinToString(","),
-            psychology = characterItem.psychology.joinToString(","),
-            mutations = characterItem.mutations.joinToString(","),
-            wealth = characterItem.wealth.joinToString(","),
-            encumbrance = characterItem.encumbrance.joinToString(","),
-            wounds = characterItem.wounds.joinToString(","),
-            spells = characterItem.spells.joinToString(","),
-            prayers = characterItem.prayers.joinToString(","),
+            partyMembers = json.encodeToString(
+                ListSerializer(String.serializer()),
+                characterItem.partyMembers
+            ),
+            armour = json.encodeToString(
+                ListSerializer(ListSerializer(String.serializer())),
+                characterItem.armour
+            ),
+            weapons = json.encodeToString(
+                ListSerializer(ListSerializer(String.serializer())),
+                characterItem.weapons
+            ),
+            trappings = json.encodeToString(
+                ListSerializer(String.serializer()),
+                characterItem.trappings
+            ),
+            psychology = json.encodeToString(
+                ListSerializer(String.serializer()),
+                characterItem.psychology
+            ),
+            mutations = json.encodeToString(
+                ListSerializer(String.serializer()),
+                characterItem.mutations
+            ),
+            wealth = json.encodeToString(ListSerializer(Int.serializer()), characterItem.wealth),
+            encumbrance = json.encodeToString(
+                ListSerializer(Int.serializer()),
+                characterItem.encumbrance
+            ),
+            wounds = json.encodeToString(ListSerializer(Int.serializer()), characterItem.wounds),
+            spells = json.encodeToString(
+                ListSerializer(ListSerializer(String.serializer())),
+                characterItem.spells
+            ),
+            prayers = json.encodeToString(
+                ListSerializer(ListSerializer(String.serializer())),
+                characterItem.prayers
+            ),
             sin = characterItem.sin.toLong(),
         )
     }

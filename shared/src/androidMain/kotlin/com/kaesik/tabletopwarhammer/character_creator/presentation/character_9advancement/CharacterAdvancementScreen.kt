@@ -18,11 +18,11 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.components.Ch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun CharacterCreatorScreenRoot(
+fun CharacterAdvancementScreenRoot(
     viewModel: AndroidCharacterAdvancementViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    CharacterCreatorScreen(
+    CharacterAdvancementScreen(
         state = state,
         onEvent = { event ->
             when (event) {
@@ -35,7 +35,7 @@ fun CharacterCreatorScreenRoot(
 }
 
 @Composable
-fun CharacterCreatorScreen(
+fun CharacterAdvancementScreen(
     state: CharacterAdvancementState,
     onEvent: (CharacterAdvancementEvent) -> Unit
 ) {
@@ -77,8 +77,8 @@ fun CharacterCreatorScreen(
 
 @Preview
 @Composable
-fun CharacterCreatorScreenPreview() {
-    CharacterCreatorScreen(
+fun CharacterAdvancementScreenPreview() {
+    CharacterAdvancementScreen(
         state = CharacterAdvancementState(),
         onEvent = {}
     )

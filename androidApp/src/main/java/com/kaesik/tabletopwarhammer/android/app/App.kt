@@ -22,8 +22,13 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.character_6tr
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_6trappings.CharacterTrappingsScreenRoot
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_7details.AndroidCharacterDetailsViewModel
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_7details.CharacterDetailsScreenRoot
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_8ten_question.AndroidCharacterTenQuestionsViewModel
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_8ten_question.CharacterTenQuestionsScreenRoot
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_9advancement.AndroidCharacterAdvancementViewModel
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_9advancement.CharacterAdvancementScreenRoot
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.AndroidCharacterSheetViewModel
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.CharacterSheetScreenRoot
+import com.kaesik.tabletopwarhammer.core.domain.character.CharacterDataSource
 import com.kaesik.tabletopwarhammer.library.presentation.library_1.AndroidLibraryViewModel
 import com.kaesik.tabletopwarhammer.library.presentation.library_1.LibraryScreenRoot
 import com.kaesik.tabletopwarhammer.library.presentation.library_2list.AndroidLibraryListViewModel
@@ -241,13 +246,36 @@ fun App() {
                     },
                 )
             }
+            composable<Route.CharacterTenQuestions> {
+                val viewModel = koinViewModel<AndroidCharacterTenQuestionsViewModel>()
+                val creatorViewModel = getKoin().get<AndroidCharacterCreatorViewModel>()
+
+                CharacterTenQuestionsScreenRoot(
+                    viewModel = viewModel,
+                )
+            }
+            composable<Route.CharacterAdvancement> {
+                val viewModel = koinViewModel<AndroidCharacterAdvancementViewModel>()
+                val creatorViewModel = getKoin().get<AndroidCharacterCreatorViewModel>()
+
+                CharacterAdvancementScreenRoot(
+                    viewModel = viewModel,
+                )
+            }
             composable<Route.CharacterFinal> {
                 val viewModel = koinViewModel<AndroidCharacterFinalViewModel>()
                 val creatorViewModel = getKoin().get<AndroidCharacterCreatorViewModel>()
+                val characterDataSource = getKoin().get<CharacterDataSource>()
+
                 CharacterFinalScreenRoot(
                     viewModel = viewModel,
                     creatorViewModel = creatorViewModel,
-                    onSaveClick = { }
+                    characterDataSource = characterDataSource,
+                    onSaveClick = {
+                        navController.navigate(
+                            Route.Menu
+                        )
+                    }
                 )
             }
         }
