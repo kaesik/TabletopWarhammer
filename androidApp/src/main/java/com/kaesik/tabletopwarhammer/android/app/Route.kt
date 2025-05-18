@@ -11,6 +11,23 @@ sealed interface Route {
     @Serializable
     data object Menu : Route
 
+    // AUTH
+    @Serializable
+    data object AuthGraph : Route
+    
+    @Serializable
+    data object Intro : Route
+
+    @Serializable
+    data object Login : Route
+
+    @Serializable
+    data object Register : Route
+
+    // LIBRARY
+    @Serializable
+    data object LibraryGraph : Route
+
     @Serializable
     data object Library : Route
 
@@ -25,8 +42,16 @@ sealed interface Route {
         val fromTable: LibraryEnum
     ) : Route
 
+    // CHARACTER SHEET
+    @Serializable
+    data object CharacterSheetGraph : Route
+
     @Serializable
     data object CharacterSheet : Route
+
+    // CHARACTER CREATOR
+    @Serializable
+    data object CharacterCreatorGraph : Route
 
     @Serializable
     data object CharacterCreator : Route
@@ -66,7 +91,7 @@ sealed interface Route {
 
     @Serializable
     data object CharacterAdvancement : Route
-    
+
     @Serializable
     data object CharacterFinal : Route
 }

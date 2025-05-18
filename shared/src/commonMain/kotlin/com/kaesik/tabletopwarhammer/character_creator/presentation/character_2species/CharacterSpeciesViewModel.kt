@@ -11,10 +11,11 @@ import kotlinx.coroutines.launch
 class CharacterSpeciesViewModel(
     private val characterCreatorClient: CharacterCreatorClient
 ) : ViewModel() {
+
     private val _state = MutableStateFlow(CharacterSpeciesState())
     val state = _state.asStateFlow()
 
-    private var characterSpeciesJob: Job? = null
+    private var speciesJob: Job? = null
 
     fun onEvent(event: CharacterSpeciesEvent) {
         when (event) {
@@ -43,8 +44,8 @@ class CharacterSpeciesViewModel(
     }
 
     private fun loadSpeciesList() {
-        characterSpeciesJob?.cancel()
-        characterSpeciesJob = viewModelScope.launch {
+        speciesJob?.cancel()
+        speciesJob = viewModelScope.launch {
             val speciesList = characterCreatorClient.getSpecies()
             _state.value = state.value.copy(
                 speciesList = speciesList,

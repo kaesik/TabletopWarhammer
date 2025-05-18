@@ -1,4 +1,4 @@
-package com.kaesik.tabletopwarhammer.menu.presentation.components
+package com.kaesik.tabletopwarhammer.core.presentation
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background

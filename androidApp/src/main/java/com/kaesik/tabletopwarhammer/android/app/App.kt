@@ -6,6 +6,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.kaesik.tabletopwarhammer.auth.presentation.intro.AndroidIntroViewModel
+import com.kaesik.tabletopwarhammer.auth.presentation.intro.IntroScreenRoot
+import com.kaesik.tabletopwarhammer.auth.presentation.login.AndroidLoginViewModel
+import com.kaesik.tabletopwarhammer.auth.presentation.login.LoginScreenRoot
+import com.kaesik.tabletopwarhammer.auth.presentation.register.AndroidRegisterViewModel
+import com.kaesik.tabletopwarhammer.auth.presentation.register.RegisterScreenRoot
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_10final.AndroidCharacterFinalViewModel
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_10final.CharacterFinalScreenRoot
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator.AndroidCharacterCreatorViewModel
@@ -45,8 +51,65 @@ fun App() {
     val navController = rememberNavController()
     NavHost(
         navController = navController,
-        startDestination = Route.MainGraph
+        startDestination = Route.AuthGraph
     ) {
+        navigation<Route.AuthGraph>(
+            startDestination = Route.Intro
+        ) {
+            composable<Route.Intro> {
+                val viewModel = koinViewModel<AndroidIntroViewModel>()
+                IntroScreenRoot(
+                    viewModel = viewModel,
+                    onSignUpClick = {
+                        navController.navigate(
+                            Route.Register
+                        )
+                    },
+                    onSignInClick = {
+                        navController.navigate(
+                            Route.Login
+                        )
+                    },
+                    onGuestClick = {
+                        navController.navigate(
+                            Route.MainGraph
+                        )
+                    },
+                )
+            }
+            composable<Route.Login> {
+                val viewModel = koinViewModel<AndroidLoginViewModel>()
+                LoginScreenRoot(
+                    viewModel = viewModel,
+                    onLoginSuccess = {
+                        navController.navigate(
+                            Route.MainGraph
+                        )
+                    },
+                    onSignUpClick = {
+                        navController.navigate(
+                            Route.Register
+                        )
+                    },
+                )
+            }
+            composable<Route.Register> {
+                val viewModel = koinViewModel<AndroidRegisterViewModel>()
+                RegisterScreenRoot(
+                    viewModel = viewModel,
+                    onSignInClick = {
+                        navController.navigate(
+                            Route.Login
+                        )
+                    },
+                    onSuccessfulRegistration = {
+                        navController.navigate(
+                            Route.MainGraph
+                        )
+                    },
+                )
+            }
+        }
         navigation<Route.MainGraph>(
             startDestination = Route.Menu
         ) {
@@ -56,23 +119,25 @@ fun App() {
                     viewModel = viewModel,
                     onNavigateToLibraryScreen = {
                         navController.navigate(
-                            Route.Library
+                            Route.LibraryGraph
                         )
                     },
                     onNavigateToCharacterSheetScreen = {
                         navController.navigate(
-                            Route.CharacterSheet
+                            Route.CharacterSheetGraph
                         )
                     },
                     onNavigateToCharacterCreatorScreen = {
                         navController.navigate(
-                            Route.CharacterCreator
+                            Route.CharacterCreatorGraph
                         )
                     }
                 )
             }
-
-            // LIBRARY
+        }
+        navigation<Route.LibraryGraph>(
+            startDestination = Route.Library
+        ) {
             composable<Route.Library> {
                 val viewModel = koinViewModel<AndroidLibraryViewModel>()
                 LibraryScreenRoot(
@@ -119,16 +184,20 @@ fun App() {
                     }
                 )
             }
-
-            // CHARACTER SHEET
+        }
+        navigation<Route.CharacterSheetGraph>(
+            startDestination = Route.CharacterSheet
+        ) {
             composable<Route.CharacterSheet> {
                 val viewModel = koinViewModel<AndroidCharacterSheetViewModel>()
                 CharacterSheetScreenRoot(
                     viewModel = viewModel,
                 )
             }
-
-            // CHARACTER CREATOR
+        }
+        navigation<Route.CharacterCreatorGraph>(
+            startDestination = Route.CharacterCreator
+        ) {
             composable<Route.CharacterCreator> {
                 val viewModel = koinViewModel<AndroidCharacterCreatorViewModel>()
                 CharacterCreatorScreenRoot(

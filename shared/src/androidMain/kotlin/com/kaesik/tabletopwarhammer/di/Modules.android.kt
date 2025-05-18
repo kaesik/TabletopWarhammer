@@ -1,5 +1,8 @@
 package com.kaesik.tabletopwarhammer.di
 
+import com.kaesik.tabletopwarhammer.auth.presentation.intro.AndroidIntroViewModel
+import com.kaesik.tabletopwarhammer.auth.presentation.login.AndroidLoginViewModel
+import com.kaesik.tabletopwarhammer.auth.presentation.register.AndroidRegisterViewModel
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_10final.AndroidCharacterFinalViewModel
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator.AndroidCharacterCreatorViewModel
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_2species.AndroidCharacterSpeciesViewModel
@@ -34,15 +37,25 @@ actual val platformModule: Module
         single { TabletopWarhammerDatabase(get()) }
         single<CharacterDataSource> { SqlDelightCharacterDataSource(get()) }
 
+        single { string }
+
+        // Auth
+        viewModelOf(::AndroidIntroViewModel)
+        viewModelOf(::AndroidLoginViewModel)
+        viewModelOf(::AndroidRegisterViewModel)
+
+        // Menu
         viewModelOf(::AndroidMenuViewModel)
 
-        single { string }
+        // Library
         viewModelOf(::AndroidLibraryViewModel)
         viewModelOf(::AndroidLibraryListViewModel)
         viewModelOf(::AndroidLibraryItemViewModel)
 
+        // Character Sheet
         viewModelOf(::AndroidCharacterSheetViewModel)
 
+        // Character Creator
         single { AndroidCharacterCreatorViewModel() }
         viewModelOf(::AndroidCharacterSpeciesViewModel)
         viewModelOf(::AndroidCharacterClassAndCareerViewModel)

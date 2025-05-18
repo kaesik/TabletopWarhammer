@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.kaesik.tabletopwarhammer.menu.presentation.components.Button1
+import com.kaesik.tabletopwarhammer.core.presentation.Button1
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -45,7 +45,7 @@ fun MenuScreen(
     state: MenuState,
     onEvent: (MenuEvent) -> Unit
 ) {
-    Scaffold (
+    Scaffold(
 
     ) { padding ->
         LazyColumn(
@@ -64,7 +64,7 @@ fun MenuScreen(
                     Text("Menu Screen")
                     Button1(
                         text = "LibraryScreen",
-                        onClick = { onEvent(MenuEvent.NavigateToLibraryScreen)}
+                        onClick = { onEvent(MenuEvent.NavigateToLibraryScreen) }
                     )
                     Button1(
                         text = "CharacterSheetScreen",

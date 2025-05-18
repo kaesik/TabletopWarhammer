@@ -1,6 +1,14 @@
 package com.kaesik.tabletopwarhammer.di
 
-import com.kaesik.tabletopwarhammer.character_creator.data.KtorCharacterCreatorClient
+import com.kaesik.tabletopwarhammer.auth.data.di.AuthClientImpl
+import com.kaesik.tabletopwarhammer.auth.data.di.EmailPatternValidator
+import com.kaesik.tabletopwarhammer.auth.domain.AuthClient
+import com.kaesik.tabletopwarhammer.auth.domain.PatternValidator
+import com.kaesik.tabletopwarhammer.auth.domain.UserDataValidator
+import com.kaesik.tabletopwarhammer.auth.presentation.intro.IntroViewModel
+import com.kaesik.tabletopwarhammer.auth.presentation.login.LoginViewModel
+import com.kaesik.tabletopwarhammer.auth.presentation.register.RegisterViewModel
+import com.kaesik.tabletopwarhammer.character_creator.data.CharacterCreatorClientImpl
 import com.kaesik.tabletopwarhammer.character_creator.domain.CharacterCreatorClient
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_10final.CharacterFinalViewModel
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator.CharacterCreatorViewModel
@@ -17,7 +25,7 @@ import com.kaesik.tabletopwarhammer.core.data.remote.HttpClientFactory
 import com.kaesik.tabletopwarhammer.core.domain.character.CharacterDataSource
 import com.kaesik.tabletopwarhammer.core.domain.library.items.AttributeItem
 import com.kaesik.tabletopwarhammer.database.TabletopWarhammerDatabase
-import com.kaesik.tabletopwarhammer.library.data.library.KtorLibraryClient
+import com.kaesik.tabletopwarhammer.library.data.library.LibraryClientImpl
 import com.kaesik.tabletopwarhammer.library.domain.library.LibraryClient
 import com.kaesik.tabletopwarhammer.library.domain.library.items.LibraryItem
 import com.kaesik.tabletopwarhammer.library.presentation.library_1.LibraryViewModel
@@ -41,20 +49,34 @@ val sharedModule = module {
     single { TabletopWarhammerDatabase(get()) }
     single<CharacterDataSource> { SqlDelightCharacterDataSource(get()) }
 
-    viewModelOf(::MenuViewModel)
+    single<PatternValidator> { EmailPatternValidator }
+    single { UserDataValidator(get()) }
 
     single { stringKoin }
+
+    // Auth
+    single<AuthClient> { AuthClientImpl() }
+    viewModelOf(::IntroViewModel)
+    viewModelOf(::LoginViewModel)
+    viewModelOf(::RegisterViewModel)
+
+    // Menu
+    viewModelOf(::MenuViewModel)
+
+    // Library
     single { libraryList }
     single { libraryItem }
-    single { KtorLibraryClient() as LibraryClient }
+    single<LibraryClient> { LibraryClientImpl() }
     viewModel { (fromTable: String) -> LibraryViewModel() }
     viewModelOf(::LibraryViewModel)
     viewModelOf(::LibraryListViewModel)
     viewModelOf(::LibraryItemViewModel)
 
+    // Character Sheet
     viewModelOf(::CharacterSheetViewModel)
 
-    single { KtorCharacterCreatorClient() as CharacterCreatorClient }
+    // Character Creator
+    single<CharacterCreatorClient> { CharacterCreatorClientImpl() }
     single { CharacterCreatorViewModel() }
     viewModelOf(::CharacterSpeciesViewModel)
     viewModelOf(::CharacterClassAndCareerViewModel)

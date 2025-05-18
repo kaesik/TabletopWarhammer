@@ -19,31 +19,22 @@ import com.kaesik.tabletopwarhammer.core.data.library.mappers.toQualityFlawItem
 import com.kaesik.tabletopwarhammer.core.data.library.mappers.toSkillItem
 import com.kaesik.tabletopwarhammer.core.data.library.mappers.toSpeciesItem
 import com.kaesik.tabletopwarhammer.core.data.library.mappers.toTalentItem
+import com.kaesik.tabletopwarhammer.core.data.remote.SupabaseClient
 import com.kaesik.tabletopwarhammer.di.libraryList
-import com.kaesik.tabletopwarhammer.library.data.Const
 import com.kaesik.tabletopwarhammer.library.domain.library.LibraryClient
 import com.kaesik.tabletopwarhammer.library.domain.library.LibraryError
 import com.kaesik.tabletopwarhammer.library.domain.library.LibraryException
 import com.kaesik.tabletopwarhammer.library.domain.library.items.LibraryItem
-import io.github.jan.supabase.createSupabaseClient
-import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.from
 
-class KtorLibraryClient : LibraryClient {
-    private val supabaseClient = createSupabaseClient(
-        supabaseKey = Const.SUPABASE_ANON_KEY,
-        supabaseUrl = Const.SUPABASE_URL
-    ) {
-        install(Postgrest)
-    }
+class LibraryClientImpl : LibraryClient {
+    private val supabaseClient = SupabaseClient.supabaseClient
 
     override suspend fun getLibraryList(
         fromTable: LibraryEnum
     ): List<LibraryItem> {
         return try {
-            println("Fetching data from table: $fromTable")
             val supabaseList = supabaseClient.from(fromTable.tableName).select()
-            println("Supabase response: $supabaseList")
             when (fromTable) {
                 LibraryEnum.ATTRIBUTE -> {
                     supabaseList
@@ -111,7 +102,6 @@ class KtorLibraryClient : LibraryClient {
         itemId: String,
         fromTable: LibraryEnum
     ): LibraryItem {
-        println("KtorLibraryClient.getLibraryItem")
         return try {
             libraryList = getLibraryList(fromTable)
             libraryList.find { it.id == itemId }

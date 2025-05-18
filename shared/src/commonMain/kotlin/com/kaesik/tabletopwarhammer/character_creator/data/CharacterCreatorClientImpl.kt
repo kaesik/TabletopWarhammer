@@ -19,6 +19,7 @@ import com.kaesik.tabletopwarhammer.core.data.library.mappers.toItemItem
 import com.kaesik.tabletopwarhammer.core.data.library.mappers.toSkillItem
 import com.kaesik.tabletopwarhammer.core.data.library.mappers.toSpeciesItem
 import com.kaesik.tabletopwarhammer.core.data.library.mappers.toTalentItem
+import com.kaesik.tabletopwarhammer.core.data.remote.SupabaseClient
 import com.kaesik.tabletopwarhammer.core.domain.library.items.AttributeItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.CareerItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.CareerPathItem
@@ -27,20 +28,12 @@ import com.kaesik.tabletopwarhammer.core.domain.library.items.ItemItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.SkillItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.SpeciesItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.TalentItem
-import com.kaesik.tabletopwarhammer.library.data.Const
 import com.kaesik.tabletopwarhammer.library.data.library.handleException
-import io.github.jan.supabase.createSupabaseClient
-import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.from
 import kotlin.coroutines.cancellation.CancellationException
 
-class KtorCharacterCreatorClient : CharacterCreatorClient {
-    private val supabaseClient = createSupabaseClient(
-        supabaseKey = Const.SUPABASE_ANON_KEY,
-        supabaseUrl = Const.SUPABASE_URL
-    ) {
-        install(Postgrest)
-    }
+class CharacterCreatorClientImpl : CharacterCreatorClient {
+    private val supabaseClient = SupabaseClient.supabaseClient
 
     override suspend fun getSpecies(): List<SpeciesItem> {
         return try {
@@ -49,10 +42,8 @@ class KtorCharacterCreatorClient : CharacterCreatorClient {
                 .select()
                 .decodeList<SpeciesDto>()
                 .map { it.toSpeciesItem() }
-            println("speciesList $speciesList")
             speciesList
         } catch (e: Exception) {
-            println("Error fetching species list: ${e.message}")
             handleException(e)
         }
     }
@@ -69,7 +60,6 @@ class KtorCharacterCreatorClient : CharacterCreatorClient {
                 .decodeSingle<SpeciesDto>()
                 .toSpeciesItem()
         } catch (e: Exception) {
-            println("Error fetching species list: ${e.message}")
             handleException(e)
         }
     }
@@ -81,13 +71,10 @@ class KtorCharacterCreatorClient : CharacterCreatorClient {
                 .select()
                 .decodeList<ClassDto>()
                 .map { it.toClassItem() }
-            println("classList $classList")
             classList
         } catch (e: CancellationException) {
-            println("Classes fetch cancelled")
             throw e
         } catch (e: Exception) {
-            println("Error fetching classes list: ${e.message}")
             handleException(e)
         }
     }
@@ -104,15 +91,11 @@ class KtorCharacterCreatorClient : CharacterCreatorClient {
                 .decodeSingle<ClassDto>()
                 .toClassItem()
         } catch (e: Exception) {
-            println("Error fetching species list: ${e.message}")
             handleException(e)
         }
     }
 
-    override suspend fun getCareers(
-        speciesName: String,
-        className: String
-    ): List<CareerItem> {
+    override suspend fun getCareers(speciesName: String, className: String): List<CareerItem> {
         return try {
             val careerList = supabaseClient
                 .from(LibraryEnum.CAREER.tableName)
@@ -135,9 +118,7 @@ class KtorCharacterCreatorClient : CharacterCreatorClient {
         }
     }
 
-    override suspend fun getCareerDetails(
-        careerName: String
-    ): CareerItem {
+    override suspend fun getCareerDetails(careerName: String): CareerItem {
         return try {
             supabaseClient
                 .from(LibraryEnum.CAREER.tableName)
@@ -186,9 +167,7 @@ class KtorCharacterCreatorClient : CharacterCreatorClient {
         }
     }
 
-    override suspend fun getAttributesDetails(
-        attributeName: String,
-    ): AttributeItem {
+    override suspend fun getAttributesDetails(attributeName: String): AttributeItem {
         return try {
             supabaseClient
                 .from(LibraryEnum.ATTRIBUTE.tableName)
@@ -271,9 +250,7 @@ class KtorCharacterCreatorClient : CharacterCreatorClient {
         }
     }
 
-    override suspend fun getSkillsDetails(
-        skillName: String
-    ): SkillItem {
+    override suspend fun getSkillsDetails(skillName: String): SkillItem {
         return try {
             supabaseClient
                 .from(LibraryEnum.SKILL.tableName)
@@ -332,9 +309,7 @@ class KtorCharacterCreatorClient : CharacterCreatorClient {
         }
     }
 
-    override suspend fun getTalentsDetails(
-        talentName: String
-    ): TalentItem {
+    override suspend fun getTalentsDetails(talentName: String): TalentItem {
         return try {
             supabaseClient
                 .from(LibraryEnum.TALENT.tableName)
@@ -440,10 +415,7 @@ class KtorCharacterCreatorClient : CharacterCreatorClient {
         }
     }
 
-    override suspend fun getTrappingsDetails(
-        className: String,
-        careerPathName: String
-    ): ItemItem {
+    override suspend fun getTrappingsDetails(className: String, careerPathName: String): ItemItem {
         TODO("Not yet implemented")
     }
 
