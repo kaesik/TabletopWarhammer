@@ -1,18 +1,14 @@
 package com.kaesik.tabletopwarhammer.auth.presentation.register
 
 import android.widget.Toast
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Check
@@ -38,7 +34,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.kaesik.tabletopwarhammer.auth.domain.PasswordValidationState
+import com.kaesik.tabletopwarhammer.auth.domain.di.PasswordValidationState
 import com.kaesik.tabletopwarhammer.auth.presentation.components.WarhammerPasswordTextField
 import com.kaesik.tabletopwarhammer.auth.presentation.components.WarhammerTextField
 import com.kaesik.tabletopwarhammer.core.presentation.Button2
@@ -62,14 +58,10 @@ fun RegisterScreenRoot(
         }
     }
 
-    if (!state.isRegistering && state.canRegister && state.error == null) {
+    if (state.isRegistering && state.error == null) {
         LaunchedEffect(Unit) {
             keyboardController?.hide()
-            Toast.makeText(
-                context,
-                "Successfully registered",
-                Toast.LENGTH_LONG
-            ).show()
+            Toast.makeText(context, "Successfully registered", Toast.LENGTH_LONG).show()
             onSuccessfulRegistration()
         }
     }
@@ -81,14 +73,13 @@ fun RegisterScreenRoot(
     )
 }
 
-
 @Composable
 private fun RegisterScreen(
     state: RegisterState,
     onEvent: (RegisterEvent) -> Unit,
     onSignInClick: () -> Unit
 ) {
-    Scaffold {padding ->
+    Scaffold { padding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
@@ -106,7 +97,12 @@ private fun RegisterScreen(
             }
             item {
                 val annotatedString = buildAnnotatedString {
-                    withStyle(style = SpanStyle(fontFamily = FontFamily.Cursive, color = Color.DarkGray)) {
+                    withStyle(
+                        style = SpanStyle(
+                            fontFamily = FontFamily.Cursive,
+                            color = Color.DarkGray
+                        )
+                    ) {
                         append("Already have a account.")
                         pushStringAnnotation(tag = "clickable_text", annotation = "login")
                         withStyle(

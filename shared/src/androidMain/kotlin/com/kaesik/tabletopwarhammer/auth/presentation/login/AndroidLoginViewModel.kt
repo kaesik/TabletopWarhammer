@@ -2,7 +2,7 @@ package com.kaesik.tabletopwarhammer.auth.presentation.login
 
 import androidx.lifecycle.ViewModel
 import com.kaesik.tabletopwarhammer.auth.domain.AuthClient
-import com.kaesik.tabletopwarhammer.auth.domain.UserDataValidator
+import com.kaesik.tabletopwarhammer.auth.domain.di.UserDataValidator
 
 class AndroidLoginViewModel(
     private val userDataValidator: UserDataValidator,

@@ -104,7 +104,7 @@ fun App() {
                     },
                     onSuccessfulRegistration = {
                         navController.navigate(
-                            Route.MainGraph
+                            Route.Login
                         )
                     },
                 )
@@ -131,7 +131,12 @@ fun App() {
                         navController.navigate(
                             Route.CharacterCreatorGraph
                         )
-                    }
+                    },
+                    onLogoutClick = {
+                        navController.navigate(
+                            Route.AuthGraph
+                        )
+                    },
                 )
             }
         }

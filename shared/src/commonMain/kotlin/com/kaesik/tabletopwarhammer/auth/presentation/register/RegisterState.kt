@@ -1,7 +1,6 @@
 package com.kaesik.tabletopwarhammer.auth.presentation.register
 
-import androidx.compose.ui.text.input.TextFieldValue
-import com.kaesik.tabletopwarhammer.auth.domain.PasswordValidationState
+import com.kaesik.tabletopwarhammer.auth.domain.di.PasswordValidationState
 
 data class RegisterState(
     val error: String? = null,

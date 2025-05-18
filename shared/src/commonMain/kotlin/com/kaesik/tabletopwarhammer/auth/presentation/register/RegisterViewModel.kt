@@ -1,10 +1,9 @@
 package com.kaesik.tabletopwarhammer.auth.presentation.register
 
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kaesik.tabletopwarhammer.auth.domain.AuthClient
-import com.kaesik.tabletopwarhammer.auth.domain.UserDataValidator
+import com.kaesik.tabletopwarhammer.auth.domain.di.UserDataValidator
 import com.kaesik.tabletopwarhammer.core.domain.util.DataError
 import com.kaesik.tabletopwarhammer.core.domain.util.Resource
 import kotlinx.coroutines.flow.MutableStateFlow

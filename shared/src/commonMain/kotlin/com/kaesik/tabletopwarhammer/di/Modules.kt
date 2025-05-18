@@ -1,10 +1,10 @@
 package com.kaesik.tabletopwarhammer.di
 
-import com.kaesik.tabletopwarhammer.auth.data.di.AuthClientImpl
+import com.kaesik.tabletopwarhammer.auth.data.AuthClientImpl
 import com.kaesik.tabletopwarhammer.auth.data.di.EmailPatternValidator
 import com.kaesik.tabletopwarhammer.auth.domain.AuthClient
-import com.kaesik.tabletopwarhammer.auth.domain.PatternValidator
-import com.kaesik.tabletopwarhammer.auth.domain.UserDataValidator
+import com.kaesik.tabletopwarhammer.auth.domain.di.PatternValidator
+import com.kaesik.tabletopwarhammer.auth.domain.di.UserDataValidator
 import com.kaesik.tabletopwarhammer.auth.presentation.intro.IntroViewModel
 import com.kaesik.tabletopwarhammer.auth.presentation.login.LoginViewModel
 import com.kaesik.tabletopwarhammer.auth.presentation.register.RegisterViewModel
@@ -31,6 +31,8 @@ import com.kaesik.tabletopwarhammer.library.domain.library.items.LibraryItem
 import com.kaesik.tabletopwarhammer.library.presentation.library_1.LibraryViewModel
 import com.kaesik.tabletopwarhammer.library.presentation.library_2list.LibraryListViewModel
 import com.kaesik.tabletopwarhammer.library.presentation.library_3item.LibraryItemViewModel
+import com.kaesik.tabletopwarhammer.menu.data.MenuClientImpl
+import com.kaesik.tabletopwarhammer.menu.domain.MenuClient
 import com.kaesik.tabletopwarhammer.menu.presentation.MenuViewModel
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
@@ -61,6 +63,7 @@ val sharedModule = module {
     viewModelOf(::RegisterViewModel)
 
     // Menu
+    single<MenuClient> { MenuClientImpl() }
     viewModelOf(::MenuViewModel)
 
     // Library

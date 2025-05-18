@@ -1,12 +1,12 @@
 package com.kaesik.tabletopwarhammer.auth.presentation.login
 
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kaesik.tabletopwarhammer.auth.domain.AuthClient
-import com.kaesik.tabletopwarhammer.auth.domain.UserDataValidator
+import com.kaesik.tabletopwarhammer.auth.domain.di.UserDataValidator
 import com.kaesik.tabletopwarhammer.core.domain.util.DataError
 import com.kaesik.tabletopwarhammer.core.domain.util.Resource
+import com.kaesik.tabletopwarhammer.core.domain.util.SessionManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -85,18 +85,22 @@ class LoginViewModel(
 
             when (result) {
                 is Resource.Error -> {
+                    println("Login Error: ${result.error}")
                     val message = when (result.error) {
                         DataError.Network.UNAUTHORIZED -> "Email or password is incorrect."
                         DataError.Network.NO_INTERNET -> "No internet connection."
                         DataError.Network.REQUEST_TIMEOUT -> "Request timed out."
                         DataError.Network.SERVER_ERROR -> "Server error occurred."
-                        else -> "Unknown error occurred."
+                        DataError.Network.CONFLICT -> "Account already exists."
+                        DataError.Network.EMAIL_NOT_CONFIRMED -> "Please confirm your email before logging in."
+                        else -> "Unknown error occurred. Please check logs."
                     }
                     _state.update { it.copy(error = message) }
                 }
 
                 is Resource.Success -> {
-                    _state.update { it.copy(error = null) }
+                    SessionManager.isLoggedIn = true
+                    _state.update { it.copy(error = null, isLoggedIn = true) }
                 }
             }
         }

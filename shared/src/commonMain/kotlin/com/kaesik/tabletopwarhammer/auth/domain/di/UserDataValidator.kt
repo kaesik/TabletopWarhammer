@@ -1,4 +1,4 @@
-package com.kaesik.tabletopwarhammer.auth.domain
+package com.kaesik.tabletopwarhammer.auth.domain.di
 
 class UserDataValidator(
     private val patternValidator: PatternValidator
@@ -22,6 +22,6 @@ class UserDataValidator(
     }
 
     companion object {
-        const val MIN_PASSWORD_LENGTH = 9
+        const val MIN_PASSWORD_LENGTH = 8
     }
 }

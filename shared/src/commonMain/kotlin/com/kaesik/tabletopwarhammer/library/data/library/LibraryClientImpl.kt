@@ -1,5 +1,6 @@
 package com.kaesik.tabletopwarhammer.library.data.library
 
+import com.kaesik.tabletopwarhammer.core.data.handleException
 import com.kaesik.tabletopwarhammer.core.data.library.LibraryEnum
 import com.kaesik.tabletopwarhammer.core.data.library.dto.AttributeDto
 import com.kaesik.tabletopwarhammer.core.data.library.dto.CareerDto
@@ -20,10 +21,10 @@ import com.kaesik.tabletopwarhammer.core.data.library.mappers.toSkillItem
 import com.kaesik.tabletopwarhammer.core.data.library.mappers.toSpeciesItem
 import com.kaesik.tabletopwarhammer.core.data.library.mappers.toTalentItem
 import com.kaesik.tabletopwarhammer.core.data.remote.SupabaseClient
+import com.kaesik.tabletopwarhammer.core.domain.util.DataError
+import com.kaesik.tabletopwarhammer.core.domain.util.DataException
 import com.kaesik.tabletopwarhammer.di.libraryList
 import com.kaesik.tabletopwarhammer.library.domain.library.LibraryClient
-import com.kaesik.tabletopwarhammer.library.domain.library.LibraryError
-import com.kaesik.tabletopwarhammer.library.domain.library.LibraryException
 import com.kaesik.tabletopwarhammer.library.domain.library.items.LibraryItem
 import io.github.jan.supabase.postgrest.from
 
@@ -105,7 +106,7 @@ class LibraryClientImpl : LibraryClient {
         return try {
             libraryList = getLibraryList(fromTable)
             libraryList.find { it.id == itemId }
-                ?: throw LibraryException(LibraryError.UNKNOWN_ERROR)
+                ?: throw DataException(DataError.Network.UNKNOWN)
         } catch (e: Exception) {
             handleException(e)
         }

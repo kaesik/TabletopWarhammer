@@ -2,16 +2,16 @@ package com.kaesik.tabletopwarhammer.auth.presentation.register
 
 import androidx.lifecycle.ViewModel
 import com.kaesik.tabletopwarhammer.auth.domain.AuthClient
-import com.kaesik.tabletopwarhammer.auth.domain.UserDataValidator
+import com.kaesik.tabletopwarhammer.auth.domain.di.UserDataValidator
 
 class AndroidRegisterViewModel(
     private val userDataValidator: UserDataValidator,
-    private val repository: AuthClient
+    private val client: AuthClient
 ) : ViewModel() {
     private val viewModel by lazy {
         RegisterViewModel(
             userDataValidator = userDataValidator,
-            client = repository
+            client = client
         )
     }
 

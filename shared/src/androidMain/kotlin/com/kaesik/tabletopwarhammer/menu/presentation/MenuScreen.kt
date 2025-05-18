@@ -1,20 +1,23 @@
 package com.kaesik.tabletopwarhammer.menu.presentation
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.kaesik.tabletopwarhammer.core.domain.util.SessionManager
 import com.kaesik.tabletopwarhammer.core.presentation.Button1
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -22,20 +25,26 @@ fun MenuScreenRoot(
     viewModel: AndroidMenuViewModel = koinViewModel(),
     onNavigateToLibraryScreen: () -> Unit,
     onNavigateToCharacterSheetScreen: () -> Unit,
-    onNavigateToCharacterCreatorScreen: () -> Unit
+    onNavigateToCharacterCreatorScreen: () -> Unit,
+    onLogoutClick: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val coroutineScope = rememberCoroutineScope()
+
     MenuScreen(
         state = state,
         onEvent = { event ->
-            when (event) {
-                is MenuEvent.NavigateToLibraryScreen -> onNavigateToLibraryScreen()
-                is MenuEvent.NavigateToCharacterSheetScreen -> onNavigateToCharacterSheetScreen()
-                is MenuEvent.NavigateToCharacterCreatorScreen -> onNavigateToCharacterCreatorScreen()
-                else -> Unit
-            }
+            coroutineScope.launch {
+                when (event) {
+                    is MenuEvent.NavigateToLibraryScreen -> onNavigateToLibraryScreen()
+                    is MenuEvent.NavigateToCharacterSheetScreen -> onNavigateToCharacterSheetScreen()
+                    is MenuEvent.NavigateToCharacterCreatorScreen -> onNavigateToCharacterCreatorScreen()
+                    is MenuEvent.OnLogoutClick -> onLogoutClick()
+                    else -> Unit
+                }
 
-            viewModel.onEvent(event)
+                viewModel.onEvent(event)
+            }
         }
     )
 }
@@ -54,30 +63,45 @@ fun MenuScreen(
                 .padding(padding)
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             item {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Text("Menu Screen")
+                Text("Menu Screen")
+            }
+            item {
+                Button1(
+                    text = "LibraryScreen",
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = { onEvent(MenuEvent.NavigateToLibraryScreen) }
+                )
+            }
+            item {
+                Button1(
+                    text = "CharacterSheetScreen",
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = { onEvent(MenuEvent.NavigateToCharacterSheetScreen) }
+                )
+            }
+            item {
+                Button1(
+                    text = "CharacterCreatorScreen",
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = { onEvent(MenuEvent.NavigateToCharacterCreatorScreen) }
+                )
+            }
+
+            if (SessionManager.isLoggedIn) {
+                item {
                     Button1(
-                        text = "LibraryScreen",
-                        onClick = { onEvent(MenuEvent.NavigateToLibraryScreen) }
-                    )
-                    Button1(
-                        text = "CharacterSheetScreen",
-                        onClick = { onEvent(MenuEvent.NavigateToCharacterSheetScreen) }
-                    )
-                    Button1(
-                        text = "CharacterCreatorScreen",
-                        onClick = { onEvent(MenuEvent.NavigateToCharacterCreatorScreen) }
+                        text = "Logout",
+                        onClick = {
+                            SessionManager.isLoggedIn = false
+                            onEvent(MenuEvent.OnLogoutClick)
+                        }
                     )
                 }
             }
         }
-
     }
 }
 

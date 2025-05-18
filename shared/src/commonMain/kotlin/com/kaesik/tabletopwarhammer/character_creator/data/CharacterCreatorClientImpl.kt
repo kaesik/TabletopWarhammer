@@ -2,6 +2,7 @@ package com.kaesik.tabletopwarhammer.character_creator.data
 
 import com.kaesik.tabletopwarhammer.character_creator.domain.CharacterCreatorClient
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.extractTalents
+import com.kaesik.tabletopwarhammer.core.data.handleException
 import com.kaesik.tabletopwarhammer.core.data.library.LibraryEnum
 import com.kaesik.tabletopwarhammer.core.data.library.dto.AttributeDto
 import com.kaesik.tabletopwarhammer.core.data.library.dto.CareerDto
@@ -28,7 +29,6 @@ import com.kaesik.tabletopwarhammer.core.domain.library.items.ItemItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.SkillItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.SpeciesItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.TalentItem
-import com.kaesik.tabletopwarhammer.library.data.library.handleException
 import io.github.jan.supabase.postgrest.from
 import kotlin.coroutines.cancellation.CancellationException
 

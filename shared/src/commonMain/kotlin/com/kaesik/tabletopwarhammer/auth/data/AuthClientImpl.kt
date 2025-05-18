@@ -1,4 +1,4 @@
-package com.kaesik.tabletopwarhammer.auth.data.di
+package com.kaesik.tabletopwarhammer.auth.data
 
 import com.kaesik.tabletopwarhammer.auth.domain.AuthClient
 import com.kaesik.tabletopwarhammer.core.data.remote.SupabaseClient
@@ -42,12 +42,21 @@ class AuthClientImpl : AuthClient {
         }
     }
 
-    private fun mapSupabaseError(e: AuthRestException): DataError.Network = when (e.statusCode) {
-        400 -> DataError.Network.CONFLICT
-        401 -> DataError.Network.UNAUTHORIZED
-        408 -> DataError.Network.REQUEST_TIMEOUT
-        429 -> DataError.Network.TOO_MANY_REQUESTS
-        500 -> DataError.Network.SERVER_ERROR
-        else -> DataError.Network.UNKNOWN
+    private fun mapSupabaseError(e: AuthRestException): DataError.Network {
+        println("Supabase Auth Error: Code=${e.statusCode}, Msg=${e.message}")
+        return when (e.statusCode) {
+            400 -> if (e.message?.contains("email not confirmed", ignoreCase = true) == true) {
+                DataError.Network.EMAIL_NOT_CONFIRMED
+            } else {
+                DataError.Network.CONFLICT
+            }
+
+            401 -> DataError.Network.UNAUTHORIZED
+            403 -> DataError.Network.EMAIL_NOT_CONFIRMED
+            408 -> DataError.Network.REQUEST_TIMEOUT
+            429 -> DataError.Network.TOO_MANY_REQUESTS
+            500 -> DataError.Network.SERVER_ERROR
+            else -> DataError.Network.UNKNOWN
+        }
     }
 }

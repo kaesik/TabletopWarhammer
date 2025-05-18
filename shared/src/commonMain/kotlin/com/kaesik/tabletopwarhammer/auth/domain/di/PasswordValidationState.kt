@@ -1,4 +1,4 @@
-package com.kaesik.tabletopwarhammer.auth.domain
+package com.kaesik.tabletopwarhammer.auth.domain.di
 
 data class PasswordValidationState(
     val hasMinimalLength: Boolean = false,
