@@ -27,7 +27,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.withStyle
@@ -98,16 +97,12 @@ private fun RegisterScreen(
             item {
                 val annotatedString = buildAnnotatedString {
                     withStyle(
-                        style = SpanStyle(
-                            fontFamily = FontFamily.Cursive,
-                            color = Color.DarkGray
-                        )
+                        style = SpanStyle(color = Color.DarkGray)
                     ) {
-                        append("Already have a account.")
+                        append("Already have a account? ")
                         pushStringAnnotation(tag = "clickable_text", annotation = "login")
                         withStyle(
                             style = SpanStyle(
-                                fontFamily = FontFamily.Cursive,
                                 fontWeight = FontWeight.SemiBold,
                                 color = MaterialTheme.colorScheme.primary
                             )

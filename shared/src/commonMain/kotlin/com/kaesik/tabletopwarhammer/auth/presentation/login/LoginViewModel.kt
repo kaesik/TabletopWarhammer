@@ -3,22 +3,26 @@ package com.kaesik.tabletopwarhammer.auth.presentation.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kaesik.tabletopwarhammer.auth.domain.AuthClient
+import com.kaesik.tabletopwarhammer.auth.domain.AuthManager
 import com.kaesik.tabletopwarhammer.auth.domain.di.UserDataValidator
 import com.kaesik.tabletopwarhammer.core.domain.util.DataError
 import com.kaesik.tabletopwarhammer.core.domain.util.Resource
 import com.kaesik.tabletopwarhammer.core.domain.util.SessionManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
     private val client: AuthClient,
+    private val authManager: AuthManager,
     private val userDataValidator: UserDataValidator,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(LoginState())
     val state = _state.asStateFlow()
+
 
     fun onEvent(event: LoginEvent) {
         when (event) {
@@ -31,6 +35,7 @@ class LoginViewModel(
                 _state.update { it.copy(error = null) }
             }
 
+            is LoginEvent.LoginWithGoogle -> loginWithGoogle()
             else -> Unit
         }
     }
@@ -106,4 +111,31 @@ class LoginViewModel(
         }
     }
 
+    private fun loginWithGoogle() {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoggingIn = true) }
+
+            authManager.loginGoogleUser().collectLatest { result ->
+                _state.update { it.copy(isLoggingIn = false) }
+
+                when (result) {
+                    is Resource.Success -> {
+                        SessionManager.isLoggedIn = true
+                        _state.update { it.copy(error = null, isLoggedIn = true) }
+                    }
+
+                    is Resource.Error -> {
+                        val message = when (result.error) {
+                            DataError.Network.NO_INTERNET -> "No internet connection. Please check your connection."
+                            DataError.Network.REQUEST_TIMEOUT -> "Request timed out. Try again."
+                            DataError.Network.UNAUTHORIZED -> "Google authentication failed. Please try again."
+                            DataError.Network.SERVER_ERROR -> "Server error occurred. Please try again later."
+                            else -> "An unexpected error occurred. Please try again."
+                        }
+                        _state.update { it.copy(error = message) }
+                    }
+                }
+            }
+        }
+    }
 }

@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kaesik.tabletopwarhammer.auth.presentation.components.WarhammerPasswordTextField
 import com.kaesik.tabletopwarhammer.auth.presentation.components.WarhammerTextField
+import com.kaesik.tabletopwarhammer.core.domain.util.SessionManager
 import com.kaesik.tabletopwarhammer.core.presentation.Button2
 import org.koin.androidx.compose.koinViewModel
 
@@ -39,6 +40,7 @@ import org.koin.androidx.compose.koinViewModel
 fun LoginScreenRoot(
     onLoginSuccess: () -> Unit,
     onSignUpClick: () -> Unit,
+    onGuestClick: () -> Unit,
     viewModel: AndroidLoginViewModel = koinViewModel()
 ) {
     val context = LocalContext.current
@@ -63,8 +65,18 @@ fun LoginScreenRoot(
 
     LoginScreen(
         state = state,
-        onEvent = { event -> viewModel.onEvent(event) },
-        onSignUpClick = onSignUpClick
+        onSignUpClick = onSignUpClick,
+        onEvent = { event ->
+            viewModel.onEvent(event)
+            when (event) {
+                LoginEvent.OnGuestClick -> {
+                    SessionManager.isLoggedIn = false
+                    onGuestClick()
+                }
+
+                else -> Unit
+            }
+        }
     )
 }
 
@@ -100,7 +112,7 @@ private fun LoginScreen(
             }
             item {
                 WarhammerTextField(
-                    value = state.email ?: "",
+                    value = state.email,
                     startIcon = Icons.Default.Email,
                     endIcon = if (state.isEmailValid) Icons.Default.Check else null,
                     hint = "example@email.com",
@@ -115,7 +127,7 @@ private fun LoginScreen(
             }
             item {
                 WarhammerPasswordTextField(
-                    value = state.password ?: "",
+                    value = state.password,
                     hint = "Password",
                     title = "Password",
                     modifier = Modifier.fillMaxWidth(),
@@ -134,6 +146,28 @@ private fun LoginScreen(
                     enabled = state.canLogin,
                     modifier = Modifier.fillMaxWidth(),
                     onClick = { onEvent(LoginEvent.OnLoginClick) }
+                )
+            }
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+            item {
+                Button2(
+                    text = "Continue as Guest",
+                    isLoading = state.isLoggingIn,
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = { onEvent(LoginEvent.OnGuestClick) }
+                )
+            }
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+            item {
+                Button2(
+                    text = "Login with Google",
+                    isLoading = state.isLoggingIn,
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = { onEvent(LoginEvent.LoginWithGoogle) }
                 )
             }
             item {

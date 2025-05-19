@@ -91,6 +91,11 @@ fun App() {
                             Route.Register
                         )
                     },
+                    onGuestClick = {
+                        navController.navigate(
+                            Route.MainGraph
+                        )
+                    },
                 )
             }
             composable<Route.Register> {

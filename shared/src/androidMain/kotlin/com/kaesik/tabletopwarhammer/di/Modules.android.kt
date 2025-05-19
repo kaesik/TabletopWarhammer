@@ -1,5 +1,6 @@
 package com.kaesik.tabletopwarhammer.di
 
+import com.kaesik.tabletopwarhammer.auth.domain.AuthManager
 import com.kaesik.tabletopwarhammer.auth.presentation.intro.AndroidIntroViewModel
 import com.kaesik.tabletopwarhammer.auth.presentation.login.AndroidLoginViewModel
 import com.kaesik.tabletopwarhammer.auth.presentation.register.AndroidRegisterViewModel
@@ -23,23 +24,20 @@ import com.kaesik.tabletopwarhammer.menu.presentation.AndroidMenuViewModel
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.okhttp.OkHttp
 import org.koin.android.ext.koin.androidApplication
+import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
-
-const val string = ""
 
 actual val platformModule: Module
     get() = module {
         single<HttpClientEngine> { OkHttp.create() }
         single { DatabaseDriverFactory(androidApplication()) }
-
         single { TabletopWarhammerDatabase(get()) }
         single<CharacterDataSource> { SqlDelightCharacterDataSource(get()) }
 
-        single { string }
-
         // Auth
+        single { AuthManager(androidContext()) }
         viewModelOf(::AndroidIntroViewModel)
         viewModelOf(::AndroidLoginViewModel)
         viewModelOf(::AndroidRegisterViewModel)
