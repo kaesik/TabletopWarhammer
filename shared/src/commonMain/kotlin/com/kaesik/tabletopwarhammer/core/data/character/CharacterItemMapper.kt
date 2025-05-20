@@ -8,7 +8,11 @@ fun CharacterEntity.toCharacterItem(): CharacterItem {
     val jsonParser = Json { ignoreUnknownKeys = true }
 
     fun parseIntList(json: String): List<Int> =
-        jsonParser.decodeFromString(json)
+        try {
+            jsonParser.decodeFromString(json)
+        } catch (_: Exception) {
+            emptyList()
+        }
 
     fun parseStringList(json: String): List<String> =
         jsonParser.decodeFromString(json)

@@ -16,7 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaesik.tabletopwarhammer.core.domain.util.SessionManager
-import com.kaesik.tabletopwarhammer.core.presentation.Button1
+import com.kaesik.tabletopwarhammer.core.presentation.WarhammerButton
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -69,35 +69,44 @@ fun MenuScreen(
                 Text("Menu Screen")
             }
             item {
-                Button1(
+                WarhammerButton(
                     text = "LibraryScreen",
                     modifier = Modifier.fillMaxWidth(),
-                    onClick = { onEvent(MenuEvent.NavigateToLibraryScreen) }
+                    onClick = { onEvent(MenuEvent.NavigateToLibraryScreen) },
+                    isLoading = state.isLoading,
+                    enabled = !state.isLoading
                 )
             }
             item {
-                Button1(
+                WarhammerButton(
                     text = "CharacterSheetScreen",
                     modifier = Modifier.fillMaxWidth(),
-                    onClick = { onEvent(MenuEvent.NavigateToCharacterSheetScreen) }
+                    onClick = { onEvent(MenuEvent.NavigateToCharacterSheetScreen) },
+                    isLoading = state.isLoading,
+                    enabled = !state.isLoading
                 )
             }
             item {
-                Button1(
+                WarhammerButton(
                     text = "CharacterCreatorScreen",
                     modifier = Modifier.fillMaxWidth(),
-                    onClick = { onEvent(MenuEvent.NavigateToCharacterCreatorScreen) }
+                    onClick = { onEvent(MenuEvent.NavigateToCharacterCreatorScreen) },
+                    isLoading = state.isLoading,
+                    enabled = !state.isLoading
                 )
             }
 
             if (SessionManager.isLoggedIn) {
                 item {
-                    Button1(
+                    WarhammerButton(
                         text = "Logout",
                         onClick = {
                             SessionManager.isLoggedIn = false
                             onEvent(MenuEvent.OnLogoutClick)
-                        }
+                        },
+                        isLoading = state.isLoading,
+                        enabled = !state.isLoading,
+                        modifier = Modifier
                     )
                 }
             }

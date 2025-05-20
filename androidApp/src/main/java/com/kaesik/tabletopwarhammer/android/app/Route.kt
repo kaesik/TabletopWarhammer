@@ -14,7 +14,7 @@ sealed interface Route {
     // AUTH
     @Serializable
     data object AuthGraph : Route
-    
+
     @Serializable
     data object Intro : Route
 
@@ -47,7 +47,12 @@ sealed interface Route {
     data object CharacterSheetGraph : Route
 
     @Serializable
-    data object CharacterSheet : Route
+    data object CharacterSheetList : Route
+
+    @Serializable
+    data class CharacterSheet(
+        val characterId: Int,
+    ) : Route
 
     // CHARACTER CREATOR
     @Serializable

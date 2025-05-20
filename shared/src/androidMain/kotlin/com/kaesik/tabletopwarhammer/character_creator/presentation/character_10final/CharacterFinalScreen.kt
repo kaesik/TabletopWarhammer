@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,11 +39,11 @@ fun CharacterFinalScreenRoot(
     characterDataSource: CharacterDataSource = getKoin().get(),
     onSaveClick: () -> Unit,
 ) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
     val creatorState by creatorViewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
-    var saveRequest by remember { mutableStateOf(false) }
     val character = creatorViewModel.state.value.character
+
+    var isSaving by remember { mutableStateOf(false) }
 
     LaunchedEffect(creatorState.message, creatorState.isError) {
         creatorState.message?.let { message ->
@@ -54,17 +55,17 @@ fun CharacterFinalScreenRoot(
         }
     }
 
-    LaunchedEffect(saveRequest) {
-        if (saveRequest) {
+    LaunchedEffect(isSaving) {
+        if (isSaving) {
             try {
-                println("DEBUG: Attempting to save character: ${character.name}")
                 characterDataSource.insertCharacter(character)
-                println("DEBUG: Character inserted into DB successfully.")
 
                 snackbarHostState.showCharacterCreatorSnackbar(
                     message = "Character saved successfully! [${character.name}]",
                     type = SnackbarType.Success
                 )
+
+                isSaving = false
                 onSaveClick()
             } catch (e: Exception) {
                 snackbarHostState.showCharacterCreatorSnackbar(
@@ -72,16 +73,18 @@ fun CharacterFinalScreenRoot(
                     type = SnackbarType.Error
                 )
             } finally {
-                saveRequest = false
+                isSaving = false
             }
         }
     }
 
     CharacterFinalScreen(
         character = character,
-        onEvent = { event ->
-            if (event is CharacterFinalEvent.OnSaveClick) {
-                saveRequest = true
+        snackbarHostState = snackbarHostState,
+        isSaving = isSaving,
+        onSaveClick = {
+            if (!isSaving) {
+                isSaving = true
             }
         }
     )
@@ -122,9 +125,15 @@ fun InfoText(label: String, value: String) {
 @Composable
 fun CharacterFinalScreen(
     character: CharacterItem,
-    onEvent: (CharacterFinalEvent) -> Unit,
+    snackbarHostState: SnackbarHostState,
+    isSaving: Boolean,
+    onSaveClick: () -> Unit,
 ) {
-    Scaffold { padding ->
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = remember { snackbarHostState })
+        }
+    ) { padding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -190,7 +199,9 @@ fun CharacterFinalScreen(
                 Spacer(modifier = Modifier.height(16.dp))
                 CharacterCreatorButton(
                     text = "Save Character",
-                    onClick = { onEvent(CharacterFinalEvent.OnSaveClick) }
+                    isLoading = isSaving,
+                    onClick = { onSaveClick() },
+                    enabled = !isSaving
                 )
             }
         }

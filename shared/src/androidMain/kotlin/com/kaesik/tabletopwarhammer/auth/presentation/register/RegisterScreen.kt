@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.sp
 import com.kaesik.tabletopwarhammer.auth.domain.di.PasswordValidationState
 import com.kaesik.tabletopwarhammer.auth.presentation.components.WarhammerPasswordTextField
 import com.kaesik.tabletopwarhammer.auth.presentation.components.WarhammerTextField
-import com.kaesik.tabletopwarhammer.core.presentation.Button2
+import com.kaesik.tabletopwarhammer.core.presentation.WarhammerButton
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -174,7 +174,7 @@ private fun RegisterScreen(
                 Spacer(modifier = Modifier.height(32.dp))
             }
             item {
-                Button2(
+                WarhammerButton(
                     text = "Register",
                     isLoading = state.isRegistering,
                     enabled = state.canRegister,

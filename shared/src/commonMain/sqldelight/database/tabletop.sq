@@ -81,6 +81,9 @@ CREATE TABLE characterEntity (
 getCharacterEntity:
 SELECT * FROM characterEntity ORDER BY id DESC;
 
+deleteCharacterEntity:
+DELETE FROM characterEntity WHERE id = ?;
+
 insertCharacterEntity:
 INSERT OR REPLACE
 INTO characterEntity (

@@ -32,8 +32,10 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.character_8te
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_8ten_question.CharacterTenQuestionsScreenRoot
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_9advancement.AndroidCharacterAdvancementViewModel
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_9advancement.CharacterAdvancementScreenRoot
-import com.kaesik.tabletopwarhammer.character_sheet.presentation.AndroidCharacterSheetViewModel
-import com.kaesik.tabletopwarhammer.character_sheet.presentation.CharacterSheetScreenRoot
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_sheet.AndroidCharacterSheetViewModel
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_sheet.CharacterSheetScreenRoot
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_sheet_list.AndroidCharacterSheetListViewModel
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_sheet_list.CharacterSheetListScreenRoot
 import com.kaesik.tabletopwarhammer.core.domain.character.CharacterDataSource
 import com.kaesik.tabletopwarhammer.library.presentation.library_1.AndroidLibraryViewModel
 import com.kaesik.tabletopwarhammer.library.presentation.library_1.LibraryScreenRoot
@@ -196,12 +198,27 @@ fun App() {
             }
         }
         navigation<Route.CharacterSheetGraph>(
-            startDestination = Route.CharacterSheet
+            startDestination = Route.CharacterSheetList
         ) {
-            composable<Route.CharacterSheet> {
+            composable<Route.CharacterSheetList> {
+                val viewModel = koinViewModel<AndroidCharacterSheetListViewModel>()
+                CharacterSheetListScreenRoot(
+                    viewModel = viewModel,
+                    onCharacterClick = {
+                        navController.navigate(
+                            Route.CharacterSheet(
+                                characterId = it.id
+                            )
+                        )
+                    }
+                )
+            }
+            composable<Route.CharacterSheet> { backstackEntry ->
                 val viewModel = koinViewModel<AndroidCharacterSheetViewModel>()
+                val characterSheetRoute: Route.CharacterSheet = backstackEntry.toRoute()
                 CharacterSheetScreenRoot(
                     viewModel = viewModel,
+                    characterId = characterSheetRoute.characterId,
                 )
             }
         }
@@ -217,7 +234,11 @@ fun App() {
                             Route.CharacterSpecies
                         )
                     },
-                    onRandomCharacterSelect = { },
+                    onRandomCharacterSelect = {
+                        navController.navigate(
+                            Route.CharacterFinal
+                        )
+                    },
                 )
             }
             composable<Route.CharacterSpecies> {
@@ -351,9 +372,11 @@ fun App() {
                     creatorViewModel = creatorViewModel,
                     characterDataSource = characterDataSource,
                     onSaveClick = {
-                        navController.navigate(
-                            Route.Menu
-                        )
+                        navController.navigate(Route.MainGraph) {
+                            popUpTo(Route.CharacterCreatorGraph) {
+                                inclusive = true
+                            }
+                        }
                     }
                 )
             }

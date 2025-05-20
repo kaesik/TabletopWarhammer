@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaesik.tabletopwarhammer.core.domain.util.SessionManager
-import com.kaesik.tabletopwarhammer.core.presentation.Button1
+import com.kaesik.tabletopwarhammer.core.presentation.WarhammerButton
 import org.koin.androidx.compose.koinViewModel
 
 
@@ -69,7 +69,7 @@ private fun IntroScreen(
                 Spacer(modifier = Modifier.height(8.dp))
             }
             item {
-                Button1(
+                WarhammerButton(
                     text = "Sign in",
                     isLoading = state.isLoading,
                     modifier = Modifier.fillMaxWidth(),
@@ -80,7 +80,7 @@ private fun IntroScreen(
                 Spacer(modifier = Modifier.height(16.dp))
             }
             item {
-                Button1(
+                WarhammerButton(
                     text = "Sign up",
                     isLoading = state.isLoading,
                     modifier = Modifier.fillMaxWidth(),
@@ -91,7 +91,7 @@ private fun IntroScreen(
                 Spacer(modifier = Modifier.height(16.dp))
             }
             item {
-                Button1(
+                WarhammerButton(
                     text = "Continue as Guest",
                     isLoading = state.isLoading,
                     modifier = Modifier.fillMaxWidth(),

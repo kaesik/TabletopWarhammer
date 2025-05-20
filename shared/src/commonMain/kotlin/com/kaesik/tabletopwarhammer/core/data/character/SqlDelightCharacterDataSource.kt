@@ -19,6 +19,13 @@ class SqlDelightCharacterDataSource(
 
     private val queries = database.tabletopQueries
 
+    override fun getAllCharacters(): List<CharacterItem> {
+        return queries
+            .getCharacterEntity()
+            .executeAsList()
+            .map { it.toCharacterItem() }
+    }
+
     override fun getCharacter(context: CoroutineContext): CommonFlow<List<CharacterItem>> {
         return queries
             .getCharacterEntity()
@@ -28,6 +35,10 @@ class SqlDelightCharacterDataSource(
                 character.map { it.toCharacterItem() }
             }
             .toCommonFlow()
+    }
+
+    override suspend fun deleteCharacter(id: Long) {
+        queries.deleteCharacterEntity(id)
     }
 
     override suspend fun insertCharacter(characterItem: CharacterItem) {

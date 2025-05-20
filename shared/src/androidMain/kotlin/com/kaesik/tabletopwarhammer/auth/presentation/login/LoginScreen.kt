@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.sp
 import com.kaesik.tabletopwarhammer.auth.presentation.components.WarhammerPasswordTextField
 import com.kaesik.tabletopwarhammer.auth.presentation.components.WarhammerTextField
 import com.kaesik.tabletopwarhammer.core.domain.util.SessionManager
-import com.kaesik.tabletopwarhammer.core.presentation.Button2
+import com.kaesik.tabletopwarhammer.core.presentation.WarhammerButton
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -140,7 +140,7 @@ private fun LoginScreen(
                 Spacer(modifier = Modifier.height(32.dp))
             }
             item {
-                Button2(
+                WarhammerButton(
                     text = "Login",
                     isLoading = state.isLoggingIn,
                     enabled = state.canLogin,
@@ -152,7 +152,7 @@ private fun LoginScreen(
                 Spacer(modifier = Modifier.height(16.dp))
             }
             item {
-                Button2(
+                WarhammerButton(
                     text = "Continue as Guest",
                     isLoading = state.isLoggingIn,
                     modifier = Modifier.fillMaxWidth(),
@@ -163,7 +163,7 @@ private fun LoginScreen(
                 Spacer(modifier = Modifier.height(16.dp))
             }
             item {
-                Button2(
+                WarhammerButton(
                     text = "Login with Google",
                     isLoading = state.isLoggingIn,
                     modifier = Modifier.fillMaxWidth(),
