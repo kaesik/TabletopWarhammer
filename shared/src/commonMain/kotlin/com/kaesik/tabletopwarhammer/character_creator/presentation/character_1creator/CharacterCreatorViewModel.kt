@@ -172,9 +172,9 @@ class CharacterCreatorViewModel : ViewModel() {
             is CharacterCreatorEvent.SetSkillsAndTalents -> {
                 _state.update { current ->
                     val updatedCharacter = current.character.copy(
-                        basicSkills = event.basicSkills,
-                        advancedSkills = event.advancedSkills,
-                        talents = event.talents,
+                        basicSkills = event.speciesBasicSkills + event.careerBasicSkills,
+                        advancedSkills = event.speciesAdvancedSkills + event.careerAdvancedSkills,
+                        talents = event.talents
                     )
                     val updated = current.copy(
                         character = updatedCharacter,

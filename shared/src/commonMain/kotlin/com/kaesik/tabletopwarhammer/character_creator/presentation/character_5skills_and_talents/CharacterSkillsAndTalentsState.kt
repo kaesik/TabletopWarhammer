@@ -23,5 +23,8 @@ data class CharacterSkillsAndTalentsState(
     val selectedTalents: List<TalentItem> = emptyList(),
     val selectedSpeciesTalents: List<TalentItem> = emptyList(),
     val selectedCareerTalents: List<TalentItem> = emptyList(),
-    val rolledTalents: Map<Pair<Int, Int>, String> = emptyMap()
+    val rolledTalents: Map<Pair<Int, Int>, String> = emptyMap(),
+
+    val careerSkillPoints: Map<String, Int> = emptyMap(),
+    val totalAllocatedPoints: Int = 0,
 )

@@ -28,9 +28,11 @@ sealed class CharacterCreatorEvent {
     ) : CharacterCreatorEvent()
 
     data class SetSkillsAndTalents(
-        val basicSkills: List<List<String>>,
-        val advancedSkills: List<List<String>>,
-        val talents: List<List<String>>,
+        val speciesBasicSkills: List<List<String>>,
+        val speciesAdvancedSkills: List<List<String>>,
+        val careerBasicSkills: List<List<String>> = emptyList(),
+        val careerAdvancedSkills: List<List<String>> = emptyList(),
+        val talents: List<List<String>>
     ) : CharacterCreatorEvent()
 
     data class SetTrappings(

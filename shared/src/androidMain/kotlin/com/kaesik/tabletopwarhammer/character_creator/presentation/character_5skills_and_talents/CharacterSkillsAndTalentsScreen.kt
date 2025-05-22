@@ -67,45 +67,99 @@ fun CharacterSkillsAndTalentsScreenRoot(
         )
     }
 
+    LaunchedEffect(state.speciesOrCareer) {
+        if (state.speciesOrCareer == SpeciesOrCareer.CAREER) {
+            if (state.careerSkillsList.isEmpty()) {
+                viewModel.onEvent(
+                    CharacterSkillsAndTalentsEvent.InitSkillsList(
+                        from = SpeciesOrCareer.CAREER,
+                        speciesName = character.species,
+                        careerPathName = character.careerPath
+                    )
+                )
+            }
+            if (state.careerTalentsList.isEmpty()) {
+                viewModel.onEvent(
+                    CharacterSkillsAndTalentsEvent.InitTalentsList(
+                        from = SpeciesOrCareer.CAREER,
+                        speciesName = character.species,
+                        careerPathName = character.careerPath
+                    )
+                )
+            }
+        }
+    }
+
     val currentSkills = when (state.speciesOrCareer) {
         SpeciesOrCareer.SPECIES -> state.skillList.getOrNull(0) ?: emptyList()
         SpeciesOrCareer.CAREER -> state.skillList.getOrNull(1) ?: emptyList()
     }
 
     fun handleSaveSkillsAndTalents(
-        viewModel: AndroidCharacterSkillsAndTalentsViewModel,
-        creatorViewModel: AndroidCharacterCreatorViewModel,
+        state: CharacterSkillsAndTalentsState,
         character: CharacterItem
     ) {
-        val currentState = viewModel.state.value
-
-        val basicSkills = currentState.selectedSkills3.map {
-            listOf(
-                it.name,
-                it.attribute.orEmpty(),
-                "3",
-                getAttributeValue(character, it.attribute.orEmpty()).toString()
+        fun toSkillRow(skill: SkillItem, bonus: Int): List<String> {
+            return listOf(
+                skill.name,
+                skill.attribute.orEmpty(),
+                bonus.toString(),
+                getAttributeValue(character, skill.attribute.orEmpty()).toString()
             )
         }
 
-        val advancedSkills = currentState.selectedSkills5.map {
-            listOf(
-                it.name,
-                it.attribute.orEmpty(),
-                "5",
-                getAttributeValue(character, it.attribute.orEmpty()).toString()
-            )
+        // 1. Pobierz species skille jako mapę (zsumujemy później)
+        val speciesMap =
+            (state.selectedSkills3.map { it to 3 } + state.selectedSkills5.map { it to 5 })
+                .groupBy({ it.first.name }, { it })
+                .mapValues { it.value.first() } // zostaje SkillItem + bonus
+
+        // 2. Career skille jako mapa: nazwa → SkillItem + bonus
+        val flatCareerSkills = state.careerSkillsList.flatten()
+        val careerMap =
+            state.careerSkillPoints.filterValues { it > 0 }.mapNotNull { (name, bonus) ->
+                flatCareerSkills.find { it.name == name }?.let { it to bonus }
+            }.groupBy({ it.first.name }, { it })
+                .mapValues { it.value.first() }
+
+        // 3. Scal species i career
+        val allSkillsMap = (speciesMap.keys + careerMap.keys).associateWith { skillName ->
+            val speciesEntry = speciesMap[skillName]
+            val careerEntry = careerMap[skillName]
+
+            val skill = speciesEntry?.first ?: careerEntry?.first!!
+            val speciesBonus = speciesEntry?.second ?: 0
+            val careerBonus = careerEntry?.second ?: 0
+            val totalBonus = speciesBonus + careerBonus
+
+            skill to totalBonus
         }
 
-        val allTalents = currentState.selectedTalents.map {
+        val careerBasicSkills = mutableListOf<List<String>>()
+        val careerAdvancedSkills = mutableListOf<List<String>>()
+
+        allSkillsMap.values.forEach { (skill, totalBonus) ->
+            if (skill.isBasic == true)
+                careerBasicSkills.add(toSkillRow(skill, totalBonus))
+            else
+                careerAdvancedSkills.add(toSkillRow(skill, totalBonus))
+        }
+
+        // 4. Talenty
+        val allTalents = state.selectedSpeciesTalents + state.selectedCareerTalents
+
+        val talents = allTalents.map {
             listOf(it.name, it.source.orEmpty(), it.page?.toString() ?: "")
         }
 
+        // 5. Zapis
         creatorViewModel.onEvent(
             CharacterCreatorEvent.SetSkillsAndTalents(
-                basicSkills = basicSkills,
-                advancedSkills = advancedSkills,
-                talents = allTalents
+                speciesBasicSkills = emptyList(), // już wszystko poszło do career*
+                speciesAdvancedSkills = emptyList(), // j.w.
+                careerBasicSkills = careerBasicSkills,
+                careerAdvancedSkills = careerAdvancedSkills,
+                talents = talents
             )
         )
     }
@@ -119,7 +173,9 @@ fun CharacterSkillsAndTalentsScreenRoot(
             when (event) {
                 is CharacterSkillsAndTalentsEvent.OnSkillChecked3 -> {
                     if (event.isChecked && state.selectedSkills3.size >= 3) {
-                        creatorViewModel.onEvent(CharacterCreatorEvent.ShowMessage("You can only select 3 skills +3!"))
+                        creatorViewModel.onEvent(
+                            CharacterCreatorEvent.ShowMessage("You can only select 3 skills +3!")
+                        )
                     } else {
                         viewModel.onEvent(event)
                     }
@@ -127,43 +183,26 @@ fun CharacterSkillsAndTalentsScreenRoot(
 
                 is CharacterSkillsAndTalentsEvent.OnSkillChecked5 -> {
                     if (event.isChecked && state.selectedSkills5.size >= 3) {
-                        creatorViewModel.onEvent(CharacterCreatorEvent.ShowMessage("You can only select 3 skills +5!"))
+                        creatorViewModel.onEvent(
+                            CharacterCreatorEvent.ShowMessage("You can only select 3 skills +5!")
+                        )
                     } else {
                         viewModel.onEvent(event)
                     }
                 }
 
                 is CharacterSkillsAndTalentsEvent.OnSaveSkillsAndTalents -> {
-                    handleSaveSkillsAndTalents(viewModel, creatorViewModel, character)
+                    handleSaveSkillsAndTalents(state, character)
                 }
 
                 is CharacterSkillsAndTalentsEvent.OnNextClick -> {
-                    val basicSkills = state.selectedSkills3.map {
-                        listOf(
-                            it.name,
-                            it.attribute.orEmpty(),
-                            "3",
-                            getAttributeValue(character, it.attribute.orEmpty()).toString()
+                    if (state.totalAllocatedPoints != 40) {
+                        creatorViewModel.onEvent(
+                            CharacterCreatorEvent.ShowMessage("You must allocate exactly 40 points to career skills!")
                         )
+                        return@CharacterSkillsAndTalentsScreen
                     }
-                    val advancedSkills = state.selectedSkills5.map {
-                        listOf(
-                            it.name,
-                            it.attribute.orEmpty(),
-                            "5",
-                            getAttributeValue(character, it.attribute.orEmpty()).toString()
-                        )
-                    }
-                    val allTalents = state.selectedTalents.map {
-                        listOf(it.name, it.source.orEmpty(), it.page?.toString() ?: "")
-                    }
-                    creatorViewModel.onEvent(
-                        CharacterCreatorEvent.SetSkillsAndTalents(
-                            basicSkills,
-                            advancedSkills,
-                            allTalents
-                        )
-                    )
+                    handleSaveSkillsAndTalents(state, character)
                     onNextClick()
                 }
 
@@ -172,7 +211,6 @@ fun CharacterSkillsAndTalentsScreenRoot(
         }
     )
 }
-
 
 private fun getAttributeValue(character: CharacterItem, attributeName: String): Int {
     return when (attributeName) {
@@ -215,11 +253,21 @@ fun CharacterSkillsAndTalentsScreen(
                     skills = skills,
                     selectedSkills3 = state.selectedSkills3,
                     selectedSkills5 = state.selectedSkills5,
+                    speciesOrCareer = state.speciesOrCareer,
+                    careerSkillPoints = state.careerSkillPoints,
                     onSkillChecked3 = { skill, isChecked ->
                         onEvent(CharacterSkillsAndTalentsEvent.OnSkillChecked3(skill, isChecked))
                     },
                     onSkillChecked5 = { skill, isChecked ->
                         onEvent(CharacterSkillsAndTalentsEvent.OnSkillChecked5(skill, isChecked))
+                    },
+                    onCareerPointsChanged = { skill, newValue ->
+                        onEvent(
+                            CharacterSkillsAndTalentsEvent.OnCareerSkillValueChanged(
+                                skill,
+                                newValue
+                            )
+                        )
                     }
                 )
             }
@@ -279,7 +327,6 @@ fun CharacterSkillsAndTalentsScreen(
         }
     }
 }
-
 
 @Preview
 @Composable

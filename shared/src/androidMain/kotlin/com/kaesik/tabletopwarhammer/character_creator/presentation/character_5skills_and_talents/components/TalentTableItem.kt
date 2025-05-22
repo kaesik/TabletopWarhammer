@@ -1,3 +1,5 @@
+package com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -13,7 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.SourceLabelBadge
 import com.kaesik.tabletopwarhammer.core.domain.library.items.TalentItem
 
 @Composable

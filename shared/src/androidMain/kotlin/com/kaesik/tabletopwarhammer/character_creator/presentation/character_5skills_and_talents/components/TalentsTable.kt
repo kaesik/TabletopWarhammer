@@ -5,6 +5,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.TalentTableItem
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.TalentTableRadioItem
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.TalentTableRandomItem
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.rollRandomTalent
 import com.kaesik.tabletopwarhammer.core.domain.library.items.TalentItem

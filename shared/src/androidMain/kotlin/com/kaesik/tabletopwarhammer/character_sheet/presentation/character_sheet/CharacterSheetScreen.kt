@@ -2,9 +2,7 @@ package com.kaesik.tabletopwarhammer.character_sheet.presentation.character_shee
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.CircularProgressIndicator
@@ -20,6 +18,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaesik.tabletopwarhammer.core.domain.character.CharacterItem
+import com.kaesik.tabletopwarhammer.core.domain.character.getAttributeValue
+import com.kaesik.tabletopwarhammer.core.presentation.InfoText
+import com.kaesik.tabletopwarhammer.core.presentation.SectionTitle
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -52,7 +53,6 @@ fun CharacterSheetScreenRoot(
     }
 }
 
-
 @Composable
 fun CharacterSheetScreen(character: CharacterItem) {
     Scaffold { padding ->
@@ -61,70 +61,133 @@ fun CharacterSheetScreen(character: CharacterItem) {
                 .fillMaxSize()
                 .padding(padding)
                 .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            item {
-                Text(
-                    "Imię: ${character.name}",
-                    style = MaterialTheme.typography.titleLarge
-                )
-                Text(
-                    "Gatunek: ${character.species}",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Text(
-                    "Klasa: ${character.cLass}",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Text(
-                    "Kariera: ${character.career}",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Text(
-                    "Poziom kariery: ${character.careerLevel}",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Text(
-                    "Ścieżka kariery: ${character.careerPath}",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Text(
-                    "Status: ${character.status}",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Text(
-                    "Wiek: ${character.age}",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Text(
-                    "Wzrost: ${character.height}",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Text(
-                    "Włosy: ${character.hair}",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Text(
-                    "Oczy: ${character.eyes}",
-                    style = MaterialTheme.typography.bodyLarge
-                )
+            // General Info
+            item { SectionTitle("Dane ogólne") }
+            item { InfoText("Imię", character.name) }
+            item { InfoText("Gatunek", character.species) }
+            item { InfoText("Klasa", character.cLass) }
+            item { InfoText("Kariera", character.career) }
+            item { InfoText("Poziom kariery", character.careerLevel) }
+            item { InfoText("Ścieżka kariery", character.careerPath) }
+            item { InfoText("Status", character.status) }
+            item { InfoText("Wiek", character.age) }
+            item { InfoText("Wzrost", character.height) }
+            item { InfoText("Włosy", character.hair) }
+            item { InfoText("Oczy", character.eyes) }
+
+            // Attributes
+            item { SectionTitle("Atrybuty") }
+            item { InfoText("WW", character.weaponSkill.joinToString("/")) }
+            item { InfoText("US", character.ballisticSkill.joinToString("/")) }
+            item { InfoText("S", character.strength.joinToString("/")) }
+            item { InfoText("Wt", character.toughness.joinToString("/")) }
+            item { InfoText("I", character.initiative.joinToString("/")) }
+            item { InfoText("Zw", character.agility.joinToString("/")) }
+            item { InfoText("Zr", character.dexterity.joinToString("/")) }
+            item { InfoText("Int", character.intelligence.joinToString("/")) }
+            item { InfoText("SW", character.willPower.joinToString("/")) }
+            item { InfoText("Ogd", character.fellowship.joinToString("/")) }
+
+            // Fate and Resolve
+            item { SectionTitle("Punkty i motywacja") }
+            item { InfoText("Los", character.fate.toString()) }
+            item { InfoText("Szczęście", character.fortune.toString()) }
+            item { InfoText("Odporność", character.resilience.toString()) }
+            item { InfoText("Zdecydowanie", character.resolve.toString()) }
+            item { InfoText("Motywacja", character.motivation) }
+
+            // Experience
+            item { SectionTitle("Doświadczenie") }
+            item { InfoText("Obecne / Wydane / Łącznie", character.experience.joinToString(" / ")) }
+
+            // Movement
+            item { SectionTitle("Ruch") }
+            item { InfoText("Ruch podstawowy", character.movement.toString()) }
+            item { InfoText("Marsz", character.walk.toString()) }
+            item { InfoText("Bieg", character.run.toString()) }
+
+            // Skills
+            item { SectionTitle("Umiejętności podstawowe") }
+            character.basicSkills.groupBy { it[0] }.forEach { (name, entries) ->
+                val bonus = entries.sumOf { it[2].toIntOrNull() ?: 0 }
+                val attr = entries.firstOrNull()?.get(1) ?: ""
+                val base = getAttributeValue(character, attr)
+                item { InfoText("$name ($attr)", "$bonus / $base / ${bonus + base}") }
             }
 
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-                Text("Atrybuty", style = MaterialTheme.typography.titleMedium)
+            item { SectionTitle("Umiejętności zaawansowane") }
+            character.advancedSkills.groupBy { it[0] }.forEach { (name, entries) ->
+                val bonus = entries.sumOf { it[2].toIntOrNull() ?: 0 }
+                val attr = entries.firstOrNull()?.get(1) ?: ""
+                val base = getAttributeValue(character, attr)
+                item { InfoText("$name ($attr)", "$bonus / $base / ${bonus + base}") }
             }
 
-            item { Text("WW: ${character.weaponSkill.joinToString("/")}") }
-            item { Text("US: ${character.ballisticSkill.joinToString("/")}") }
-            item { Text("S: ${character.strength.joinToString("/")}") }
-            item { Text("Wt: ${character.toughness.joinToString("/")}") }
-            item { Text("I: ${character.initiative.joinToString("/")}") }
-            item { Text("Zw: ${character.agility.joinToString("/")}") }
-            item { Text("Zr: ${character.dexterity.joinToString("/")}") }
-            item { Text("Int: ${character.intelligence.joinToString("/")}") }
-            item { Text("SW: ${character.willPower.joinToString("/")}") }
-            item { Text("Ogd: ${character.fellowship.joinToString("/")}") }
+            // Talents
+            item { SectionTitle("Talenty") }
+            character.talents.groupBy { it[0] }.forEach { (name, entries) ->
+                val count = entries.size
+                item { InfoText(name, "$count") }
+            }
+
+            // Trappings
+            if (character.trappings.isNotEmpty()) {
+                item { SectionTitle("Wyposażenie") }
+                character.trappings.forEach { trap ->
+                    item { InfoText("-", trap) }
+                }
+            }
+
+            // Wealth
+            item { SectionTitle("Majątek") }
+            item { InfoText("Miedziaki", character.wealth.getOrNull(0)?.toString() ?: "0") }
+            item { InfoText("Srebrniki", character.wealth.getOrNull(1)?.toString() ?: "0") }
+            item { InfoText("Złoto", character.wealth.getOrNull(2)?.toString() ?: "0") }
+
+            // Party Info
+            if (character.partyName.isNotBlank()) {
+                item { SectionTitle("Drużyna") }
+                item { InfoText("Nazwa", character.partyName) }
+                item { InfoText("Ambicja (krótkoterminowa)", character.partyAmbitionShortTerm) }
+                item { InfoText("Ambicja (długoterminowa)", character.partyAmbitionLongTerm) }
+                character.partyMembers.forEachIndexed { index, member ->
+                    item { InfoText("Członek ${index + 1}", member) }
+                }
+            }
+
+            // Psychology & Mutations
+            if (character.psychology.isNotEmpty()) {
+                item { SectionTitle("Psychika") }
+                character.psychology.forEach { item { InfoText("-", it) } }
+            }
+            if (character.mutations.isNotEmpty()) {
+                item { SectionTitle("Mutacje") }
+                character.mutations.forEach { item { InfoText("-", it) } }
+            }
+
+            // Spells
+            if (character.spells.isNotEmpty()) {
+                item { SectionTitle("Zaklęcia") }
+                character.spells.forEach { spell ->
+                    val name = spell.getOrNull(0) ?: "?"
+                    val range = spell.getOrNull(2) ?: ""
+                    val effect = spell.getOrNull(4) ?: ""
+                    item { InfoText(name, "Zasięg: $range | Efekt: $effect") }
+                }
+            }
+
+            // Prayers
+            if (character.prayers.isNotEmpty()) {
+                item { SectionTitle("Modlitwy") }
+                character.prayers.forEach { prayer ->
+                    val name = prayer.getOrNull(0) ?: "?"
+                    val range = prayer.getOrNull(2) ?: ""
+                    val effect = prayer.getOrNull(4) ?: ""
+                    item { InfoText(name, "Zasięg: $range | Efekt: $effect") }
+                }
+            }
         }
     }
 }

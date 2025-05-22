@@ -65,6 +65,17 @@ class CharacterSkillsAndTalentsViewModel(
 
             is CharacterSkillsAndTalentsEvent.OnSpeciesOrCareerClick -> toggleSpeciesOrCareer()
 
+            is CharacterSkillsAndTalentsEvent.OnCareerSkillValueChanged -> {
+                val newMap = _state.value.careerSkillPoints.toMutableMap()
+                newMap[event.skill.name] = event.newValue
+                val total = newMap.values.sum()
+                if (event.newValue in 0..10 && total <= 40) {
+                    _state.update {
+                        it.copy(careerSkillPoints = newMap, totalAllocatedPoints = total)
+                    }
+                }
+            }
+
             else -> Unit
         }
     }

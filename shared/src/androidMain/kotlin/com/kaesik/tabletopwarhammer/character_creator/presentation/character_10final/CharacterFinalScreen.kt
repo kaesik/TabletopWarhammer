@@ -1,17 +1,14 @@
 package com.kaesik.tabletopwarhammer.character_creator.presentation.character_10final
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -29,6 +26,9 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.components.Sn
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.showCharacterCreatorSnackbar
 import com.kaesik.tabletopwarhammer.core.domain.character.CharacterDataSource
 import com.kaesik.tabletopwarhammer.core.domain.character.CharacterItem
+import com.kaesik.tabletopwarhammer.core.domain.character.getAttributeValue
+import com.kaesik.tabletopwarhammer.core.presentation.InfoText
+import com.kaesik.tabletopwarhammer.core.presentation.SectionTitle
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.getKoin
 
@@ -65,8 +65,8 @@ fun CharacterFinalScreenRoot(
                     type = SnackbarType.Success
                 )
 
-                isSaving = false
                 onSaveClick()
+                isSaving = false
             } catch (e: Exception) {
                 snackbarHostState.showCharacterCreatorSnackbar(
                     message = "Error saving character: ${e.localizedMessage}",
@@ -88,38 +88,6 @@ fun CharacterFinalScreenRoot(
             }
         }
     )
-}
-
-@Composable
-fun SectionTitle(title: String) {
-    Text(
-        text = title,
-        style = MaterialTheme.typography.titleMedium,
-        color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.padding(vertical = 8.dp)
-    )
-}
-
-@Composable
-fun InfoText(label: String, value: String) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(vertical = 2.dp)
-    ) {
-        Text(
-            text = "$label:",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.weight(1f)
-        )
-        Text(
-            text = value,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.weight(1f)
-        )
-    }
 }
 
 @Composable
@@ -173,16 +141,47 @@ fun CharacterFinalScreen(
             item { InfoText("Resilience", character.resilience.toString()) }
             item { InfoText("Resolve", character.resolve.toString()) }
 
+            // Basic Skills
             item { SectionTitle("Skills - Basic") }
-            items(character.basicSkills.size) { index ->
-                val skill = character.basicSkills[index]
-                InfoText(skill[0], "+${skill[2]} (${skill[1]}: ${skill[3]})")
+
+            val groupedBasic = character.basicSkills.groupBy { it[0] }
+
+            groupedBasic.forEach { (name, entries) ->
+                val attribute = entries.firstOrNull()?.get(1).orEmpty()
+                val base = getAttributeValue(character, attribute)
+                val bonus = entries.sumOf { it[2].toIntOrNull() ?: 0 }
+                val total = base + bonus
+
+                item {
+                    InfoText(name, "$bonus / $base / $total")
+                }
             }
 
+            // Advanced Skills
             item { SectionTitle("Skills - Advanced") }
-            items(character.advancedSkills.size) { index ->
-                val skill = character.advancedSkills[index]
-                InfoText(skill[0], "+${skill[2]} (${skill[1]}: ${skill[3]})")
+
+            val groupedAdvanced = character.advancedSkills.groupBy { it[0] }
+
+            groupedAdvanced.forEach { (name, entries) ->
+                val attribute = entries.firstOrNull()?.get(1).orEmpty()
+                val base = getAttributeValue(character, attribute)
+                val bonus = entries.sumOf { it[2].toIntOrNull() ?: 0 }
+                val total = base + bonus
+
+                item {
+                    InfoText(name, "$bonus / $base / $total")
+                }
+            }
+
+            item { SectionTitle("Talents") }
+
+            val groupedTalents = character.talents.groupBy { it[0] }
+
+            groupedTalents.forEach { (name, entries) ->
+                val count = entries.size
+                item {
+                    InfoText(name, "$count")
+                }
             }
 
             item { SectionTitle("Trappings") }

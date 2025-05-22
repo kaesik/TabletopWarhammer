@@ -43,6 +43,11 @@ sealed class CharacterSkillsAndTalentsEvent {
         val rolledName: String
     ) : CharacterSkillsAndTalentsEvent()
 
+    data class OnCareerSkillValueChanged(
+        val skill: SkillItem,
+        val newValue: Int
+    ) : CharacterSkillsAndTalentsEvent()
+
     data object OnSaveSkillsAndTalents : CharacterSkillsAndTalentsEvent()
     data object OnSpeciesOrCareerClick : CharacterSkillsAndTalentsEvent()
     data object OnNextClick : CharacterSkillsAndTalentsEvent()
