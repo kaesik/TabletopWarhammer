@@ -1,4 +1,4 @@
-package com.kaesik.tabletopwarhammer.core.presentation
+package com.kaesik.tabletopwarhammer.core.presentation.components
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme

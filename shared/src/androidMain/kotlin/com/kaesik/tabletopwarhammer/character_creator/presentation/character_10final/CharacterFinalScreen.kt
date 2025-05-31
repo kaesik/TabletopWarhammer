@@ -27,8 +27,8 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.components.sh
 import com.kaesik.tabletopwarhammer.core.domain.character.CharacterDataSource
 import com.kaesik.tabletopwarhammer.core.domain.character.CharacterItem
 import com.kaesik.tabletopwarhammer.core.domain.character.getAttributeValue
-import com.kaesik.tabletopwarhammer.core.presentation.InfoText
-import com.kaesik.tabletopwarhammer.core.presentation.SectionTitle
+import com.kaesik.tabletopwarhammer.core.presentation.components.InfoText
+import com.kaesik.tabletopwarhammer.core.presentation.components.SectionTitle
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.getKoin
 

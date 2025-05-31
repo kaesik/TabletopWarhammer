@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.sp
 import com.kaesik.tabletopwarhammer.auth.domain.di.PasswordValidationState
 import com.kaesik.tabletopwarhammer.auth.presentation.components.WarhammerPasswordTextField
 import com.kaesik.tabletopwarhammer.auth.presentation.components.WarhammerTextField
-import com.kaesik.tabletopwarhammer.core.presentation.WarhammerButton
+import com.kaesik.tabletopwarhammer.core.presentation.components.WarhammerButton
 import org.koin.androidx.compose.koinViewModel
 
 @Composable

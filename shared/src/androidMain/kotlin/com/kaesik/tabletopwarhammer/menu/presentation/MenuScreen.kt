@@ -16,7 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaesik.tabletopwarhammer.core.domain.util.SessionManager
-import com.kaesik.tabletopwarhammer.core.presentation.WarhammerButton
+import com.kaesik.tabletopwarhammer.core.presentation.components.WarhammerButton
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 

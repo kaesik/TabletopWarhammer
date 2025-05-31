@@ -19,8 +19,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaesik.tabletopwarhammer.core.domain.character.CharacterItem
 import com.kaesik.tabletopwarhammer.core.domain.character.getAttributeValue
-import com.kaesik.tabletopwarhammer.core.presentation.InfoText
-import com.kaesik.tabletopwarhammer.core.presentation.SectionTitle
+import com.kaesik.tabletopwarhammer.core.presentation.components.InfoText
+import com.kaesik.tabletopwarhammer.core.presentation.components.SectionTitle
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -64,52 +64,52 @@ fun CharacterSheetScreen(character: CharacterItem) {
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // General Info
-            item { SectionTitle("Dane ogólne") }
-            item { InfoText("Imię", character.name) }
-            item { InfoText("Gatunek", character.species) }
-            item { InfoText("Klasa", character.cLass) }
-            item { InfoText("Kariera", character.career) }
-            item { InfoText("Poziom kariery", character.careerLevel) }
-            item { InfoText("Ścieżka kariery", character.careerPath) }
+            item { SectionTitle("General Information") }
+            item { InfoText("Name", character.name) }
+            item { InfoText("Species", character.species) }
+            item { InfoText("Class", character.cLass) }
+            item { InfoText("Career", character.career) }
+            item { InfoText("Career Level", character.careerLevel) }
+            item { InfoText("Career Path", character.careerPath) }
             item { InfoText("Status", character.status) }
-            item { InfoText("Wiek", character.age) }
-            item { InfoText("Wzrost", character.height) }
-            item { InfoText("Włosy", character.hair) }
-            item { InfoText("Oczy", character.eyes) }
+            item { InfoText("Age", character.age) }
+            item { InfoText("Height", character.height) }
+            item { InfoText("Hair", character.hair) }
+            item { InfoText("Eyes", character.eyes) }
 
             // Attributes
-            item { SectionTitle("Atrybuty") }
-            item { InfoText("WW", character.weaponSkill.joinToString("/")) }
-            item { InfoText("US", character.ballisticSkill.joinToString("/")) }
-            item { InfoText("S", character.strength.joinToString("/")) }
-            item { InfoText("Wt", character.toughness.joinToString("/")) }
-            item { InfoText("I", character.initiative.joinToString("/")) }
-            item { InfoText("Zw", character.agility.joinToString("/")) }
-            item { InfoText("Zr", character.dexterity.joinToString("/")) }
-            item { InfoText("Int", character.intelligence.joinToString("/")) }
-            item { InfoText("SW", character.willPower.joinToString("/")) }
-            item { InfoText("Ogd", character.fellowship.joinToString("/")) }
+            item { SectionTitle("Attributes") }
+            item { InfoText("Weapon Skill", character.weaponSkill.joinToString("/")) }
+            item { InfoText("Ballistic Skill", character.ballisticSkill.joinToString("/")) }
+            item { InfoText("Strength", character.strength.joinToString("/")) }
+            item { InfoText("Toughness", character.toughness.joinToString("/")) }
+            item { InfoText("Initiative", character.initiative.joinToString("/")) }
+            item { InfoText("Agility", character.agility.joinToString("/")) }
+            item { InfoText("Dexterity", character.dexterity.joinToString("/")) }
+            item { InfoText("Intelligence", character.intelligence.joinToString("/")) }
+            item { InfoText("Willpower", character.willPower.joinToString("/")) }
+            item { InfoText("Fellowship", character.fellowship.joinToString("/")) }
 
             // Fate and Resolve
-            item { SectionTitle("Punkty i motywacja") }
-            item { InfoText("Los", character.fate.toString()) }
-            item { InfoText("Szczęście", character.fortune.toString()) }
-            item { InfoText("Odporność", character.resilience.toString()) }
-            item { InfoText("Zdecydowanie", character.resolve.toString()) }
-            item { InfoText("Motywacja", character.motivation) }
+            item { SectionTitle("Points and Motivation") }
+            item { InfoText("Fate", character.fate.toString()) }
+            item { InfoText("Fortune", character.fortune.toString()) }
+            item { InfoText("Resilience", character.resilience.toString()) }
+            item { InfoText("Resolve", character.resolve.toString()) }
+            item { InfoText("Motivation", character.motivation) }
 
             // Experience
-            item { SectionTitle("Doświadczenie") }
-            item { InfoText("Obecne / Wydane / Łącznie", character.experience.joinToString(" / ")) }
+            item { SectionTitle("Experience") }
+            item { InfoText("Current / Spent / Total", character.experience.joinToString(" / ")) }
 
             // Movement
-            item { SectionTitle("Ruch") }
-            item { InfoText("Ruch podstawowy", character.movement.toString()) }
-            item { InfoText("Marsz", character.walk.toString()) }
-            item { InfoText("Bieg", character.run.toString()) }
+            item { SectionTitle("Movement") }
+            item { InfoText("Base", character.movement.toString()) }
+            item { InfoText("Walk", character.walk.toString()) }
+            item { InfoText("Run", character.run.toString()) }
 
             // Skills
-            item { SectionTitle("Umiejętności podstawowe") }
+            item { SectionTitle("Basic Skills") }
             character.basicSkills.groupBy { it[0] }.forEach { (name, entries) ->
                 val bonus = entries.sumOf { it[2].toIntOrNull() ?: 0 }
                 val attr = entries.firstOrNull()?.get(1) ?: ""
@@ -117,7 +117,7 @@ fun CharacterSheetScreen(character: CharacterItem) {
                 item { InfoText("$name ($attr)", "$bonus / $base / ${bonus + base}") }
             }
 
-            item { SectionTitle("Umiejętności zaawansowane") }
+            item { SectionTitle("Advanced Skills") }
             character.advancedSkills.groupBy { it[0] }.forEach { (name, entries) ->
                 val bonus = entries.sumOf { it[2].toIntOrNull() ?: 0 }
                 val attr = entries.firstOrNull()?.get(1) ?: ""
@@ -126,7 +126,7 @@ fun CharacterSheetScreen(character: CharacterItem) {
             }
 
             // Talents
-            item { SectionTitle("Talenty") }
+            item { SectionTitle("Talents") }
             character.talents.groupBy { it[0] }.forEach { (name, entries) ->
                 val count = entries.size
                 item { InfoText(name, "$count") }
@@ -134,58 +134,58 @@ fun CharacterSheetScreen(character: CharacterItem) {
 
             // Trappings
             if (character.trappings.isNotEmpty()) {
-                item { SectionTitle("Wyposażenie") }
+                item { SectionTitle("Trappings") }
                 character.trappings.forEach { trap ->
                     item { InfoText("-", trap) }
                 }
             }
 
             // Wealth
-            item { SectionTitle("Majątek") }
-            item { InfoText("Miedziaki", character.wealth.getOrNull(0)?.toString() ?: "0") }
-            item { InfoText("Srebrniki", character.wealth.getOrNull(1)?.toString() ?: "0") }
-            item { InfoText("Złoto", character.wealth.getOrNull(2)?.toString() ?: "0") }
+            item { SectionTitle("Wealth") }
+            item { InfoText("Brass", character.wealth.getOrNull(0)?.toString() ?: "0") }
+            item { InfoText("Silver", character.wealth.getOrNull(1)?.toString() ?: "0") }
+            item { InfoText("Gold", character.wealth.getOrNull(2)?.toString() ?: "0") }
 
             // Party Info
             if (character.partyName.isNotBlank()) {
-                item { SectionTitle("Drużyna") }
-                item { InfoText("Nazwa", character.partyName) }
-                item { InfoText("Ambicja (krótkoterminowa)", character.partyAmbitionShortTerm) }
-                item { InfoText("Ambicja (długoterminowa)", character.partyAmbitionLongTerm) }
+                item { SectionTitle("Party") }
+                item { InfoText("Name", character.partyName) }
+                item { InfoText("Short-Term Ambition", character.partyAmbitionShortTerm) }
+                item { InfoText("Long-Term Ambition", character.partyAmbitionLongTerm) }
                 character.partyMembers.forEachIndexed { index, member ->
-                    item { InfoText("Członek ${index + 1}", member) }
+                    item { InfoText("Member ${index + 1}", member) }
                 }
             }
 
             // Psychology & Mutations
             if (character.psychology.isNotEmpty()) {
-                item { SectionTitle("Psychika") }
+                item { SectionTitle("Psychology") }
                 character.psychology.forEach { item { InfoText("-", it) } }
             }
             if (character.mutations.isNotEmpty()) {
-                item { SectionTitle("Mutacje") }
+                item { SectionTitle("Mutations") }
                 character.mutations.forEach { item { InfoText("-", it) } }
             }
 
             // Spells
             if (character.spells.isNotEmpty()) {
-                item { SectionTitle("Zaklęcia") }
+                item { SectionTitle("Spells") }
                 character.spells.forEach { spell ->
                     val name = spell.getOrNull(0) ?: "?"
                     val range = spell.getOrNull(2) ?: ""
                     val effect = spell.getOrNull(4) ?: ""
-                    item { InfoText(name, "Zasięg: $range | Efekt: $effect") }
+                    item { InfoText(name, "Range: $range | Effect: $effect") }
                 }
             }
 
             // Prayers
             if (character.prayers.isNotEmpty()) {
-                item { SectionTitle("Modlitwy") }
+                item { SectionTitle("Prayers") }
                 character.prayers.forEach { prayer ->
                     val name = prayer.getOrNull(0) ?: "?"
                     val range = prayer.getOrNull(2) ?: ""
                     val effect = prayer.getOrNull(4) ?: ""
-                    item { InfoText(name, "Zasięg: $range | Efekt: $effect") }
+                    item { InfoText(name, "Range: $range | Effect: $effect") }
                 }
             }
         }
