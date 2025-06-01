@@ -1,4 +1,4 @@
-package com.kaesik.tabletopwarhammer.character_sheet.presentation.character_sheet_list
+package com.kaesik.tabletopwarhammer.character_sheet.presentation.character_1sheet_list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

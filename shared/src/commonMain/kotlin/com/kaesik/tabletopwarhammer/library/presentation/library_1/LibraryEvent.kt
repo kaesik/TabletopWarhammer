@@ -4,4 +4,5 @@ import com.kaesik.tabletopwarhammer.core.data.library.LibraryEnum
 
 sealed class LibraryEvent {
     data class OnLibraryListSelect(val fromTable: LibraryEnum) : LibraryEvent()
+    data object OnBackClick : LibraryEvent()
 }

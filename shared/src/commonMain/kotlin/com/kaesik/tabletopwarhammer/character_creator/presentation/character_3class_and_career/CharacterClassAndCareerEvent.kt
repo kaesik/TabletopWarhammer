@@ -20,4 +20,5 @@ sealed class CharacterClassAndCareerEvent {
     data object SetHasRolledClassAndCareer : CharacterClassAndCareerEvent()
 
     data object OnNextClick : CharacterClassAndCareerEvent()
+    data object OnBackClick : CharacterClassAndCareerEvent()
 }

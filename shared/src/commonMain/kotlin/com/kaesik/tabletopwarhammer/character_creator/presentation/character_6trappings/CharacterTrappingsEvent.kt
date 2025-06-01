@@ -12,4 +12,5 @@ sealed class CharacterTrappingsEvent {
     data class InitWealthList(val careerPathName: String) : CharacterTrappingsEvent()
 
     data object OnNextClick : CharacterTrappingsEvent()
+    data object OnBackClick : CharacterTrappingsEvent()
 }

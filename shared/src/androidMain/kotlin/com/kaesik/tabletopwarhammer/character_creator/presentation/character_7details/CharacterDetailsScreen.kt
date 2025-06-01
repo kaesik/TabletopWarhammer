@@ -21,6 +21,7 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.character_7de
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_7details.components.generateRandomHeight
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorButton
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorTitle
+import com.kaesik.tabletopwarhammer.core.presentation.MainScaffold
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.getKoin
 
@@ -29,6 +30,7 @@ fun CharacterDetailsScreenRoot(
     viewModel: AndroidCharacterDetailsViewModel = koinViewModel(),
     creatorViewModel: AndroidCharacterCreatorViewModel = getKoin().get(),
     onNextClick: () -> Unit,
+    onBackClick: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val character = creatorViewModel.state.value.character
@@ -76,6 +78,8 @@ fun CharacterDetailsScreenRoot(
                     onNextClick()
                 }
 
+                is CharacterDetailsEvent.OnBackClick -> onBackClick()
+
                 else -> Unit
             }
 
@@ -92,238 +96,241 @@ fun CharacterDetailsScreen(
 ) {
     val race = species.uppercase()
 
-    Scaffold { padding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            item {
-                CharacterCreatorTitle("Character Creator Screen")
-            }
+    MainScaffold(
+        title = "Details",
+        onBackClick = { onEvent(CharacterDetailsEvent.OnBackClick) },
+        content = {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                item {
+                    CharacterCreatorTitle("Character Creator Screen")
+                }
 
-            when (race) {
-                "HALFLING" -> {
-                    item {
-                        DetailInputRandom(
-                            label = "Name",
-                            value = state.name,
-                            onValueChange = { onEvent(CharacterDetailsEvent.OnNameChanged(it)) },
-                            onRandomClick = {
-                                onEvent(
-                                    CharacterDetailsEvent.GenerateRandomName(
-                                        species
+                when (race) {
+                    "HALFLING" -> {
+                        item {
+                            DetailInputRandom(
+                                label = "Name",
+                                value = state.name,
+                                onValueChange = { onEvent(CharacterDetailsEvent.OnNameChanged(it)) },
+                                onRandomClick = {
+                                    onEvent(
+                                        CharacterDetailsEvent.GenerateRandomName(
+                                            species
+                                        )
                                     )
-                                )
-                            },
-                        )
-                    }
-                    item {
-                        DetailInputBasic(
-                            label = "Forename",
-                            value = state.forename,
-                            onValueChange = { onEvent(CharacterDetailsEvent.OnForenameChanged(it)) },
-                        )
-                    }
-                    item {
-                        DetailInputRandom(
-                            label = "Clan",
-                            value = state.clan,
-                            onValueChange = { onEvent(CharacterDetailsEvent.OnClanChanged(it)) },
-                            onRandomClick = {
-                                onEvent(
-                                    CharacterDetailsEvent.GenerateRandomName(
-                                        species
+                                },
+                            )
+                        }
+                        item {
+                            DetailInputBasic(
+                                label = "Forename",
+                                value = state.forename,
+                                onValueChange = { onEvent(CharacterDetailsEvent.OnForenameChanged(it)) },
+                            )
+                        }
+                        item {
+                            DetailInputRandom(
+                                label = "Clan",
+                                value = state.clan,
+                                onValueChange = { onEvent(CharacterDetailsEvent.OnClanChanged(it)) },
+                                onRandomClick = {
+                                    onEvent(
+                                        CharacterDetailsEvent.GenerateRandomName(
+                                            species
+                                        )
                                     )
-                                )
-                            },
-                        )
+                                },
+                            )
+                        }
+                    }
+
+                    "DWARF" -> {
+                        item {
+                            DetailInputRandom(
+                                label = "Name",
+                                value = state.name,
+                                onValueChange = { onEvent(CharacterDetailsEvent.OnNameChanged(it)) },
+                                onRandomClick = {
+                                    onEvent(
+                                        CharacterDetailsEvent.GenerateRandomName(
+                                            species
+                                        )
+                                    )
+                                },
+                            )
+                        }
+                        item {
+                            DetailInputRandom(
+                                label = "Forename",
+                                value = state.forename,
+                                onValueChange = { onEvent(CharacterDetailsEvent.OnForenameChanged(it)) },
+                                onRandomClick = {
+                                    onEvent(
+                                        CharacterDetailsEvent.GenerateRandomName(
+                                            species
+                                        )
+                                    )
+                                },
+                            )
+                        }
+                        item {
+                            DetailInputRandom(
+                                label = "Surname",
+                                value = state.surname,
+                                onValueChange = { onEvent(CharacterDetailsEvent.OnForenameChanged(it)) },
+                                onRandomClick = {
+                                    onEvent(
+                                        CharacterDetailsEvent.GenerateRandomName(
+                                            species
+                                        )
+                                    )
+                                },
+                            )
+                        }
+                        item {
+                            DetailInputRandom(
+                                label = "Clan",
+                                value = state.clan,
+                                onValueChange = { onEvent(CharacterDetailsEvent.OnClanChanged(it)) },
+                                onRandomClick = {
+                                    onEvent(
+                                        CharacterDetailsEvent.GenerateRandomName(
+                                            species
+                                        )
+                                    )
+                                },
+                            )
+                        }
+                    }
+
+                    "HUMAN" -> {
+                        item {
+                            DetailInputRandom(
+                                label = "Name",
+                                value = state.name,
+                                onValueChange = { onEvent(CharacterDetailsEvent.OnNameChanged(it)) },
+                                onRandomClick = {
+                                    onEvent(
+                                        CharacterDetailsEvent.GenerateRandomName(
+                                            species
+                                        )
+                                    )
+                                },
+                            )
+                        }
+                        item {
+                            DetailInputRandom(
+                                label = "Surname",
+                                value = state.surname,
+                                onValueChange = { onEvent(CharacterDetailsEvent.OnSurnameChanged(it)) },
+                                onRandomClick = {
+                                    onEvent(
+                                        CharacterDetailsEvent.GenerateRandomName(
+                                            species
+                                        )
+                                    )
+                                },
+                            )
+                        }
+                    }
+
+                    in listOf("HIGH ELF", "WOOD ELF") -> {
+                        item {
+                            DetailInputRandom(
+                                label = "Name",
+                                value = state.name,
+                                onValueChange = { onEvent(CharacterDetailsEvent.OnNameChanged(it)) },
+                                onRandomClick = {
+                                    onEvent(
+                                        CharacterDetailsEvent.GenerateRandomName(
+                                            species
+                                        )
+                                    )
+                                },
+                            )
+                        }
+                        item {
+                            DetailInputRandom(
+                                label = "Forename",
+                                value = state.forename,
+                                onValueChange = { onEvent(CharacterDetailsEvent.OnForenameChanged(it)) },
+                                onRandomClick = {
+                                    onEvent(
+                                        CharacterDetailsEvent.GenerateRandomName(
+                                            species
+                                        )
+                                    )
+                                },
+                            )
+                        }
+                        item {
+                            DetailInputBasic(
+                                label = "Epithet",
+                                value = state.epithet,
+                                onValueChange = { onEvent(CharacterDetailsEvent.OnEpithetChanged(it)) },
+                            )
+                        }
                     }
                 }
 
-                "DWARF" -> {
-                    item {
-                        DetailInputRandom(
-                            label = "Name",
-                            value = state.name,
-                            onValueChange = { onEvent(CharacterDetailsEvent.OnNameChanged(it)) },
-                            onRandomClick = {
-                                onEvent(
-                                    CharacterDetailsEvent.GenerateRandomName(
-                                        species
-                                    )
-                                )
-                            },
-                        )
-                    }
-                    item {
-                        DetailInputRandom(
-                            label = "Forename",
-                            value = state.forename,
-                            onValueChange = { onEvent(CharacterDetailsEvent.OnForenameChanged(it)) },
-                            onRandomClick = {
-                                onEvent(
-                                    CharacterDetailsEvent.GenerateRandomName(
-                                        species
-                                    )
-                                )
-                            },
-                        )
-                    }
-                    item {
-                        DetailInputRandom(
-                            label = "Surname",
-                            value = state.surname,
-                            onValueChange = { onEvent(CharacterDetailsEvent.OnForenameChanged(it)) },
-                            onRandomClick = {
-                                onEvent(
-                                    CharacterDetailsEvent.GenerateRandomName(
-                                        species
-                                    )
-                                )
-                            },
-                        )
-                    }
-                    item {
-                        DetailInputRandom(
-                            label = "Clan",
-                            value = state.clan,
-                            onValueChange = { onEvent(CharacterDetailsEvent.OnClanChanged(it)) },
-                            onRandomClick = {
-                                onEvent(
-                                    CharacterDetailsEvent.GenerateRandomName(
-                                        species
-                                    )
-                                )
-                            },
-                        )
-                    }
+                item {
+                    DetailInputRandom(
+                        label = "Age",
+                        value = state.age,
+                        onValueChange = { onEvent(CharacterDetailsEvent.OnAgeChanged(it)) },
+                        onRandomClick = {
+                            val random = generateRandomAge(species)
+                            onEvent(CharacterDetailsEvent.OnAgeChanged(random))
+                        },
+                    )
                 }
-
-                "HUMAN" -> {
-                    item {
-                        DetailInputRandom(
-                            label = "Name",
-                            value = state.name,
-                            onValueChange = { onEvent(CharacterDetailsEvent.OnNameChanged(it)) },
-                            onRandomClick = {
-                                onEvent(
-                                    CharacterDetailsEvent.GenerateRandomName(
-                                        species
-                                    )
-                                )
-                            },
-                        )
-                    }
-                    item {
-                        DetailInputRandom(
-                            label = "Surname",
-                            value = state.surname,
-                            onValueChange = { onEvent(CharacterDetailsEvent.OnSurnameChanged(it)) },
-                            onRandomClick = {
-                                onEvent(
-                                    CharacterDetailsEvent.GenerateRandomName(
-                                        species
-                                    )
-                                )
-                            },
-                        )
-                    }
+                item {
+                    DetailInputRandom(
+                        label = "Height",
+                        value = state.height,
+                        onValueChange = { onEvent(CharacterDetailsEvent.OnHeightChanged(it)) },
+                        onRandomClick = {
+                            val random = generateRandomHeight(species)
+                            onEvent(CharacterDetailsEvent.OnHeightChanged(random))
+                        },
+                    )
                 }
-
-                in listOf("HIGH ELF", "WOOD ELF") -> {
-                    item {
-                        DetailInputRandom(
-                            label = "Name",
-                            value = state.name,
-                            onValueChange = { onEvent(CharacterDetailsEvent.OnNameChanged(it)) },
-                            onRandomClick = {
-                                onEvent(
-                                    CharacterDetailsEvent.GenerateRandomName(
-                                        species
-                                    )
-                                )
-                            },
-                        )
-                    }
-                    item {
-                        DetailInputRandom(
-                            label = "Forename",
-                            value = state.forename,
-                            onValueChange = { onEvent(CharacterDetailsEvent.OnForenameChanged(it)) },
-                            onRandomClick = {
-                                onEvent(
-                                    CharacterDetailsEvent.GenerateRandomName(
-                                        species
-                                    )
-                                )
-                            },
-                        )
-                    }
-                    item {
-                        DetailInputBasic(
-                            label = "Epithet",
-                            value = state.epithet,
-                            onValueChange = { onEvent(CharacterDetailsEvent.OnEpithetChanged(it)) },
-                        )
-                    }
+                item {
+                    DetailInputRandom(
+                        label = "Hair Color",
+                        value = state.hairColor,
+                        onValueChange = { onEvent(CharacterDetailsEvent.OnHairColorChanged(it)) },
+                        onRandomClick = {
+                            val random = generateRandomHairColor(species)
+                            onEvent(CharacterDetailsEvent.OnHairColorChanged(random))
+                        },
+                    )
                 }
-            }
-
-            item {
-                DetailInputRandom(
-                    label = "Age",
-                    value = state.age,
-                    onValueChange = { onEvent(CharacterDetailsEvent.OnAgeChanged(it)) },
-                    onRandomClick = {
-                        val random = generateRandomAge(species)
-                        onEvent(CharacterDetailsEvent.OnAgeChanged(random))
-                    },
-                )
-            }
-            item {
-                DetailInputRandom(
-                    label = "Height",
-                    value = state.height,
-                    onValueChange = { onEvent(CharacterDetailsEvent.OnHeightChanged(it)) },
-                    onRandomClick = {
-                        val random = generateRandomHeight(species)
-                        onEvent(CharacterDetailsEvent.OnHeightChanged(random))
-                    },
-                )
-            }
-            item {
-                DetailInputRandom(
-                    label = "Hair Color",
-                    value = state.hairColor,
-                    onValueChange = { onEvent(CharacterDetailsEvent.OnHairColorChanged(it)) },
-                    onRandomClick = {
-                        val random = generateRandomHairColor(species)
-                        onEvent(CharacterDetailsEvent.OnHairColorChanged(random))
-                    },
-                )
-            }
-            item {
-                DetailInputRandom(
-                    label = "Eyes Color",
-                    value = state.eyeColor,
-                    onValueChange = { onEvent(CharacterDetailsEvent.OnEyeColorChanged(it)) },
-                    onRandomClick = {
-                        val random = generateRandomEyeColor(species)
-                        onEvent(CharacterDetailsEvent.OnEyeColorChanged(random))
-                    },
-                )
-            }
-            item {
-                CharacterCreatorButton(
-                    text = "Next",
-                    onClick = { onEvent(CharacterDetailsEvent.OnNextClick) }
-                )
+                item {
+                    DetailInputRandom(
+                        label = "Eyes Color",
+                        value = state.eyeColor,
+                        onValueChange = { onEvent(CharacterDetailsEvent.OnEyeColorChanged(it)) },
+                        onRandomClick = {
+                            val random = generateRandomEyeColor(species)
+                            onEvent(CharacterDetailsEvent.OnEyeColorChanged(random))
+                        },
+                    )
+                }
+                item {
+                    CharacterCreatorButton(
+                        text = "Next",
+                        onClick = { onEvent(CharacterDetailsEvent.OnNextClick) }
+                    )
+                }
             }
         }
-    }
+    )
 }
 
 @Preview

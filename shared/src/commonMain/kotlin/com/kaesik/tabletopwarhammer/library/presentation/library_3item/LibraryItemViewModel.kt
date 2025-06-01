@@ -26,13 +26,7 @@ class LibraryItemViewModel(
                 )
             }
 
-            is LibraryItemEvent.OnFavoriteClick -> {
-
-            }
-
-            is LibraryItemEvent.OnBackClick -> {
-
-            }
+            else -> Unit
         }
     }
 

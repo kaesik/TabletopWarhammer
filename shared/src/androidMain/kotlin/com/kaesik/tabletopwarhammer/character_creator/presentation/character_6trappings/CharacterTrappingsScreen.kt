@@ -22,6 +22,7 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.character_6tr
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorButton
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorTitle
 import com.kaesik.tabletopwarhammer.core.domain.library.items.ItemItem
+import com.kaesik.tabletopwarhammer.core.presentation.MainScaffold
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.getKoin
 
@@ -30,12 +31,12 @@ fun CharacterTrappingsScreenRoot(
     viewModel: AndroidCharacterTrappingsViewModel = koinViewModel(),
     creatorViewModel: AndroidCharacterCreatorViewModel = getKoin().get(),
     onNextClick: () -> Unit,
+    onBackClick: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val character = creatorViewModel.state.value.character
 
     LaunchedEffect(true) {
-//        debugCheckTrappingsConsistency()
         viewModel.onEvent(
             CharacterTrappingsEvent.InitTrappingsList(
                 from = ClassOrCareer.CLASS,
@@ -62,22 +63,28 @@ fun CharacterTrappingsScreenRoot(
         classTrappings = classTrappings,
         careerTrappings = careerTrappings,
         onEvent = { event ->
-            if (event is CharacterTrappingsEvent.OnNextClick) {
-                val mergedTrappings = (classTrappings + careerTrappings).map { it.name }
+            when (event) {
+                is CharacterTrappingsEvent.OnNextClick -> {
+                    val mergedTrappings = (classTrappings + careerTrappings).map { it.name }
 
-                creatorViewModel.onEvent(
-                    CharacterCreatorEvent.SetTrappings(
-                        trappings = mergedTrappings
+                    creatorViewModel.onEvent(
+                        CharacterCreatorEvent.SetTrappings(
+                            trappings = mergedTrappings
+                        )
                     )
-                )
 
-                creatorViewModel.onEvent(
-                    CharacterCreatorEvent.SetWealth(
-                        wealth = state.wealth
+                    creatorViewModel.onEvent(
+                        CharacterCreatorEvent.SetWealth(
+                            wealth = state.wealth
+                        )
                     )
-                )
 
-                onNextClick()
+                    onNextClick()
+                }
+
+                is CharacterTrappingsEvent.OnBackClick -> onBackClick()
+
+                else -> Unit
             }
             viewModel.onEvent(event)
         }
@@ -91,50 +98,53 @@ fun CharacterTrappingsScreen(
     careerTrappings: List<ItemItem>,
     onEvent: (CharacterTrappingsEvent) -> Unit,
 ) {
-    Scaffold { padding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            item {
-                CharacterCreatorTitle("Character Trappings Screen")
-            }
-            item {
-                CharacterCreatorTitle("Class Trappings")
-            }
-            item {
-                TrappingsTable(trappings = classTrappings)
-            }
-            item {
-                CharacterCreatorTitle("Career Trappings")
-            }
-            item {
-                TrappingsTable(trappings = careerTrappings)
-            }
-            item {
-                CharacterCreatorTitle("Starting Wealth")
-            }
+    MainScaffold(
+        title = "Trappings",
+        onBackClick = { onEvent(CharacterTrappingsEvent.OnBackClick) },
+        content = {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                item {
+                    CharacterCreatorTitle("Character Trappings Screen")
+                }
+                item {
+                    CharacterCreatorTitle("Class Trappings")
+                }
+                item {
+                    TrappingsTable(trappings = classTrappings)
+                }
+                item {
+                    CharacterCreatorTitle("Career Trappings")
+                }
+                item {
+                    TrappingsTable(trappings = careerTrappings)
+                }
+                item {
+                    CharacterCreatorTitle("Starting Wealth")
+                }
 
-            item {
-                Text(
-                    text = formatWealth(state.wealth),
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium
-                )
-            }
-            item {
-                CharacterCreatorButton(
-                    text = "Next",
-                    onClick = {
-                        onEvent(CharacterTrappingsEvent.OnNextClick)
-                    }
-                )
+                item {
+                    Text(
+                        text = formatWealth(state.wealth),
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+                item {
+                    CharacterCreatorButton(
+                        text = "Next",
+                        onClick = {
+                            onEvent(CharacterTrappingsEvent.OnNextClick)
+                        }
+                    )
+                }
             }
         }
-    }
+    )
 }
 
 fun formatWealth(wealth: List<Int>): String {

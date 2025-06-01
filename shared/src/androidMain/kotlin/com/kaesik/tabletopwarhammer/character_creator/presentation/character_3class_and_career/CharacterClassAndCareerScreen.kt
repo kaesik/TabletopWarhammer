@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,6 +31,7 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.components.Sn
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.showCharacterCreatorSnackbar
 import com.kaesik.tabletopwarhammer.core.domain.library.items.CareerItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.ClassItem
+import com.kaesik.tabletopwarhammer.core.presentation.MainScaffold
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.getKoin
@@ -44,6 +44,7 @@ fun CharacterClassAndCareerScreenRoot(
     onClassSelect: (ClassItem) -> Unit,
     onCareerSelect: (CareerItem) -> Unit,
     onNextClick: () -> Unit,
+    onBackClick: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val creatorState by creatorViewModel.state.collectAsStateWithLifecycle()
@@ -59,6 +60,7 @@ fun CharacterClassAndCareerScreenRoot(
             creatorViewModel.onEvent(CharacterCreatorEvent.ClearMessage)
         }
     }
+
     LaunchedEffect(creatorState.selectedClass, creatorState.selectedCareer) {
         viewModel.onEvent(CharacterClassAndCareerEvent.InitClassList)
 
@@ -76,7 +78,6 @@ fun CharacterClassAndCareerScreenRoot(
             viewModel.onEvent(CharacterClassAndCareerEvent.SetSelectedCareer(careerItem))
         }
     }
-
 
     LaunchedEffect(true) {
         println("CharacterSpeciesScreenRoot: cLass = ${creatorState.character.cLass}")
@@ -188,10 +189,11 @@ fun CharacterClassAndCareerScreenRoot(
                     }
                 }
 
-
                 is CharacterClassAndCareerEvent.OnNextClick -> {
                     onNextClick()
                 }
+
+                is CharacterClassAndCareerEvent.OnBackClick -> onBackClick()
 
                 else -> Unit
             }
@@ -210,86 +212,92 @@ fun CharacterClassAndCareerScreen(
     careers: List<CareerItem>,
     snackbarHostState: SnackbarHostState,
 ) {
-    Scaffold(
-        snackbarHost = { CharacterCreatorSnackbarHost(snackbarHostState) }
-    ) { padding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            item {
-                CharacterCreatorTitle("Character ClassAndCareer Screen")
-            }
-            if (!state.hasRolledClassAndCareer) {
+    MainScaffold(
+        title = "Class & Career",
+        snackbarHost = { CharacterCreatorSnackbarHost(snackbarHostState) },
+        onBackClick = { onEvent(CharacterClassAndCareerEvent.OnBackClick) },
+        content = {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
                 item {
-                    DiceThrow(onClick = { onEvent(CharacterClassAndCareerEvent.RollRandomClassAndCareer) })
+                    CharacterCreatorTitle("Character ClassAndCareer Screen")
                 }
-            }
-            item {
-                var expanded by remember { mutableStateOf(false) }
-                Box {
-                    CharacterCreatorButton(
-                        text = state.selectedClass?.name ?: "Select Class",
-                        onClick = { expanded = true },
-                        enabled = !state.isLoading
-                    )
-                    DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false },
-                    ) {
-                        classes.forEach { classItem ->
-                            DropdownMenuItem(
-                                text = { Text(classItem.name) },
-                                onClick = {
-                                    expanded = false
-                                    onEvent(CharacterClassAndCareerEvent.OnClassSelect(classItem.id))
-                                }
-                            )
+                if (!state.hasRolledClassAndCareer) {
+                    item {
+                        DiceThrow(onClick = { onEvent(CharacterClassAndCareerEvent.RollRandomClassAndCareer) })
+                    }
+                }
+                item {
+                    var expanded by remember { mutableStateOf(false) }
+                    Box {
+                        CharacterCreatorButton(
+                            text = state.selectedClass?.name ?: "Select Class",
+                            onClick = { expanded = true },
+                            enabled = !state.isLoading
+                        )
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false },
+                        ) {
+                            classes.forEach { classItem ->
+                                DropdownMenuItem(
+                                    text = { Text(classItem.name) },
+                                    onClick = {
+                                        expanded = false
+                                        onEvent(CharacterClassAndCareerEvent.OnClassSelect(classItem.id))
+                                    }
+                                )
+                            }
                         }
                     }
                 }
-            }
-            item {
-                var expanded by remember { mutableStateOf(false) }
-                Box {
+                item {
+                    var expanded by remember { mutableStateOf(false) }
+                    Box {
+                        CharacterCreatorButton(
+                            text = state.selectedCareer?.name ?: "Select Career",
+                            onClick = {
+                                if (state.selectedClass != null) expanded = true
+                            },
+                            enabled = !state.isLoading && state.selectedClass != null
+                        )
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false },
+                        ) {
+                            careers.forEach { careerItem ->
+                                DropdownMenuItem(
+                                    text = { Text(careerItem.name) },
+                                    onClick = {
+                                        expanded = false
+                                        onEvent(
+                                            CharacterClassAndCareerEvent.OnCareerSelect(
+                                                careerItem.id
+                                            )
+                                        )
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+                item {
                     CharacterCreatorButton(
-                        text = state.selectedCareer?.name ?: "Select Career",
+                        text = "Next",
                         onClick = {
-                            if (state.selectedClass != null) expanded = true
+                            onEvent(CharacterClassAndCareerEvent.OnNextClick)
                         },
-                        enabled = !state.isLoading && state.selectedClass != null
+                        enabled = !state.isLoading && state.selectedCareer != null
                     )
-                    DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false },
-                    ) {
-                        careers.forEach { careerItem ->
-                            DropdownMenuItem(
-                                text = { Text(careerItem.name) },
-                                onClick = {
-                                    expanded = false
-                                    onEvent(CharacterClassAndCareerEvent.OnCareerSelect(careerItem.id))
-                                }
-                            )
-                        }
-                    }
                 }
-            }
-            item {
-                CharacterCreatorButton(
-                    text = "Next",
-                    onClick = {
-                        onEvent(CharacterClassAndCareerEvent.OnNextClick)
-                    },
-                    enabled = !state.isLoading && state.selectedCareer != null
-                )
             }
         }
-    }
+    )
 }
 
 @Preview

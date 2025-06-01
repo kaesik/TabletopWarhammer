@@ -14,4 +14,5 @@ sealed class CharacterAttributesEvent {
     data object RollAllDice : CharacterAttributesEvent()
 
     data object OnNextClick : CharacterAttributesEvent()
+    data object OnBackClick : CharacterAttributesEvent()
 }

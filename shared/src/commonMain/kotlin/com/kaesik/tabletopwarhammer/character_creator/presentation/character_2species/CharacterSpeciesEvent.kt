@@ -7,4 +7,5 @@ sealed class CharacterSpeciesEvent {
     data object RollRandomSpecies : CharacterSpeciesEvent()
 
     data object OnNextClick : CharacterSpeciesEvent()
+    data object OnBackClick : CharacterSpeciesEvent()
 }

@@ -50,4 +50,6 @@ sealed class CharacterCreatorEvent {
         val hairColor: String,
         val eyeColor: String,
     ) : CharacterCreatorEvent()
+
+    data object OnBackClick : CharacterCreatorEvent()
 }

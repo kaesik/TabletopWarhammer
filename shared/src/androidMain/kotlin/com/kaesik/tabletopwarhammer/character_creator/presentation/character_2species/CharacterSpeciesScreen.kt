@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,6 +24,7 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.components.Di
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.SnackbarType
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.showCharacterCreatorSnackbar
 import com.kaesik.tabletopwarhammer.core.domain.library.items.SpeciesItem
+import com.kaesik.tabletopwarhammer.core.presentation.MainScaffold
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.getKoin
 
@@ -34,6 +34,7 @@ fun CharacterSpeciesScreenRoot(
     creatorViewModel: AndroidCharacterCreatorViewModel = getKoin().get(),
     onSpeciesSelect: (SpeciesItem) -> Unit,
     onNextClick: () -> Unit,
+    onBackClick: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val creatorState by creatorViewModel.state.collectAsStateWithLifecycle()
@@ -100,6 +101,9 @@ fun CharacterSpeciesScreenRoot(
                     }
                 }
 
+                CharacterSpeciesEvent.OnBackClick -> onBackClick()
+
+
                 else -> Unit
             }
         },
@@ -115,43 +119,45 @@ fun CharacterSpeciesScreen(
     species: List<SpeciesItem>,
     snackbarHostState: SnackbarHostState,
 ) {
-    Scaffold(
+    MainScaffold(
+        title = "Species",
         snackbarHost = { CharacterCreatorSnackbarHost(snackbarHostState) },
-    ) { padding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            item {
-                CharacterCreatorTitle("Character Species Screen")
-            }
-            if (!state.hasRolledSpecies) {
+        onBackClick = { onEvent(CharacterSpeciesEvent.OnBackClick) },
+        content = {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
                 item {
-                    DiceThrow(onClick = { onEvent(CharacterSpeciesEvent.RollRandomSpecies) })
+                    CharacterCreatorTitle("Character Species Screen")
+                }
+                if (!state.hasRolledSpecies) {
+                    item {
+                        DiceThrow(onClick = { onEvent(CharacterSpeciesEvent.RollRandomSpecies) })
+                    }
+                }
+                items(species) { speciesItem ->
+                    CharacterCreatorButton(
+                        text = speciesItem.name,
+                        onClick = {
+                            onEvent(CharacterSpeciesEvent.OnSpeciesSelect(speciesItem.id))
+                            println("CharacterSpeciesScreen: $speciesItem")
+                        }
+                    )
+                }
+                item {
+                    CharacterCreatorButton(
+                        text = "Next",
+                        onClick = { onEvent(CharacterSpeciesEvent.OnNextClick) },
+                        enabled = state.selectedSpecies != null
+                    )
                 }
             }
-            items(species) { speciesItem ->
-                CharacterCreatorButton(
-                    text = speciesItem.name,
-                    onClick = {
-                        onEvent(CharacterSpeciesEvent.OnSpeciesSelect(speciesItem.id))
-                        println("CharacterSpeciesScreen: $speciesItem")
-                    }
-                )
-            }
-            item {
-                CharacterCreatorButton(
-                    text = "Next",
-                    onClick = { onEvent(CharacterSpeciesEvent.OnNextClick) },
-                    enabled = state.selectedSpecies != null
-                )
-            }
         }
-    }
+    )
 }
 
 @Preview

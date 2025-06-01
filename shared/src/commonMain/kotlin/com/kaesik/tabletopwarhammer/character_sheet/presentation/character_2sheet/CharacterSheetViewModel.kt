@@ -1,4 +1,4 @@
-package com.kaesik.tabletopwarhammer.character_sheet.presentation.character_sheet
+package com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -30,18 +30,24 @@ class CharacterSheetViewModel(
                             )
                         } else {
                             _state.value = _state.value.copy(
-                                error = "Nie znaleziono postaci",
+                                error = "Character not found",
                                 isLoading = false
                             )
                         }
                     } catch (e: Exception) {
                         _state.value = _state.value.copy(
-                            error = e.message ?: "Wystąpił błąd",
+                            error = e.message ?: "Unknown error",
                             isLoading = false
                         )
                     }
                 }
             }
+
+            is CharacterSheetEvent.OnBackClick -> {
+
+            }
+
+            else -> Unit
         }
     }
 }

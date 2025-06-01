@@ -18,8 +18,8 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.character_4at
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.CharacterSkillsAndTalentsViewModel
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_6trappings.CharacterTrappingsViewModel
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_7details.CharacterDetailsViewModel
-import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_sheet.CharacterSheetViewModel
-import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_sheet_list.CharacterSheetListViewModel
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_1sheet_list.CharacterSheetListViewModel
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.CharacterSheetViewModel
 import com.kaesik.tabletopwarhammer.core.data.character.SqlDelightCharacterDataSource
 import com.kaesik.tabletopwarhammer.core.data.local.DatabaseDriverFactory
 import com.kaesik.tabletopwarhammer.core.data.remote.HttpClientFactory
@@ -47,20 +47,25 @@ val libraryItem: LibraryItem = AttributeItem("", "", "", "", 0)
 expect val platformModule: Module
 
 val sharedModule = module {
+    // Core
+    single { stringKoin }
     single { HttpClientFactory.create(get()) }
     single { get<DatabaseDriverFactory>().create() }
     single { TabletopWarhammerDatabase(get()) }
     single<CharacterDataSource> { SqlDelightCharacterDataSource(get()) }
 
-    single<PatternValidator> { EmailPatternValidator }
-    single { UserDataValidator(get()) }
-
-    single { stringKoin }
-
     // Auth
     single<AuthClient> { AuthClientImpl() }
+    single<PatternValidator> { EmailPatternValidator }
+    single { UserDataValidator(get()) }
     viewModelOf(::IntroViewModel)
-    viewModelOf(::LoginViewModel)
+    viewModel {
+        LoginViewModel(
+            client = get(),
+            authManager = get(),
+            userDataValidator = get()
+        )
+    }
     viewModelOf(::RegisterViewModel)
 
     // Menu
@@ -82,7 +87,7 @@ val sharedModule = module {
 
     // Character Creator
     single<CharacterCreatorClient> { CharacterCreatorClientImpl() }
-    single { CharacterCreatorViewModel() }
+    viewModelOf(::CharacterCreatorViewModel)
     viewModelOf(::CharacterSpeciesViewModel)
     viewModelOf(::CharacterClassAndCareerViewModel)
     viewModelOf(::CharacterAttributesViewModel)

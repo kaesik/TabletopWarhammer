@@ -1,4 +1,4 @@
-package com.kaesik.tabletopwarhammer.character_sheet.presentation.character_sheet
+package com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet
 
 import com.kaesik.tabletopwarhammer.core.domain.character.CharacterItem
 

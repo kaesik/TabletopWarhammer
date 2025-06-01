@@ -32,10 +32,10 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.character_8te
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_8ten_question.CharacterTenQuestionsScreenRoot
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_9advancement.AndroidCharacterAdvancementViewModel
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_9advancement.CharacterAdvancementScreenRoot
-import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_sheet.AndroidCharacterSheetViewModel
-import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_sheet.CharacterSheetScreenRoot
-import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_sheet_list.AndroidCharacterSheetListViewModel
-import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_sheet_list.CharacterSheetListScreenRoot
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_1sheet_list.AndroidCharacterSheetListViewModel
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_1sheet_list.CharacterSheetListScreenRoot
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.AndroidCharacterSheetViewModel
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.CharacterSheetScreenRoot
 import com.kaesik.tabletopwarhammer.core.domain.character.CharacterDataSource
 import com.kaesik.tabletopwarhammer.library.presentation.library_1.AndroidLibraryViewModel
 import com.kaesik.tabletopwarhammer.library.presentation.library_1.LibraryScreenRoot
@@ -159,6 +159,9 @@ fun App() {
                         navController.navigate(
                             Route.LibraryList(fromTable = it)
                         )
+                    },
+                    onBackClick = {
+                        navController.navigateUp()
                     }
                 )
             }
@@ -178,6 +181,9 @@ fun App() {
                                 fromTable = libraryListRoute.fromTable
                             )
                         )
+                    },
+                    onBackClick = {
+                        navController.navigateUp()
                     }
                 )
             }
@@ -190,9 +196,6 @@ fun App() {
                     fromTable = libraryItemRoute.fromTable,
                     onBackClick = {
                         navController.navigateUp()
-                    },
-                    onFavoriteClick = {
-
                     }
                 )
             }
@@ -210,6 +213,9 @@ fun App() {
                                 characterId = it.id
                             )
                         )
+                    },
+                    onBackClick = {
+                        navController.navigateUp()
                     }
                 )
             }
@@ -219,6 +225,9 @@ fun App() {
                 CharacterSheetScreenRoot(
                     viewModel = viewModel,
                     characterId = characterSheetRoute.characterId,
+                    onBackClick = {
+                        navController.navigateUp()
+                    }
                 )
             }
         }
@@ -239,6 +248,9 @@ fun App() {
                             Route.CharacterFinal
                         )
                     },
+                    onBackClick = {
+                        navController.navigateUp()
+                    }
                 )
             }
             composable<Route.CharacterSpecies> {
@@ -257,6 +269,9 @@ fun App() {
                                 characterSpecies = creatorViewModel.state.value.character.species
                             )
                         )
+                    },
+                    onBackClick = {
+                        navController.navigateUp()
                     }
                 )
             }
@@ -280,6 +295,9 @@ fun App() {
                                 characterSpecies = creatorViewModel.state.value.character.species
                             )
                         )
+                    },
+                    onBackClick = {
+                        navController.navigateUp()
                     }
                 )
             }
@@ -298,6 +316,9 @@ fun App() {
                             )
                         )
                     },
+                    onBackClick = {
+                        navController.navigateUp()
+                    },
                     characterSpecies = creatorViewModel.state.value.character.species,
                 )
             }
@@ -315,6 +336,9 @@ fun App() {
                                 characterCareerPath = creatorViewModel.state.value.character.careerPath,
                             )
                         )
+                    },
+                    onBackClick = {
+                        navController.navigateUp()
                     }
                 )
             }
@@ -331,6 +355,9 @@ fun App() {
                             )
                         )
                     },
+                    onBackClick = {
+                        navController.navigateUp()
+                    }
                 )
             }
             composable<Route.CharacterDetails> {
@@ -344,6 +371,9 @@ fun App() {
                             Route.CharacterFinal
                         )
                     },
+                    onBackClick = {
+                        navController.navigateUp()
+                    }
                 )
             }
             composable<Route.CharacterTenQuestions> {
@@ -377,6 +407,9 @@ fun App() {
                                 inclusive = true
                             }
                         }
+                    },
+                    onBackClick = {
+                        navController.navigateUp()
                     }
                 )
             }

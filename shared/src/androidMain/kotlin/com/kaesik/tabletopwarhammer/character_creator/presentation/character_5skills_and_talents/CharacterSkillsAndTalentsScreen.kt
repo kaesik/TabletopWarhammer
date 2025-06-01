@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -21,11 +20,13 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1cr
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.SkillsTable
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.SpeciesOrCareer
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorButton
+import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorSnackbarHost
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorTitle
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.SnackbarType
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.showCharacterCreatorSnackbar
 import com.kaesik.tabletopwarhammer.core.domain.character.CharacterItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.SkillItem
+import com.kaesik.tabletopwarhammer.core.presentation.MainScaffold
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.getKoin
 
@@ -34,6 +35,7 @@ fun CharacterSkillsAndTalentsScreenRoot(
     viewModel: AndroidCharacterSkillsAndTalentsViewModel = koinViewModel(),
     creatorViewModel: AndroidCharacterCreatorViewModel = getKoin().get(),
     onNextClick: () -> Unit,
+    onBackClick: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val creatorState by creatorViewModel.state.collectAsStateWithLifecycle()
@@ -169,6 +171,7 @@ fun CharacterSkillsAndTalentsScreenRoot(
         skills = currentSkills,
         speciesLabel = character.species,
         careerLabel = character.careerPath,
+        snackbarHostState = snackbarHostState,
         onEvent = { event ->
             when (event) {
                 is CharacterSkillsAndTalentsEvent.OnSkillChecked3 -> {
@@ -206,6 +209,8 @@ fun CharacterSkillsAndTalentsScreenRoot(
                     onNextClick()
                 }
 
+                is CharacterSkillsAndTalentsEvent.OnBackClick -> onBackClick()
+
                 else -> viewModel.onEvent(event)
             }
         }
@@ -235,97 +240,117 @@ fun CharacterSkillsAndTalentsScreen(
     speciesLabel: String,
     careerLabel: String,
     onEvent: (CharacterSkillsAndTalentsEvent) -> Unit,
+    snackbarHostState: SnackbarHostState
 ) {
-    Scaffold { padding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            item {
-                CharacterCreatorTitle("Character Skills and Talents")
-            }
-            item {
-                SkillsTable(
-                    skills = skills,
-                    selectedSkills3 = state.selectedSkills3,
-                    selectedSkills5 = state.selectedSkills5,
-                    speciesOrCareer = state.speciesOrCareer,
-                    careerSkillPoints = state.careerSkillPoints,
-                    onSkillChecked3 = { skill, isChecked ->
-                        onEvent(CharacterSkillsAndTalentsEvent.OnSkillChecked3(skill, isChecked))
-                    },
-                    onSkillChecked5 = { skill, isChecked ->
-                        onEvent(CharacterSkillsAndTalentsEvent.OnSkillChecked5(skill, isChecked))
-                    },
-                    onCareerPointsChanged = { skill, newValue ->
-                        onEvent(
-                            CharacterSkillsAndTalentsEvent.OnCareerSkillValueChanged(
-                                skill,
-                                newValue
+    MainScaffold(
+        title = "Skills and Talents",
+        snackbarHost = { CharacterCreatorSnackbarHost(snackbarHostState) },
+        onBackClick = { onEvent(CharacterSkillsAndTalentsEvent.OnBackClick) },
+        content = {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                item {
+                    CharacterCreatorTitle("Character Skills and Talents")
+                }
+                item {
+                    SkillsTable(
+                        skills = skills,
+                        selectedSkills3 = state.selectedSkills3,
+                        selectedSkills5 = state.selectedSkills5,
+                        speciesOrCareer = state.speciesOrCareer,
+                        careerSkillPoints = state.careerSkillPoints,
+                        onSkillChecked3 = { skill, isChecked ->
+                            onEvent(
+                                CharacterSkillsAndTalentsEvent.OnSkillChecked3(
+                                    skill,
+                                    isChecked
+                                )
                             )
-                        )
-                    }
-                )
-            }
-            item {
-                TalentsTable(
-                    talentsGroups = when (state.speciesOrCareer) {
-                        SpeciesOrCareer.SPECIES -> state.speciesTalentsList
-                        SpeciesOrCareer.CAREER -> state.careerTalentsList
-                    },
-                    selectedTalents = state.selectedTalents,
-                    rolledTalents = state.rolledTalents,
-                    speciesName = speciesLabel,
-                    careerName = careerLabel,
-                    isSpeciesMode = state.speciesOrCareer == SpeciesOrCareer.SPECIES,
-                    onTalentChecked = { talent, isChecked ->
-                        onEvent(CharacterSkillsAndTalentsEvent.OnTalentChecked(talent, isChecked))
-                    },
-                    onRandomTalentRolled = { groupIndex, talentIndex, rolledName ->
-                        onEvent(
-                            CharacterSkillsAndTalentsEvent.OnRandomTalentRolled(
-                                groupIndex, talentIndex, rolledName
+                        },
+                        onSkillChecked5 = { skill, isChecked ->
+                            onEvent(
+                                CharacterSkillsAndTalentsEvent.OnSkillChecked5(
+                                    skill,
+                                    isChecked
+                                )
                             )
-                        )
-                    }
-                )
-            }
+                        },
+                        onCareerPointsChanged = { skill, newValue ->
+                            onEvent(
+                                CharacterSkillsAndTalentsEvent.OnCareerSkillValueChanged(
+                                    skill,
+                                    newValue
+                                )
+                            )
+                        }
+                    )
+                }
+                item {
+                    TalentsTable(
+                        talentsGroups = when (state.speciesOrCareer) {
+                            SpeciesOrCareer.SPECIES -> state.speciesTalentsList
+                            SpeciesOrCareer.CAREER -> state.careerTalentsList
+                        },
+                        selectedTalents = state.selectedTalents,
+                        rolledTalents = state.rolledTalents,
+                        speciesName = speciesLabel,
+                        careerName = careerLabel,
+                        isSpeciesMode = state.speciesOrCareer == SpeciesOrCareer.SPECIES,
+                        onTalentChecked = { talent, isChecked ->
+                            onEvent(
+                                CharacterSkillsAndTalentsEvent.OnTalentChecked(
+                                    talent,
+                                    isChecked
+                                )
+                            )
+                        },
+                        onRandomTalentRolled = { groupIndex, talentIndex, rolledName ->
+                            onEvent(
+                                CharacterSkillsAndTalentsEvent.OnRandomTalentRolled(
+                                    groupIndex, talentIndex, rolledName
+                                )
+                            )
+                        }
+                    )
+                }
 
-            item {
-                if (state.speciesOrCareer == SpeciesOrCareer.CAREER) {
+                item {
+                    if (state.speciesOrCareer == SpeciesOrCareer.CAREER) {
+                        CharacterCreatorButton(
+                            text = "Back: Species Skills and Talents",
+                            onClick = {
+                                onEvent(CharacterSkillsAndTalentsEvent.OnSaveSkillsAndTalents)
+                                onEvent(CharacterSkillsAndTalentsEvent.OnSpeciesOrCareerClick)
+                            }
+                        )
+                    }
+                }
+                item {
+                    val buttonText = if (state.speciesOrCareer == SpeciesOrCareer.SPECIES) {
+                        "Next: Career Skills and Talents"
+                    } else {
+                        "Next: Trappings"
+                    }
                     CharacterCreatorButton(
-                        text = "Back: Species Skills and Talents",
+                        text = buttonText,
                         onClick = {
                             onEvent(CharacterSkillsAndTalentsEvent.OnSaveSkillsAndTalents)
-                            onEvent(CharacterSkillsAndTalentsEvent.OnSpeciesOrCareerClick)
+                            if (state.speciesOrCareer == SpeciesOrCareer.SPECIES) {
+                                onEvent(CharacterSkillsAndTalentsEvent.OnSpeciesOrCareerClick)
+                            } else {
+                                onEvent(CharacterSkillsAndTalentsEvent.OnNextClick)
+                            }
                         }
                     )
                 }
             }
-            item {
-                val buttonText = if (state.speciesOrCareer == SpeciesOrCareer.SPECIES) {
-                    "Next: Career Skills and Talents"
-                } else {
-                    "Next: Trappings"
-                }
-                CharacterCreatorButton(
-                    text = buttonText,
-                    onClick = {
-                        onEvent(CharacterSkillsAndTalentsEvent.OnSaveSkillsAndTalents)
-                        if (state.speciesOrCareer == SpeciesOrCareer.SPECIES) {
-                            onEvent(CharacterSkillsAndTalentsEvent.OnSpeciesOrCareerClick)
-                        } else {
-                            onEvent(CharacterSkillsAndTalentsEvent.OnNextClick)
-                        }
-                    }
-                )
-            }
         }
-    }
+    )
 }
 
 @Preview
@@ -336,6 +361,7 @@ fun CharacterSkillsAndTalentsScreenPreview() {
         skills = listOf(),
         speciesLabel = "Species",
         careerLabel = "Career",
-        onEvent = { }
+        onEvent = { },
+        snackbarHostState = remember { SnackbarHostState() }
     )
 }

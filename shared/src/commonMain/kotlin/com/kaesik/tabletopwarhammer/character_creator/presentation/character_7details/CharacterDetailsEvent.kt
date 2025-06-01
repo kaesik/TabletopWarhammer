@@ -20,4 +20,5 @@ sealed class CharacterDetailsEvent {
     data class RollEpithet(val species: String) : CharacterDetailsEvent()
 
     data object OnNextClick : CharacterDetailsEvent()
+    data object OnBackClick : CharacterDetailsEvent()
 }

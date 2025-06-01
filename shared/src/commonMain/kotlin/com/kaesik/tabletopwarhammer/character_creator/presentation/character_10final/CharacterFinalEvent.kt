@@ -2,4 +2,5 @@ package com.kaesik.tabletopwarhammer.character_creator.presentation.character_10
 
 sealed class CharacterFinalEvent {
     data object OnSaveClick : CharacterFinalEvent()
+    data object OnBackClick : CharacterFinalEvent()
 }

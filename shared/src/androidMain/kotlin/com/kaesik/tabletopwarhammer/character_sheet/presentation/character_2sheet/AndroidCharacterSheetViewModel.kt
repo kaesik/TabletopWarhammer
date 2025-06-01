@@ -1,4 +1,4 @@
-package com.kaesik.tabletopwarhammer.character_sheet.presentation.character_sheet
+package com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet
 
 import androidx.lifecycle.ViewModel
 import com.kaesik.tabletopwarhammer.core.domain.character.CharacterDataSource
