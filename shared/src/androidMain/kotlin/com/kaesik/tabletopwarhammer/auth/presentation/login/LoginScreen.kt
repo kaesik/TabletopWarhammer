@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kaesik.tabletopwarhammer.auth.presentation.components.WarhammerPasswordTextField
 import com.kaesik.tabletopwarhammer.auth.presentation.components.WarhammerTextField
+import com.kaesik.tabletopwarhammer.core.domain.util.DataException
 import com.kaesik.tabletopwarhammer.core.domain.util.SessionManager
 import com.kaesik.tabletopwarhammer.core.presentation.components.WarhammerButton
 import org.koin.androidx.compose.koinViewModel
@@ -47,10 +48,10 @@ fun LoginScreenRoot(
     val keyboardController = LocalSoftwareKeyboardController.current
     val state = viewModel.state.collectAsState().value
 
-    state.error?.let { errorMessage ->
-        LaunchedEffect(errorMessage) {
+    LaunchedEffect(state.error) {
+        state.error?.let { error ->
             keyboardController?.hide()
-            Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
+            Toast.makeText(context, DataException(error).message, Toast.LENGTH_LONG).show()
             viewModel.onEvent(LoginEvent.ClearError)
         }
     }

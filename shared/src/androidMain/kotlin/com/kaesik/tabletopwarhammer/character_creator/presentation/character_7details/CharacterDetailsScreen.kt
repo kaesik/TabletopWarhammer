@@ -99,6 +99,9 @@ fun CharacterDetailsScreen(
     MainScaffold(
         title = "Details",
         onBackClick = { onEvent(CharacterDetailsEvent.OnBackClick) },
+        isLoading = state.isLoading,
+        isError = state.isError,
+        error = state.error,
         content = {
             LazyColumn(
                 modifier = Modifier

@@ -3,6 +3,8 @@ package com.kaesik.tabletopwarhammer.character_creator.presentation.character_3c
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kaesik.tabletopwarhammer.character_creator.domain.CharacterCreatorClient
+import com.kaesik.tabletopwarhammer.core.domain.util.DataError
+import com.kaesik.tabletopwarhammer.core.domain.util.DataException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -64,7 +66,7 @@ class CharacterClassAndCareerViewModel(
     private fun loadClassesList() {
         classJob?.cancel()
         classJob = viewModelScope.launch {
-            _state.update { it.copy(isLoading = true) }
+            _state.update { it.copy(isLoading = true, error = null) }
 
             try {
                 val classList = characterCreatorClient.getClasses()
@@ -72,7 +74,6 @@ class CharacterClassAndCareerViewModel(
                 _state.update {
                     it.copy(
                         classList = classList,
-                        error = null,
                         isLoading = false
                     )
                 }
@@ -81,11 +82,19 @@ class CharacterClassAndCareerViewModel(
                 println("Classes fetch cancelled normally")
                 _state.update { it.copy(isLoading = false) }
 
+            } catch (e: DataException) {
+                _state.update {
+                    it.copy(
+                        error = e.error,
+                        isLoading = false
+                    )
+                }
+
             } catch (e: Exception) {
                 e.printStackTrace()
                 _state.update {
                     it.copy(
-                        error = "Nie udało się załadować klas: ${e.message}",
+                        error = DataError.Local.UNKNOWN,
                         isLoading = false
                     )
                 }
@@ -99,7 +108,7 @@ class CharacterClassAndCareerViewModel(
     ) {
         careerJob?.cancel()
         careerJob = viewModelScope.launch {
-            _state.update { it.copy(isLoading = true) }
+            _state.update { it.copy(isLoading = true, error = null) }
 
             try {
                 val careerList = characterCreatorClient.getCareers(
@@ -110,7 +119,6 @@ class CharacterClassAndCareerViewModel(
                 _state.update {
                     it.copy(
                         careerList = careerList,
-                        error = null,
                         isLoading = false
                     )
                 }
@@ -119,16 +127,23 @@ class CharacterClassAndCareerViewModel(
                 println("Careers fetch cancelled normally")
                 _state.update { it.copy(isLoading = false) }
 
+            } catch (e: DataException) {
+                _state.update {
+                    it.copy(
+                        error = e.error,
+                        isLoading = false
+                    )
+                }
+
             } catch (e: Exception) {
                 e.printStackTrace()
                 _state.update {
                     it.copy(
-                        error = "Nie udało się załadować karier: ${e.message}",
+                        error = DataError.Local.UNKNOWN,
                         isLoading = false
                     )
                 }
             }
         }
     }
-
 }

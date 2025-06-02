@@ -58,6 +58,9 @@ fun CharacterCreatorScreen(
     MainScaffold(
         title = "Character Creator",
         onBackClick = { onEvent(CharacterCreatorEvent.OnBackClick) },
+        isLoading = state.isLoading,
+        isError = state.isError,
+        error = state.error,
         content = {
             LazyColumn(
                 modifier = Modifier

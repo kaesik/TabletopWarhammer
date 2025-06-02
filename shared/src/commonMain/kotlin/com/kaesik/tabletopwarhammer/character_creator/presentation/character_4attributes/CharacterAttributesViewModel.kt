@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kaesik.tabletopwarhammer.character_creator.domain.CharacterCreatorClient
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_4attributes.components.parseAttributeFormula
+import com.kaesik.tabletopwarhammer.core.domain.util.DataError
+import com.kaesik.tabletopwarhammer.core.domain.util.DataException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -76,7 +78,7 @@ class CharacterAttributesViewModel(
         attributeJob?.cancel()
         attributeJob = viewModelScope.launch {
             try {
-                _state.value = state.value.copy(isLoading = true)
+                _state.value = state.value.copy(isLoading = true, error = null)
 
                 val attributeList = characterCreatorClient.getAttributes()
                 val species = characterCreatorClient.getSpeciesDetails(speciesName)
@@ -107,10 +109,16 @@ class CharacterAttributesViewModel(
                     isLoading = false,
                     error = null
                 )
-            } catch (e: Exception) {
+            } catch (e: DataException) {
                 _state.value = state.value.copy(
                     isLoading = false,
-                    error = e.message
+                    error = e.error
+                )
+            } catch (e: Exception) {
+                e.printStackTrace()
+                _state.value = state.value.copy(
+                    isLoading = false,
+                    error = DataError.Local.UNKNOWN
                 )
             }
         }
@@ -119,6 +127,8 @@ class CharacterAttributesViewModel(
     private fun loadFateAndResilience(speciesName: String) {
         viewModelScope.launch {
             try {
+                _state.value = state.value.copy(error = null)
+
                 val species = characterCreatorClient.getSpeciesDetails(speciesName)
 
                 val baseFate = species.fatePoints?.toIntOrNull() ?: 0
@@ -132,8 +142,11 @@ class CharacterAttributesViewModel(
                     resiliencePoints = baseResilience,
                     extraPoints = extraPoints
                 )
+            } catch (e: DataException) {
+                _state.value = state.value.copy(error = e.error)
             } catch (e: Exception) {
-                _state.value = state.value.copy(error = e.message)
+                e.printStackTrace()
+                _state.value = state.value.copy(error = DataError.Local.UNKNOWN)
             }
         }
     }

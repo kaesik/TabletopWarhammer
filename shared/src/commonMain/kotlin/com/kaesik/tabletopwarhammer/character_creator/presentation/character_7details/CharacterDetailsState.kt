@@ -1,7 +1,11 @@
 package com.kaesik.tabletopwarhammer.character_creator.presentation.character_7details
 
+import com.kaesik.tabletopwarhammer.core.domain.util.DataError
+
 data class CharacterDetailsState(
-    val error: String? = null,
+    val error: DataError? = null,
+    val message: String? = null,
+    val isError: Boolean = false,
     val isLoading: Boolean = false,
 
     val name: String = "",

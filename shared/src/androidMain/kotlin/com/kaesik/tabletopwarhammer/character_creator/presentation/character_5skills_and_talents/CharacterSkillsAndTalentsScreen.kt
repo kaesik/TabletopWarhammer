@@ -246,6 +246,9 @@ fun CharacterSkillsAndTalentsScreen(
         title = "Skills and Talents",
         snackbarHost = { CharacterCreatorSnackbarHost(snackbarHostState) },
         onBackClick = { onEvent(CharacterSkillsAndTalentsEvent.OnBackClick) },
+        isLoading = state.isLoading,
+        isError = state.isError,
+        error = state.error,
         content = {
             LazyColumn(
                 modifier = Modifier

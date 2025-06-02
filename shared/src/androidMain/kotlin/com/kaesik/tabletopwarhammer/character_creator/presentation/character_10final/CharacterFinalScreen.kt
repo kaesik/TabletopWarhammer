@@ -40,6 +40,7 @@ fun CharacterFinalScreenRoot(
     onSaveClick: () -> Unit,
     onBackClick: () -> Unit
 ) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
     val creatorState by creatorViewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val character = creatorViewModel.state.value.character
@@ -80,6 +81,7 @@ fun CharacterFinalScreenRoot(
     }
 
     CharacterFinalScreen(
+        state = state,
         character = character,
         snackbarHostState = snackbarHostState,
         isSaving = isSaving,
@@ -102,6 +104,7 @@ fun CharacterFinalScreenRoot(
 
 @Composable
 fun CharacterFinalScreen(
+    state: CharacterFinalState,
     character: CharacterItem,
     snackbarHostState: SnackbarHostState,
     isSaving: Boolean,
@@ -110,6 +113,9 @@ fun CharacterFinalScreen(
     MainScaffold(
         snackbarHost = { CharacterCreatorSnackbarHost(snackbarHostState) },
         onBackClick = { onEvent(CharacterFinalEvent.OnBackClick) },
+        isLoading = state.isLoading,
+        isError = state.isError,
+        error = state.error,
         content = {
             LazyColumn(
                 modifier = Modifier

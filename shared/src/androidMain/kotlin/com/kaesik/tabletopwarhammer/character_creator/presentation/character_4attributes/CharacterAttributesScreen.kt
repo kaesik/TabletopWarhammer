@@ -110,6 +110,9 @@ fun CharacterAttributesScreen(
         title = "Attributes",
         snackbarHost = { CharacterCreatorSnackbarHost(snackbarHostState) },
         onBackClick = { onEvent(CharacterAttributesEvent.OnBackClick) },
+        isLoading = state.isLoading,
+        isError = state.isError,
+        error = state.error,
         content = {
             LazyColumn(
                 modifier = Modifier

@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kaesik.tabletopwarhammer.auth.domain.AuthClient
 import com.kaesik.tabletopwarhammer.auth.domain.di.UserDataValidator
-import com.kaesik.tabletopwarhammer.core.domain.util.DataError
 import com.kaesik.tabletopwarhammer.core.domain.util.Resource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -88,12 +87,8 @@ class RegisterViewModel(
 
             when (result) {
                 is Resource.Error -> {
-                    val message = when (result.error) {
-                        DataError.Network.CONFLICT -> "Email already exists."
-                        DataError.Network.NO_INTERNET -> "No internet connection."
-                        else -> "Unknown error occurred."
-                    }
-                    _state.update { it.copy(error = message) }
+                    println("Register Error: ${result.error}")
+                    _state.update { it.copy(error = result.error) }
                 }
 
                 is Resource.Success -> {

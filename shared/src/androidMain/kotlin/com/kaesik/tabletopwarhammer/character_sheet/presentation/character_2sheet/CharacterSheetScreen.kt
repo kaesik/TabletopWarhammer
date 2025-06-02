@@ -46,6 +46,7 @@ fun CharacterSheetScreenRoot(
     } else {
         state.character?.let {
             CharacterSheetScreen(
+                state = state,
                 character = it,
                 onEvent = { event ->
                     when (event) {
@@ -67,11 +68,16 @@ fun CharacterSheetScreenRoot(
 
 @Composable
 fun CharacterSheetScreen(
+    state: CharacterSheetState,
     character: CharacterItem,
     onEvent: (CharacterSheetEvent) -> Unit
 ) {
     MainScaffold(
         onBackClick = { onEvent(CharacterSheetEvent.OnBackClick) },
+        title = character.name,
+        isLoading = state.isLoading,
+        isError = state.isError,
+        error = state.error,
         content = {
             LazyColumn(
                 modifier = Modifier
@@ -218,6 +224,12 @@ fun CharacterSheetScreen(
 @Composable
 fun CharacterSheetScreenPreview() {
     CharacterSheetScreen(
+        state = CharacterSheetState(
+            isLoading = false,
+            isError = false,
+            error = null,
+            character = null
+        ),
         onEvent = {},
         character = CharacterItem(
             id = 1,

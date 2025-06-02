@@ -66,6 +66,9 @@ fun CharacterSheetListScreen(
     MainScaffold(
         title = "Character Sheets",
         onBackClick = { onEvent(CharacterSheetListEvent.OnBackClick) },
+        isLoading = state.isLoading,
+        isError = state.isError,
+        error = state.error,
         content = {
             if (state.isLoading) {
                 Box(

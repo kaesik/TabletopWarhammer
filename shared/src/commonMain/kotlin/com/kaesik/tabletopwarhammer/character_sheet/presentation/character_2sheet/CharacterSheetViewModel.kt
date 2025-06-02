@@ -3,6 +3,8 @@ package com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2she
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kaesik.tabletopwarhammer.core.domain.character.CharacterDataSource
+import com.kaesik.tabletopwarhammer.core.domain.util.DataError
+import com.kaesik.tabletopwarhammer.core.domain.util.DataException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -18,7 +20,7 @@ class CharacterSheetViewModel(
         when (event) {
             is CharacterSheetEvent.LoadCharacterById -> {
                 viewModelScope.launch {
-                    _state.value = _state.value.copy(isLoading = true)
+                    _state.value = _state.value.copy(isLoading = true, error = null)
                     try {
                         val characters = characterDataSource.getAllCharacters()
                         val character = characters.find { it.id == event.id }
@@ -30,21 +32,22 @@ class CharacterSheetViewModel(
                             )
                         } else {
                             _state.value = _state.value.copy(
-                                error = "Character not found",
+                                error = DataError.Local.FILE_NOT_FOUND,
                                 isLoading = false
                             )
                         }
+                    } catch (e: DataException) {
+                        _state.value = _state.value.copy(
+                            error = e.error,
+                            isLoading = false
+                        )
                     } catch (e: Exception) {
                         _state.value = _state.value.copy(
-                            error = e.message ?: "Unknown error",
+                            error = DataError.Local.UNKNOWN,
                             isLoading = false
                         )
                     }
                 }
-            }
-
-            is CharacterSheetEvent.OnBackClick -> {
-
             }
 
             else -> Unit

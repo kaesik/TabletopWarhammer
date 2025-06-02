@@ -5,6 +5,8 @@ import com.kaesik.tabletopwarhammer.library.domain.library.items.LibraryItem
 
 data class LibraryItemState(
     val error: DataError? = null,
+    val message: String? = null,
+    val isError: Boolean = false,
     val isLoading: Boolean = false,
 
     val libraryItem: LibraryItem? = null,

@@ -2,10 +2,14 @@ package com.kaesik.tabletopwarhammer.character_creator.presentation.character_4a
 
 import com.kaesik.tabletopwarhammer.core.domain.library.items.AttributeItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.SpeciesItem
+import com.kaesik.tabletopwarhammer.core.domain.util.DataError
 
 data class CharacterAttributesState(
-    val error: String? = null,
+    val error: DataError? = null,
+    val message: String? = null,
+    val isError: Boolean = false,
     val isLoading: Boolean = false,
+
     val showFateResilienceCard: Boolean = false,
 
     val species: SpeciesItem? = null,

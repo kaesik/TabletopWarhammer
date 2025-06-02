@@ -67,6 +67,9 @@ fun LibraryItemScreen(
 ) {
     MainScaffold(
         onBackClick = { onEvent(LibraryItemEvent.OnBackClick) },
+        isLoading = state.isLoading,
+        isError = state.isError,
+        error = state.error,
         content = {
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
