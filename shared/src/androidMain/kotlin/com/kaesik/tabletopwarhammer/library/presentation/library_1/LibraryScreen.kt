@@ -21,7 +21,6 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun LibraryScreenRoot(
     viewModel: AndroidLibraryViewModel = koinViewModel(),
-    onBackClick: () -> Unit,
     onLibraryListSelect: (LibraryEnum) -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -30,7 +29,6 @@ fun LibraryScreenRoot(
         onEvent = { event ->
             when (event) {
                 is LibraryEvent.OnLibraryListSelect -> onLibraryListSelect(event.fromTable)
-                is LibraryEvent.OnBackClick -> onBackClick()
                 else -> Unit
             }
 
@@ -46,7 +44,6 @@ fun LibraryScreen(
 ) {
     MainScaffold(
         title = "Library",
-        onBackClick = { onEvent(LibraryEvent.OnBackClick) },
         modifier = Modifier.fillMaxSize(),
         isLoading = state.isLoading,
         isError = state.isError,

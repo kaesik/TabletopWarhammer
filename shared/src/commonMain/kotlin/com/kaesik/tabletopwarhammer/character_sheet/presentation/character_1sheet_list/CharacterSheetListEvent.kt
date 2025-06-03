@@ -6,5 +6,4 @@ sealed class CharacterSheetListEvent {
     data object LoadCharacters : CharacterSheetListEvent()
     data class OnCharacterClick(val character: CharacterItem) : CharacterSheetListEvent()
     data class OnDeleteCharacter(val character: CharacterItem) : CharacterSheetListEvent()
-    data object OnBackClick : CharacterSheetListEvent()
 }

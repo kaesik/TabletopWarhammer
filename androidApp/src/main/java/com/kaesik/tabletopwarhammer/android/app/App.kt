@@ -1,6 +1,7 @@
 package com.kaesik.tabletopwarhammer.android.app
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
@@ -36,382 +37,358 @@ import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_1shee
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_1sheet_list.CharacterSheetListScreenRoot
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.AndroidCharacterSheetViewModel
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.CharacterSheetScreenRoot
+import com.kaesik.tabletopwarhammer.core.domain.Route
 import com.kaesik.tabletopwarhammer.core.domain.character.CharacterDataSource
+import com.kaesik.tabletopwarhammer.core.presentation.di.LocalNavController
 import com.kaesik.tabletopwarhammer.library.presentation.library_1.AndroidLibraryViewModel
 import com.kaesik.tabletopwarhammer.library.presentation.library_1.LibraryScreenRoot
 import com.kaesik.tabletopwarhammer.library.presentation.library_2list.AndroidLibraryListViewModel
 import com.kaesik.tabletopwarhammer.library.presentation.library_2list.LibraryListScreenRoot
 import com.kaesik.tabletopwarhammer.library.presentation.library_3item.AndroidLibraryItemViewModel
 import com.kaesik.tabletopwarhammer.library.presentation.library_3item.LibraryItemScreenRoot
-import com.kaesik.tabletopwarhammer.menu.presentation.AndroidMenuViewModel
-import com.kaesik.tabletopwarhammer.menu.presentation.MenuScreenRoot
+import com.kaesik.tabletopwarhammer.main.presentation.about.AboutScreenRoot
+import com.kaesik.tabletopwarhammer.main.presentation.about.AndroidAboutViewModel
+import com.kaesik.tabletopwarhammer.main.presentation.menu.AndroidMenuViewModel
+import com.kaesik.tabletopwarhammer.main.presentation.menu.MenuScreenRoot
+import com.kaesik.tabletopwarhammer.main.presentation.settings.AndroidSettingsViewModel
+import com.kaesik.tabletopwarhammer.main.presentation.settings.SettingsScreenRoot
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.getKoin
 
 @Composable
 fun App() {
     val navController = rememberNavController()
-    NavHost(
-        navController = navController,
-        startDestination = Route.AuthGraph
-    ) {
-        navigation<Route.AuthGraph>(
-            startDestination = Route.Intro
+    CompositionLocalProvider(LocalNavController provides navController) {
+        NavHost(
+            navController = navController,
+            startDestination = Route.AuthGraph
         ) {
-            composable<Route.Intro> {
-                val viewModel = koinViewModel<AndroidIntroViewModel>()
-                IntroScreenRoot(
-                    viewModel = viewModel,
-                    onSignUpClick = {
-                        navController.navigate(
-                            Route.Register
-                        )
-                    },
-                    onSignInClick = {
-                        navController.navigate(
-                            Route.Login
-                        )
-                    },
-                    onGuestClick = {
-                        navController.navigate(
-                            Route.MainGraph
-                        )
-                    },
-                )
+            navigation<Route.AuthGraph>(
+                startDestination = Route.Intro
+            ) {
+                composable<Route.Intro> {
+                    val viewModel = koinViewModel<AndroidIntroViewModel>()
+                    IntroScreenRoot(
+                        viewModel = viewModel,
+                        onSignUpClick = {
+                            navController.navigate(
+                                Route.Register
+                            )
+                        },
+                        onSignInClick = {
+                            navController.navigate(
+                                Route.Login
+                            )
+                        },
+                        onGuestClick = {
+                            navController.navigate(
+                                Route.MainGraph
+                            )
+                        },
+                    )
+                }
+                composable<Route.Login> {
+                    val viewModel = koinViewModel<AndroidLoginViewModel>()
+                    LoginScreenRoot(
+                        viewModel = viewModel,
+                        onLoginSuccess = {
+                            navController.navigate(
+                                Route.MainGraph
+                            )
+                        },
+                        onSignUpClick = {
+                            navController.navigate(
+                                Route.Register
+                            )
+                        },
+                        onGuestClick = {
+                            navController.navigate(
+                                Route.MainGraph
+                            )
+                        },
+                    )
+                }
+                composable<Route.Register> {
+                    val viewModel = koinViewModel<AndroidRegisterViewModel>()
+                    RegisterScreenRoot(
+                        viewModel = viewModel,
+                        onSignInClick = {
+                            navController.navigate(
+                                Route.Login
+                            )
+                        },
+                        onSuccessfulRegistration = {
+                            navController.navigate(
+                                Route.Login
+                            )
+                        },
+                    )
+                }
             }
-            composable<Route.Login> {
-                val viewModel = koinViewModel<AndroidLoginViewModel>()
-                LoginScreenRoot(
-                    viewModel = viewModel,
-                    onLoginSuccess = {
-                        navController.navigate(
-                            Route.MainGraph
-                        )
-                    },
-                    onSignUpClick = {
-                        navController.navigate(
-                            Route.Register
-                        )
-                    },
-                    onGuestClick = {
-                        navController.navigate(
-                            Route.MainGraph
-                        )
-                    },
-                )
+            navigation<Route.MainGraph>(
+                startDestination = Route.Menu
+            ) {
+                composable<Route.Menu> {
+                    val viewModel = koinViewModel<AndroidMenuViewModel>()
+                    MenuScreenRoot(
+                        viewModel = viewModel,
+                        onNavigateToLibraryScreen = {
+                            navController.navigate(
+                                Route.LibraryGraph
+                            )
+                        },
+                        onNavigateToCharacterSheetScreen = {
+                            navController.navigate(
+                                Route.CharacterSheetGraph
+                            )
+                        },
+                        onNavigateToCharacterCreatorScreen = {
+                            navController.navigate(
+                                Route.CharacterCreatorGraph
+                            )
+                        },
+                    )
+                }
+                composable<Route.Settings> {
+                    val viewModel = koinViewModel<AndroidSettingsViewModel>()
+                    SettingsScreenRoot(
+                        viewModel = viewModel,
+                    )
+                }
+                composable<Route.About> {
+                    val viewModel = koinViewModel<AndroidAboutViewModel>()
+                    AboutScreenRoot(
+                        viewModel = viewModel,
+                    )
+                }
             }
-            composable<Route.Register> {
-                val viewModel = koinViewModel<AndroidRegisterViewModel>()
-                RegisterScreenRoot(
-                    viewModel = viewModel,
-                    onSignInClick = {
-                        navController.navigate(
-                            Route.Login
-                        )
-                    },
-                    onSuccessfulRegistration = {
-                        navController.navigate(
-                            Route.Login
-                        )
-                    },
-                )
-            }
-        }
-        navigation<Route.MainGraph>(
-            startDestination = Route.Menu
-        ) {
-            composable<Route.Menu> {
-                val viewModel = koinViewModel<AndroidMenuViewModel>()
-                MenuScreenRoot(
-                    viewModel = viewModel,
-                    onNavigateToLibraryScreen = {
-                        navController.navigate(
-                            Route.LibraryGraph
-                        )
-                    },
-                    onNavigateToCharacterSheetScreen = {
-                        navController.navigate(
-                            Route.CharacterSheetGraph
-                        )
-                    },
-                    onNavigateToCharacterCreatorScreen = {
-                        navController.navigate(
-                            Route.CharacterCreatorGraph
-                        )
-                    },
-                    onLogoutClick = {
-                        navController.navigate(
-                            Route.AuthGraph
-                        )
-                    },
-                )
-            }
-        }
-        navigation<Route.LibraryGraph>(
-            startDestination = Route.Library
-        ) {
-            composable<Route.Library> {
-                val viewModel = koinViewModel<AndroidLibraryViewModel>()
-                LibraryScreenRoot(
-                    viewModel = viewModel,
-                    onLibraryListSelect = {
-                        println("App:LibraryScreenRoot $it")
-                        navController.navigate(
-                            Route.LibraryList(fromTable = it)
-                        )
-                    },
-                    onBackClick = {
-                        navController.navigateUp()
-                    }
-                )
-            }
-            composable<Route.LibraryList> { backstackEntry ->
-                val viewModel = koinViewModel<AndroidLibraryListViewModel>()
-                val libraryListRoute: Route.LibraryList = backstackEntry.toRoute()
+            navigation<Route.LibraryGraph>(
+                startDestination = Route.Library
+            ) {
+                composable<Route.Library> {
+                    val viewModel = koinViewModel<AndroidLibraryViewModel>()
+                    LibraryScreenRoot(
+                        viewModel = viewModel,
+                        onLibraryListSelect = {
+                            println("App:LibraryScreenRoot $it")
+                            navController.navigate(
+                                Route.LibraryList(fromTable = it)
+                            )
+                        }
+                    )
+                }
+                composable<Route.LibraryList> { backstackEntry ->
+                    val viewModel = koinViewModel<AndroidLibraryListViewModel>()
+                    val libraryListRoute: Route.LibraryList = backstackEntry.toRoute()
 //                main()
 //                println("main() $it")
-                LibraryListScreenRoot(
-                    viewModel = viewModel,
-                    fromTable = libraryListRoute.fromTable,
-                    onLibraryItemSelect = {
-                        println("App:LibraryListScreenRoot $it")
-                        navController.navigate(
-                            Route.LibraryItem(
-                                itemId = it,
-                                fromTable = libraryListRoute.fromTable
+                    LibraryListScreenRoot(
+                        viewModel = viewModel,
+                        fromTable = libraryListRoute.fromTable,
+                        onLibraryItemSelect = {
+                            println("App:LibraryListScreenRoot $it")
+                            navController.navigate(
+                                Route.LibraryItem(
+                                    itemId = it,
+                                    fromTable = libraryListRoute.fromTable
+                                )
                             )
-                        )
-                    },
-                    onBackClick = {
-                        navController.navigateUp()
-                    }
-                )
+                        }
+                    )
+                }
+                composable<Route.LibraryItem> { backstackEntry ->
+                    val viewModel = koinViewModel<AndroidLibraryItemViewModel>()
+                    val libraryItemRoute: Route.LibraryItem = backstackEntry.toRoute()
+                    LibraryItemScreenRoot(
+                        viewModel = viewModel,
+                        itemId = libraryItemRoute.itemId,
+                        fromTable = libraryItemRoute.fromTable
+                    )
+                }
             }
-            composable<Route.LibraryItem> { backstackEntry ->
-                val viewModel = koinViewModel<AndroidLibraryItemViewModel>()
-                val libraryItemRoute: Route.LibraryItem = backstackEntry.toRoute()
-                LibraryItemScreenRoot(
-                    viewModel = viewModel,
-                    itemId = libraryItemRoute.itemId,
-                    fromTable = libraryItemRoute.fromTable,
-                    onBackClick = {
-                        navController.navigateUp()
-                    }
-                )
-            }
-        }
-        navigation<Route.CharacterSheetGraph>(
-            startDestination = Route.CharacterSheetList
-        ) {
-            composable<Route.CharacterSheetList> {
-                val viewModel = koinViewModel<AndroidCharacterSheetListViewModel>()
-                CharacterSheetListScreenRoot(
-                    viewModel = viewModel,
-                    onCharacterClick = {
-                        navController.navigate(
-                            Route.CharacterSheet(
-                                characterId = it.id
+            navigation<Route.CharacterSheetGraph>(
+                startDestination = Route.CharacterSheetList
+            ) {
+                composable<Route.CharacterSheetList> {
+                    val viewModel = koinViewModel<AndroidCharacterSheetListViewModel>()
+                    CharacterSheetListScreenRoot(
+                        viewModel = viewModel,
+                        onCharacterClick = {
+                            navController.navigate(
+                                Route.CharacterSheet(
+                                    characterId = it.id
+                                )
                             )
-                        )
-                    },
-                    onBackClick = {
-                        navController.navigateUp()
-                    }
-                )
+                        }
+                    )
+                }
+                composable<Route.CharacterSheet> { backstackEntry ->
+                    val viewModel = koinViewModel<AndroidCharacterSheetViewModel>()
+                    val characterSheetRoute: Route.CharacterSheet = backstackEntry.toRoute()
+                    CharacterSheetScreenRoot(
+                        viewModel = viewModel,
+                        characterId = characterSheetRoute.characterId
+                    )
+                }
             }
-            composable<Route.CharacterSheet> { backstackEntry ->
-                val viewModel = koinViewModel<AndroidCharacterSheetViewModel>()
-                val characterSheetRoute: Route.CharacterSheet = backstackEntry.toRoute()
-                CharacterSheetScreenRoot(
-                    viewModel = viewModel,
-                    characterId = characterSheetRoute.characterId,
-                    onBackClick = {
-                        navController.navigateUp()
-                    }
-                )
-            }
-        }
-        navigation<Route.CharacterCreatorGraph>(
-            startDestination = Route.CharacterCreator
-        ) {
-            composable<Route.CharacterCreator> {
-                val viewModel = koinViewModel<AndroidCharacterCreatorViewModel>()
-                CharacterCreatorScreenRoot(
-                    viewModel = viewModel,
-                    onCreateCharacterSelect = {
-                        navController.navigate(
-                            Route.CharacterSpecies
-                        )
-                    },
-                    onRandomCharacterSelect = {
-                        navController.navigate(
-                            Route.CharacterFinal
-                        )
-                    },
-                    onBackClick = {
-                        navController.navigateUp()
-                    }
-                )
-            }
-            composable<Route.CharacterSpecies> {
-                val viewModel = koinViewModel<AndroidCharacterSpeciesViewModel>()
-                val creatorViewModel = getKoin().get<AndroidCharacterCreatorViewModel>()
-
-                CharacterSpeciesScreenRoot(
-                    viewModel = viewModel,
-                    creatorViewModel = creatorViewModel,
-                    onSpeciesSelect = { speciesItem ->
-                        println("Selected species: ${speciesItem.name}")
-                    },
-                    onNextClick = {
-                        navController.navigate(
-                            Route.CharacterClassAndCareer(
-                                characterSpecies = creatorViewModel.state.value.character.species
+            navigation<Route.CharacterCreatorGraph>(
+                startDestination = Route.CharacterCreator
+            ) {
+                composable<Route.CharacterCreator> {
+                    val viewModel = koinViewModel<AndroidCharacterCreatorViewModel>()
+                    CharacterCreatorScreenRoot(
+                        viewModel = viewModel,
+                        onCreateCharacterSelect = {
+                            navController.navigate(
+                                Route.CharacterSpecies
                             )
-                        )
-                    },
-                    onBackClick = {
-                        navController.navigateUp()
-                    }
-                )
-            }
-            composable<Route.CharacterClassAndCareer> {
-                val viewModel = koinViewModel<AndroidCharacterClassAndCareerViewModel>()
-                val creatorViewModel = getKoin().get<AndroidCharacterCreatorViewModel>()
-
-                CharacterClassAndCareerScreenRoot(
-                    viewModel = viewModel,
-                    creatorViewModel = creatorViewModel,
-                    speciesName = creatorViewModel.state.value.character.species,
-                    onCareerSelect = { careerItem ->
-                        println("Selected career: ${careerItem.name}")
-                    },
-                    onClassSelect = { classItem ->
-                        println("Selected class: ${classItem.name}")
-                    },
-                    onNextClick = {
-                        navController.navigate(
-                            Route.CharacterAttributes(
-                                characterSpecies = creatorViewModel.state.value.character.species
+                        },
+                        onRandomCharacterSelect = {
+                            navController.navigate(
+                                Route.CharacterFinal
                             )
-                        )
-                    },
-                    onBackClick = {
-                        navController.navigateUp()
-                    }
-                )
-            }
-            composable<Route.CharacterAttributes> {
-                val viewModel = koinViewModel<AndroidCharacterAttributesViewModel>()
-                val creatorViewModel = getKoin().get<AndroidCharacterCreatorViewModel>()
+                        }
+                    )
+                }
+                composable<Route.CharacterSpecies> {
+                    val viewModel = koinViewModel<AndroidCharacterSpeciesViewModel>()
+                    val creatorViewModel = getKoin().get<AndroidCharacterCreatorViewModel>()
 
-                CharacterAttributesScreenRoot(
-                    viewModel = viewModel,
-                    creatorViewModel = creatorViewModel,
-                    onNextClick = {
-                        navController.navigate(
-                            Route.CharacterSkillsAndTalents(
-                                characterSpecies = creatorViewModel.state.value.character.species,
-                                characterCareer = creatorViewModel.state.value.character.career
+                    CharacterSpeciesScreenRoot(
+                        viewModel = viewModel,
+                        creatorViewModel = creatorViewModel,
+                        onSpeciesSelect = { speciesItem ->
+                            println("Selected species: ${speciesItem.name}")
+                        },
+                        onNextClick = {
+                            navController.navigate(
+                                Route.CharacterClassAndCareer(
+                                    characterSpecies = creatorViewModel.state.value.character.species
+                                )
                             )
-                        )
-                    },
-                    onBackClick = {
-                        navController.navigateUp()
-                    },
-                    characterSpecies = creatorViewModel.state.value.character.species,
-                )
-            }
-            composable<Route.CharacterSkillsAndTalents> {
-                val viewModel = koinViewModel<AndroidCharacterSkillsAndTalentsViewModel>()
-                val creatorViewModel = getKoin().get<AndroidCharacterCreatorViewModel>()
+                        }
+                    )
+                }
+                composable<Route.CharacterClassAndCareer> {
+                    val viewModel = koinViewModel<AndroidCharacterClassAndCareerViewModel>()
+                    val creatorViewModel = getKoin().get<AndroidCharacterCreatorViewModel>()
 
-                CharacterSkillsAndTalentsScreenRoot(
-                    viewModel = viewModel,
-                    creatorViewModel = creatorViewModel,
-                    onNextClick = {
-                        navController.navigate(
-                            Route.CharacterTrappings(
-                                characterClass = creatorViewModel.state.value.character.cLass,
-                                characterCareerPath = creatorViewModel.state.value.character.careerPath,
+                    CharacterClassAndCareerScreenRoot(
+                        viewModel = viewModel,
+                        creatorViewModel = creatorViewModel,
+                        speciesName = creatorViewModel.state.value.character.species,
+                        onCareerSelect = { careerItem ->
+                            println("Selected career: ${careerItem.name}")
+                        },
+                        onClassSelect = { classItem ->
+                            println("Selected class: ${classItem.name}")
+                        },
+                        onNextClick = {
+                            navController.navigate(
+                                Route.CharacterAttributes(
+                                    characterSpecies = creatorViewModel.state.value.character.species
+                                )
                             )
-                        )
-                    },
-                    onBackClick = {
-                        navController.navigateUp()
-                    }
-                )
-            }
-            composable<Route.CharacterTrappings> {
-                val viewModel = koinViewModel<AndroidCharacterTrappingsViewModel>()
-                val creatorViewModel = getKoin().get<AndroidCharacterCreatorViewModel>()
-                CharacterTrappingsScreenRoot(
-                    viewModel = viewModel,
-                    creatorViewModel = creatorViewModel,
-                    onNextClick = {
-                        navController.navigate(
-                            Route.CharacterDetails(
-                                characterSpecies = creatorViewModel.state.value.character.species,
+                        }
+                    )
+                }
+                composable<Route.CharacterAttributes> {
+                    val viewModel = koinViewModel<AndroidCharacterAttributesViewModel>()
+                    val creatorViewModel = getKoin().get<AndroidCharacterCreatorViewModel>()
+
+                    CharacterAttributesScreenRoot(
+                        viewModel = viewModel,
+                        creatorViewModel = creatorViewModel,
+                        onNextClick = {
+                            navController.navigate(
+                                Route.CharacterSkillsAndTalents(
+                                    characterSpecies = creatorViewModel.state.value.character.species,
+                                    characterCareer = creatorViewModel.state.value.character.career
+                                )
                             )
-                        )
-                    },
-                    onBackClick = {
-                        navController.navigateUp()
-                    }
-                )
-            }
-            composable<Route.CharacterDetails> {
-                val viewModel = koinViewModel<AndroidCharacterDetailsViewModel>()
-                val creatorViewModel = getKoin().get<AndroidCharacterCreatorViewModel>()
-                CharacterDetailsScreenRoot(
-                    viewModel = viewModel,
-                    creatorViewModel = creatorViewModel,
-                    onNextClick = {
-                        navController.navigate(
-                            Route.CharacterFinal
-                        )
-                    },
-                    onBackClick = {
-                        navController.navigateUp()
-                    }
-                )
-            }
-            composable<Route.CharacterTenQuestions> {
-                val viewModel = koinViewModel<AndroidCharacterTenQuestionsViewModel>()
-                val creatorViewModel = getKoin().get<AndroidCharacterCreatorViewModel>()
+                        },
+                        characterSpecies = creatorViewModel.state.value.character.species,
+                    )
+                }
+                composable<Route.CharacterSkillsAndTalents> {
+                    val viewModel = koinViewModel<AndroidCharacterSkillsAndTalentsViewModel>()
+                    val creatorViewModel = getKoin().get<AndroidCharacterCreatorViewModel>()
 
-                CharacterTenQuestionsScreenRoot(
-                    viewModel = viewModel,
-                )
-            }
-            composable<Route.CharacterAdvancement> {
-                val viewModel = koinViewModel<AndroidCharacterAdvancementViewModel>()
-                val creatorViewModel = getKoin().get<AndroidCharacterCreatorViewModel>()
+                    CharacterSkillsAndTalentsScreenRoot(
+                        viewModel = viewModel,
+                        creatorViewModel = creatorViewModel,
+                        onNextClick = {
+                            navController.navigate(
+                                Route.CharacterTrappings(
+                                    characterClass = creatorViewModel.state.value.character.cLass,
+                                    characterCareerPath = creatorViewModel.state.value.character.careerPath,
+                                )
+                            )
+                        }
+                    )
+                }
+                composable<Route.CharacterTrappings> {
+                    val viewModel = koinViewModel<AndroidCharacterTrappingsViewModel>()
+                    val creatorViewModel = getKoin().get<AndroidCharacterCreatorViewModel>()
+                    CharacterTrappingsScreenRoot(
+                        viewModel = viewModel,
+                        creatorViewModel = creatorViewModel,
+                        onNextClick = {
+                            navController.navigate(
+                                Route.CharacterDetails(
+                                    characterSpecies = creatorViewModel.state.value.character.species,
+                                )
+                            )
+                        }
+                    )
+                }
+                composable<Route.CharacterDetails> {
+                    val viewModel = koinViewModel<AndroidCharacterDetailsViewModel>()
+                    val creatorViewModel = getKoin().get<AndroidCharacterCreatorViewModel>()
+                    CharacterDetailsScreenRoot(
+                        viewModel = viewModel,
+                        creatorViewModel = creatorViewModel,
+                        onNextClick = {
+                            navController.navigate(
+                                Route.CharacterFinal
+                            )
+                        }
+                    )
+                }
+                composable<Route.CharacterTenQuestions> {
+                    val viewModel = koinViewModel<AndroidCharacterTenQuestionsViewModel>()
+                    val creatorViewModel = getKoin().get<AndroidCharacterCreatorViewModel>()
 
-                CharacterAdvancementScreenRoot(
-                    viewModel = viewModel,
-                )
-            }
-            composable<Route.CharacterFinal> {
-                val viewModel = koinViewModel<AndroidCharacterFinalViewModel>()
-                val creatorViewModel = getKoin().get<AndroidCharacterCreatorViewModel>()
-                val characterDataSource = getKoin().get<CharacterDataSource>()
+                    CharacterTenQuestionsScreenRoot(
+                        viewModel = viewModel,
+                    )
+                }
+                composable<Route.CharacterAdvancement> {
+                    val viewModel = koinViewModel<AndroidCharacterAdvancementViewModel>()
+                    val creatorViewModel = getKoin().get<AndroidCharacterCreatorViewModel>()
 
-                CharacterFinalScreenRoot(
-                    viewModel = viewModel,
-                    creatorViewModel = creatorViewModel,
-                    characterDataSource = characterDataSource,
-                    onSaveClick = {
-                        navController.navigate(Route.MainGraph) {
-                            popUpTo(Route.CharacterCreatorGraph) {
-                                inclusive = true
+                    CharacterAdvancementScreenRoot(
+                        viewModel = viewModel,
+                    )
+                }
+                composable<Route.CharacterFinal> {
+                    val viewModel = koinViewModel<AndroidCharacterFinalViewModel>()
+                    val creatorViewModel = getKoin().get<AndroidCharacterCreatorViewModel>()
+                    val characterDataSource = getKoin().get<CharacterDataSource>()
+
+                    CharacterFinalScreenRoot(
+                        viewModel = viewModel,
+                        creatorViewModel = creatorViewModel,
+                        characterDataSource = characterDataSource,
+                        onSaveClick = {
+                            navController.navigate(Route.MainGraph) {
+                                popUpTo(Route.CharacterCreatorGraph) {
+                                    inclusive = true
+                                }
                             }
                         }
-                    },
-                    onBackClick = {
-                        navController.navigateUp()
-                    }
-                )
+                    )
+                }
             }
         }
     }

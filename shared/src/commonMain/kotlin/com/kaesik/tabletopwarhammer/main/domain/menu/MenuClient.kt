@@ -1,4 +1,4 @@
-package com.kaesik.tabletopwarhammer.menu.domain
+package com.kaesik.tabletopwarhammer.main.domain.menu
 
 import com.kaesik.tabletopwarhammer.core.domain.util.DataError
 import com.kaesik.tabletopwarhammer.core.domain.util.EmptyResult

@@ -4,21 +4,28 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.*
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.kaesik.tabletopwarhammer.core.domain.Route
 import com.kaesik.tabletopwarhammer.core.domain.util.DataError
 import com.kaesik.tabletopwarhammer.core.domain.util.DataException
+import com.kaesik.tabletopwarhammer.core.domain.util.SessionManager
+import com.kaesik.tabletopwarhammer.core.presentation.di.LocalNavController
 
 @Composable
 fun MainScaffold(
     title: String = "",
     snackbarHost: @Composable () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit,
-    onBackClick: () -> Unit = {},
     isLoading: Boolean,
     isError: Boolean,
     error: DataError?,
@@ -26,19 +33,55 @@ fun MainScaffold(
     showBackButton: Boolean = true,
     showMenuButton: Boolean = true,
 ) {
+    val navController = LocalNavController.current
     Scaffold(
         modifier = modifier,
         snackbarHost = snackbarHost,
         topBar = {
             MainTopBar(
                 title = title,
-                onBackClick = onBackClick,
                 showBackButton = showBackButton,
                 showMenuButton = showMenuButton,
+                onBackClick = {
+                    if (navController.previousBackStackEntry != null) {
+                        navController.popBackStack()
+                    } else {
+                        navController.navigate(Route.Intro) {
+                            popUpTo(Route.Intro) { inclusive = true }
+                        }
+                    }
+                },
+                onSettingsClick = {
+                    navController.navigate(Route.Settings)
+                },
+                onHelpClick = {
+
+                },
+                onAboutClick = {
+                    navController.navigate(Route.About)
+                },
+                onLoginClick = {
+                    navController.navigate(Route.Login)
+                },
+                onLogoutClick = {
+                    navController.navigate(Route.Intro) {
+                        popUpTo(Route.Intro) { inclusive = true }
+                    }
+                    SessionManager.isLoggedIn = false
+                }
             )
         },
         bottomBar = {
-            MainBottomBar()
+            MainBottomBar(
+                onHomeClick = {
+                    navController.navigate(Route.Menu) {
+                        popUpTo(Route.Menu) { inclusive = true }
+                    }
+                },
+                onLibraryClick = {
+                    navController.navigate(Route.Library)
+                },
+            )
         }
     ) { padding ->
         Box(
@@ -53,7 +96,7 @@ fun MainScaffold(
                 )
 
                 isError && error != null -> Text(
-                    text = DataException(error).message ?: "Unknown error",
+                    text = DataException(error).message,
                     modifier = Modifier.align(Alignment.Center),
                     color = MaterialTheme.colorScheme.error
                 )
@@ -70,7 +113,6 @@ fun MainScaffoldPreview() {
     MainScaffold(
         title = "Preview Scaffold",
         content = {},
-        onBackClick = {},
         snackbarHost = {
             SnackbarHost(
                 hostState = remember { SnackbarHostState() }

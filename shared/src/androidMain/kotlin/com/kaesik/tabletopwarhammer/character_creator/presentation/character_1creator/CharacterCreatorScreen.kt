@@ -23,7 +23,6 @@ fun CharacterCreatorScreenRoot(
     viewModel: AndroidCharacterCreatorViewModel = koinViewModel(),
     onCreateCharacterSelect: () -> Unit,
     onRandomCharacterSelect: () -> Unit,
-    onBackClick: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     CharacterCreatorScreen(
@@ -36,10 +35,6 @@ fun CharacterCreatorScreenRoot(
 
                 is CharacterCreatorEvent.OnRandomCharacterSelect -> {
                     onRandomCharacterSelect()
-                }
-
-                CharacterCreatorEvent.OnBackClick -> {
-                    onBackClick()
                 }
 
                 else -> Unit
@@ -57,7 +52,6 @@ fun CharacterCreatorScreen(
 ) {
     MainScaffold(
         title = "Character Creator",
-        onBackClick = { onEvent(CharacterCreatorEvent.OnBackClick) },
         isLoading = state.isLoading,
         isError = state.isError,
         error = state.error,

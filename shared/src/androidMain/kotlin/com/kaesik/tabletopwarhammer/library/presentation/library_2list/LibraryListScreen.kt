@@ -17,7 +17,6 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun LibraryListScreenRoot(
     viewModel: AndroidLibraryListViewModel = koinViewModel(),
-    onBackClick: () -> Unit,
     onLibraryItemSelect: (String) -> Unit,
     fromTable: LibraryEnum
 ) {
@@ -30,7 +29,6 @@ fun LibraryListScreenRoot(
         onEvent = { event ->
             when (event) {
                 is LibraryListEvent.OnLibraryItemSelect -> onLibraryItemSelect(event.id)
-                is LibraryListEvent.OnBackClick -> onBackClick()
                 else -> Unit
             }
 
@@ -45,7 +43,6 @@ fun LibraryListScreen(
     onEvent: (LibraryListEvent) -> Unit,
 ) {
     MainScaffold(
-        onBackClick = { onEvent(LibraryListEvent.OnBackClick) },
         isLoading = state.isLoading,
         isError = state.isError,
         error = state.error,

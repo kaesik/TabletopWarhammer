@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -30,7 +29,6 @@ fun CharacterDetailsScreenRoot(
     viewModel: AndroidCharacterDetailsViewModel = koinViewModel(),
     creatorViewModel: AndroidCharacterCreatorViewModel = getKoin().get(),
     onNextClick: () -> Unit,
-    onBackClick: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val character = creatorViewModel.state.value.character
@@ -78,8 +76,6 @@ fun CharacterDetailsScreenRoot(
                     onNextClick()
                 }
 
-                is CharacterDetailsEvent.OnBackClick -> onBackClick()
-
                 else -> Unit
             }
 
@@ -98,7 +94,6 @@ fun CharacterDetailsScreen(
 
     MainScaffold(
         title = "Details",
-        onBackClick = { onEvent(CharacterDetailsEvent.OnBackClick) },
         isLoading = state.isLoading,
         isError = state.isError,
         error = state.error,

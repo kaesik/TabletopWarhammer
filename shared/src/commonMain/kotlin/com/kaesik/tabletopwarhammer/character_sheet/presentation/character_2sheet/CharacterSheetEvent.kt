@@ -2,5 +2,4 @@ package com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2she
 
 sealed class CharacterSheetEvent {
     data class LoadCharacterById(val id: Int) : CharacterSheetEvent()
-    data object OnBackClick : CharacterSheetEvent()
 }

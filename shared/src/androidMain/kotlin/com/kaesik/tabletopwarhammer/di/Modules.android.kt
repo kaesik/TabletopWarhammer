@@ -12,8 +12,8 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.character_4at
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.AndroidCharacterSkillsAndTalentsViewModel
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_6trappings.AndroidCharacterTrappingsViewModel
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_7details.AndroidCharacterDetailsViewModel
-import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.AndroidCharacterSheetViewModel
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_1sheet_list.AndroidCharacterSheetListViewModel
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.AndroidCharacterSheetViewModel
 import com.kaesik.tabletopwarhammer.core.data.character.SqlDelightCharacterDataSource
 import com.kaesik.tabletopwarhammer.core.data.local.DatabaseDriverFactory
 import com.kaesik.tabletopwarhammer.core.domain.character.CharacterDataSource
@@ -21,7 +21,9 @@ import com.kaesik.tabletopwarhammer.database.TabletopWarhammerDatabase
 import com.kaesik.tabletopwarhammer.library.presentation.library_1.AndroidLibraryViewModel
 import com.kaesik.tabletopwarhammer.library.presentation.library_2list.AndroidLibraryListViewModel
 import com.kaesik.tabletopwarhammer.library.presentation.library_3item.AndroidLibraryItemViewModel
-import com.kaesik.tabletopwarhammer.menu.presentation.AndroidMenuViewModel
+import com.kaesik.tabletopwarhammer.main.presentation.about.AndroidAboutViewModel
+import com.kaesik.tabletopwarhammer.main.presentation.menu.AndroidMenuViewModel
+import com.kaesik.tabletopwarhammer.main.presentation.settings.AndroidSettingsViewModel
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.okhttp.OkHttp
 import org.koin.android.ext.koin.androidApplication
@@ -43,8 +45,10 @@ actual val platformModule: Module
         viewModelOf(::AndroidLoginViewModel)
         viewModelOf(::AndroidRegisterViewModel)
 
-        // Menu
+        // Main
         viewModelOf(::AndroidMenuViewModel)
+        viewModelOf(::AndroidSettingsViewModel)
+        viewModelOf(::AndroidAboutViewModel)
 
         // Library
         viewModelOf(::AndroidLibraryViewModel)

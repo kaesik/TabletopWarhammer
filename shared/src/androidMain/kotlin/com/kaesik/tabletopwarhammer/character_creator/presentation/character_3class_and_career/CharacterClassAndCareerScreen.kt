@@ -44,7 +44,6 @@ fun CharacterClassAndCareerScreenRoot(
     onClassSelect: (ClassItem) -> Unit,
     onCareerSelect: (CareerItem) -> Unit,
     onNextClick: () -> Unit,
-    onBackClick: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val creatorState by creatorViewModel.state.collectAsStateWithLifecycle()
@@ -193,8 +192,6 @@ fun CharacterClassAndCareerScreenRoot(
                     onNextClick()
                 }
 
-                is CharacterClassAndCareerEvent.OnBackClick -> onBackClick()
-
                 else -> Unit
             }
         },
@@ -215,7 +212,6 @@ fun CharacterClassAndCareerScreen(
     MainScaffold(
         title = "Class & Career",
         snackbarHost = { CharacterCreatorSnackbarHost(snackbarHostState) },
-        onBackClick = { onEvent(CharacterClassAndCareerEvent.OnBackClick) },
         isLoading = state.isLoading,
         isError = state.isError,
         error = state.error,

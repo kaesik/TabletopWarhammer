@@ -7,6 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Help
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Login
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Settings
@@ -25,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.kaesik.tabletopwarhammer.core.domain.util.SessionManager.isLoggedIn
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,6 +37,7 @@ fun MainTopBar(
     onHelpClick: () -> Unit = {},
     onAboutClick: () -> Unit = {},
     onLogoutClick: () -> Unit = {},
+    onLoginClick: () -> Unit = {},
     showBackButton: Boolean = true,
     showMenuButton: Boolean = true,
 ) {
@@ -94,16 +97,29 @@ fun MainTopBar(
                                 onAboutClick()
                             }
                         )
-                        DropdownMenuItem(
-                            text = { Text("Logout") },
-                            leadingIcon = {
-                                Icon(Icons.Default.Logout, contentDescription = "Logout")
-                            },
-                            onClick = {
-                                expanded = false
-                                onLogoutClick()
-                            }
-                        )
+                        if (isLoggedIn) {
+                            DropdownMenuItem(
+                                text = { Text("Logout") },
+                                leadingIcon = {
+                                    Icon(Icons.Default.Logout, contentDescription = "Logout")
+                                },
+                                onClick = {
+                                    expanded = false
+                                    onLogoutClick()
+                                }
+                            )
+                        } else {
+                            DropdownMenuItem(
+                                text = { Text("Login") },
+                                leadingIcon = {
+                                    Icon(Icons.Default.Login, contentDescription = "Login")
+                                },
+                                onClick = {
+                                    expanded = false
+                                    onLoginClick()
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -121,6 +137,6 @@ fun MainTopBarPreview() {
         onHelpClick = {},
         onAboutClick = {},
         showBackButton = true,
-        showMenuButton = true
+        showMenuButton = true,
     )
 }

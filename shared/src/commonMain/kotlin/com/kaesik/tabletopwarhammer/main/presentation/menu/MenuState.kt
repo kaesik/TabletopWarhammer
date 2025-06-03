@@ -1,4 +1,4 @@
-package com.kaesik.tabletopwarhammer.menu.presentation
+package com.kaesik.tabletopwarhammer.main.presentation.menu
 
 import com.kaesik.tabletopwarhammer.core.domain.util.DataError
 
@@ -7,6 +7,4 @@ data class MenuState(
     val message: String? = null,
     val isError: Boolean = false,
     val isLoading: Boolean = false,
-
-    val isLoggedOut: Boolean = false,
 )

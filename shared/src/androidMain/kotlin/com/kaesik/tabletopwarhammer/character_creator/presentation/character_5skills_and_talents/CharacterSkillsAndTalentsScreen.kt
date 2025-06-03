@@ -35,7 +35,6 @@ fun CharacterSkillsAndTalentsScreenRoot(
     viewModel: AndroidCharacterSkillsAndTalentsViewModel = koinViewModel(),
     creatorViewModel: AndroidCharacterCreatorViewModel = getKoin().get(),
     onNextClick: () -> Unit,
-    onBackClick: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val creatorState by creatorViewModel.state.collectAsStateWithLifecycle()
@@ -157,8 +156,8 @@ fun CharacterSkillsAndTalentsScreenRoot(
         // 5. Zapis
         creatorViewModel.onEvent(
             CharacterCreatorEvent.SetSkillsAndTalents(
-                speciesBasicSkills = emptyList(), // już wszystko poszło do career*
-                speciesAdvancedSkills = emptyList(), // j.w.
+                speciesBasicSkills = emptyList(),
+                speciesAdvancedSkills = emptyList(),
                 careerBasicSkills = careerBasicSkills,
                 careerAdvancedSkills = careerAdvancedSkills,
                 talents = talents
@@ -209,8 +208,6 @@ fun CharacterSkillsAndTalentsScreenRoot(
                     onNextClick()
                 }
 
-                is CharacterSkillsAndTalentsEvent.OnBackClick -> onBackClick()
-
                 else -> viewModel.onEvent(event)
             }
         }
@@ -245,7 +242,6 @@ fun CharacterSkillsAndTalentsScreen(
     MainScaffold(
         title = "Skills and Talents",
         snackbarHost = { CharacterCreatorSnackbarHost(snackbarHostState) },
-        onBackClick = { onEvent(CharacterSkillsAndTalentsEvent.OnBackClick) },
         isLoading = state.isLoading,
         isError = state.isError,
         error = state.error,

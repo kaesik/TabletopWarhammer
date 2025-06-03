@@ -17,8 +17,10 @@ import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.providers.Google
 import io.github.jan.supabase.auth.providers.builtin.IDToken
 import io.github.jan.supabase.exceptions.RestException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.withContext
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import java.security.MessageDigest
@@ -43,10 +45,13 @@ actual class AuthManager(private val context: Context) {
         val credentialManager = CredentialManager.create(context)
 
         try {
-            val result = credentialManager.getCredential(
-                context = context,
-                request = request
-            )
+            val result = withContext(Dispatchers.IO) {
+                credentialManager.getCredential(
+                    context = context,
+                    request = request
+                )
+            }
+
             val googleIdTokenCredential = GoogleIdTokenCredential
                 .createFrom(result.credential.data)
 

@@ -37,7 +37,6 @@ fun CharacterAttributesScreenRoot(
     creatorViewModel: AndroidCharacterCreatorViewModel = getKoin().get(),
     characterSpecies: String,
     onNextClick: () -> Unit,
-    onBackClick: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val creatorState by creatorViewModel.state.collectAsStateWithLifecycle()
@@ -85,8 +84,6 @@ fun CharacterAttributesScreenRoot(
                     creatorViewModel.onEvent(CharacterCreatorEvent.ShowMessage("You gained 50 XP for rolling attributes!"))
                 }
 
-                is CharacterAttributesEvent.OnBackClick -> onBackClick()
-
                 else -> viewModel.onEvent(event)
             }
         },
@@ -109,7 +106,6 @@ fun CharacterAttributesScreen(
     MainScaffold(
         title = "Attributes",
         snackbarHost = { CharacterCreatorSnackbarHost(snackbarHostState) },
-        onBackClick = { onEvent(CharacterAttributesEvent.OnBackClick) },
         isLoading = state.isLoading,
         isError = state.isError,
         error = state.error,

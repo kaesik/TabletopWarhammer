@@ -32,9 +32,11 @@ import com.kaesik.tabletopwarhammer.library.domain.library.items.LibraryItem
 import com.kaesik.tabletopwarhammer.library.presentation.library_1.LibraryViewModel
 import com.kaesik.tabletopwarhammer.library.presentation.library_2list.LibraryListViewModel
 import com.kaesik.tabletopwarhammer.library.presentation.library_3item.LibraryItemViewModel
-import com.kaesik.tabletopwarhammer.menu.data.MenuClientImpl
-import com.kaesik.tabletopwarhammer.menu.domain.MenuClient
-import com.kaesik.tabletopwarhammer.menu.presentation.MenuViewModel
+import com.kaesik.tabletopwarhammer.main.data.menu.MenuClientImpl
+import com.kaesik.tabletopwarhammer.main.domain.menu.MenuClient
+import com.kaesik.tabletopwarhammer.main.presentation.about.AboutViewModel
+import com.kaesik.tabletopwarhammer.main.presentation.menu.MenuViewModel
+import com.kaesik.tabletopwarhammer.main.presentation.settings.SettingsViewModel
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
@@ -68,9 +70,11 @@ val sharedModule = module {
     }
     viewModelOf(::RegisterViewModel)
 
-    // Menu
+    // Main
     single<MenuClient> { MenuClientImpl() }
     viewModelOf(::MenuViewModel)
+    viewModelOf(::SettingsViewModel)
+    viewModelOf(::AboutViewModel)
 
     // Library
     single { libraryList }

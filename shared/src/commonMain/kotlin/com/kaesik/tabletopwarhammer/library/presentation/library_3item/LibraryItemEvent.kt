@@ -4,6 +4,4 @@ import com.kaesik.tabletopwarhammer.core.data.library.LibraryEnum
 
 sealed class LibraryItemEvent {
     data class InitItem(val itemId: String, val fromTable: LibraryEnum) : LibraryItemEvent()
-    data object OnFavoriteClick : LibraryItemEvent()
-    data object OnBackClick : LibraryItemEvent()
 }

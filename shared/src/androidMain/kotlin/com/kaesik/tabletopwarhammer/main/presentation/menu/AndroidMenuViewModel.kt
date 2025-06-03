@@ -1,7 +1,7 @@
-package com.kaesik.tabletopwarhammer.menu.presentation
+package com.kaesik.tabletopwarhammer.main.presentation.menu
 
 import androidx.lifecycle.ViewModel
-import com.kaesik.tabletopwarhammer.menu.domain.MenuClient
+import com.kaesik.tabletopwarhammer.main.domain.menu.MenuClient
 
 class AndroidMenuViewModel(
     private val client: MenuClient

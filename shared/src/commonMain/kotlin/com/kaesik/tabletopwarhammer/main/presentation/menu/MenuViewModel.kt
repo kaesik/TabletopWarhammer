@@ -1,7 +1,7 @@
-package com.kaesik.tabletopwarhammer.menu.presentation
+package com.kaesik.tabletopwarhammer.main.presentation.menu
 
 import androidx.lifecycle.ViewModel
-import com.kaesik.tabletopwarhammer.menu.domain.MenuClient
+import com.kaesik.tabletopwarhammer.main.domain.menu.MenuClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
@@ -13,14 +13,8 @@ class MenuViewModel(
 
     suspend fun onEvent(event: MenuEvent) {
         when (event) {
-            is MenuEvent.OnLogoutClick -> logout()
 
             else -> Unit
         }
-    }
-
-    private suspend fun logout() {
-        client.logout()
-        _state.value = _state.value.copy(isLoggedOut = true)
     }
 }

@@ -27,7 +27,6 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun CharacterSheetScreenRoot(
     viewModel: AndroidCharacterSheetViewModel = koinViewModel(),
-    onBackClick: () -> Unit,
     characterId: Int
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -50,7 +49,6 @@ fun CharacterSheetScreenRoot(
                 character = it,
                 onEvent = { event ->
                     when (event) {
-                        is CharacterSheetEvent.OnBackClick -> onBackClick()
                         else -> Unit
                     }
 
@@ -73,7 +71,6 @@ fun CharacterSheetScreen(
     onEvent: (CharacterSheetEvent) -> Unit
 ) {
     MainScaffold(
-        onBackClick = { onEvent(CharacterSheetEvent.OnBackClick) },
         title = character.name,
         isLoading = state.isLoading,
         isError = state.isError,

@@ -34,7 +34,6 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun LibraryItemScreenRoot(
     viewModel: AndroidLibraryItemViewModel = koinViewModel(),
-    onBackClick: () -> Unit,
     itemId: String,
     fromTable: LibraryEnum
 ) {
@@ -51,7 +50,6 @@ fun LibraryItemScreenRoot(
         state = state,
         onEvent = { event ->
             when (event) {
-                is LibraryItemEvent.OnBackClick -> onBackClick()
                 else -> Unit
             }
 
@@ -66,7 +64,6 @@ fun LibraryItemScreen(
     onEvent: (LibraryItemEvent) -> Unit
 ) {
     MainScaffold(
-        onBackClick = { onEvent(LibraryItemEvent.OnBackClick) },
         isLoading = state.isLoading,
         isError = state.isError,
         error = state.error,

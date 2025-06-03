@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,7 +30,6 @@ fun CharacterTrappingsScreenRoot(
     viewModel: AndroidCharacterTrappingsViewModel = koinViewModel(),
     creatorViewModel: AndroidCharacterCreatorViewModel = getKoin().get(),
     onNextClick: () -> Unit,
-    onBackClick: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val character = creatorViewModel.state.value.character
@@ -82,8 +80,6 @@ fun CharacterTrappingsScreenRoot(
                     onNextClick()
                 }
 
-                is CharacterTrappingsEvent.OnBackClick -> onBackClick()
-
                 else -> Unit
             }
             viewModel.onEvent(event)
@@ -100,7 +96,6 @@ fun CharacterTrappingsScreen(
 ) {
     MainScaffold(
         title = "Trappings",
-        onBackClick = { onEvent(CharacterTrappingsEvent.OnBackClick) },
         isLoading = state.isLoading,
         isError = state.isError,
         error = state.error,

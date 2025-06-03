@@ -1,9 +1,7 @@
-package com.kaesik.tabletopwarhammer.menu.presentation
+package com.kaesik.tabletopwarhammer.main.presentation.menu
 
 sealed class MenuEvent {
     data object NavigateToLibraryScreen : MenuEvent()
     data object NavigateToCharacterSheetScreen : MenuEvent()
     data object NavigateToCharacterCreatorScreen : MenuEvent()
-    data object OnLogoutClick : MenuEvent()
-    data object OnBackClick : MenuEvent()
 }

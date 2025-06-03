@@ -1,4 +1,4 @@
-package com.kaesik.tabletopwarhammer.android.app
+package com.kaesik.tabletopwarhammer.core.domain
 
 import com.kaesik.tabletopwarhammer.core.data.library.LibraryEnum
 import kotlinx.serialization.Serializable
@@ -10,6 +10,15 @@ sealed interface Route {
 
     @Serializable
     data object Menu : Route
+
+    @Serializable
+    data object Settings : Route
+
+    @Serializable
+    data object About : Route
+
+    @Serializable
+    data object Help : Route
 
     // AUTH
     @Serializable

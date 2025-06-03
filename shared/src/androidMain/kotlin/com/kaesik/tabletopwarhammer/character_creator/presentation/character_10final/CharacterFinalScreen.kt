@@ -38,7 +38,6 @@ fun CharacterFinalScreenRoot(
     creatorViewModel: AndroidCharacterCreatorViewModel = getKoin().get(),
     characterDataSource: CharacterDataSource = getKoin().get(),
     onSaveClick: () -> Unit,
-    onBackClick: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val creatorState by creatorViewModel.state.collectAsStateWithLifecycle()
@@ -93,8 +92,6 @@ fun CharacterFinalScreenRoot(
                     }
                 }
 
-                is CharacterFinalEvent.OnBackClick -> onBackClick()
-
                 else -> viewModel.onEvent(event)
             }
 
@@ -112,7 +109,6 @@ fun CharacterFinalScreen(
 ) {
     MainScaffold(
         snackbarHost = { CharacterCreatorSnackbarHost(snackbarHostState) },
-        onBackClick = { onEvent(CharacterFinalEvent.OnBackClick) },
         isLoading = state.isLoading,
         isError = state.isError,
         error = state.error,

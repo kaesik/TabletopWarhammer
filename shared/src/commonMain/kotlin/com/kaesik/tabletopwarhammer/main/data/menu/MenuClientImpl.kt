@@ -1,16 +1,13 @@
-package com.kaesik.tabletopwarhammer.menu.data
+package com.kaesik.tabletopwarhammer.main.data.menu
 
 import com.kaesik.tabletopwarhammer.core.data.remote.SupabaseClient
 import com.kaesik.tabletopwarhammer.core.domain.util.DataError
+import com.kaesik.tabletopwarhammer.core.domain.util.EmptyResult
 import com.kaesik.tabletopwarhammer.core.domain.util.Resource
 import com.kaesik.tabletopwarhammer.core.domain.util.asEmptyResult
-import com.kaesik.tabletopwarhammer.menu.domain.MenuClient
+import com.kaesik.tabletopwarhammer.main.domain.menu.MenuClient
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.exception.AuthRestException
-import io.ktor.client.plugins.auth.Auth
-import io.ktor.client.plugins.auth.providers.BearerAuthProvider
-import io.ktor.client.plugins.plugin
-import com.kaesik.tabletopwarhammer.core.domain.util.EmptyResult
 
 class MenuClientImpl : MenuClient {
     private val supabaseClient = SupabaseClient.supabaseClient

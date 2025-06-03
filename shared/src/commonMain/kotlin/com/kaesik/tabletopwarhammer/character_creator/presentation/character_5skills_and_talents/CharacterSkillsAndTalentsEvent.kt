@@ -51,5 +51,4 @@ sealed class CharacterSkillsAndTalentsEvent {
     data object OnSaveSkillsAndTalents : CharacterSkillsAndTalentsEvent()
     data object OnSpeciesOrCareerClick : CharacterSkillsAndTalentsEvent()
     data object OnNextClick : CharacterSkillsAndTalentsEvent()
-    data object OnBackClick : CharacterSkillsAndTalentsEvent()
 }
