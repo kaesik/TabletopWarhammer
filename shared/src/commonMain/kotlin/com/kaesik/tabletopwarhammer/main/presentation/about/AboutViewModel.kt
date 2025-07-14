@@ -1,7 +1,6 @@
 package com.kaesik.tabletopwarhammer.main.presentation.about
 
 import androidx.lifecycle.ViewModel
-import com.kaesik.tabletopwarhammer.main.domain.menu.MenuClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 

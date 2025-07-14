@@ -21,6 +21,11 @@ sealed class CharacterCreatorEvent {
         val careerPathItem: CareerPathItem?
     ) : CharacterCreatorEvent()
 
+    data class SaveRolledAttributes(
+        val rolled: List<Int>,
+        val total: List<Int>
+    ) : CharacterCreatorEvent()
+
     data class SetAttributes(
         val totalAttributes: List<Int>,
         val fatePoints: Int,

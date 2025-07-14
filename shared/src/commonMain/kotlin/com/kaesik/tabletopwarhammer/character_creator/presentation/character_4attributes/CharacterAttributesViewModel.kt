@@ -66,8 +66,12 @@ class CharacterAttributesViewModel(
                 }
             }
 
-            is CharacterAttributesEvent.RollAllDice -> {
-                rollAllDice()
+            is CharacterAttributesEvent.RollOneDice -> rollOneDice()
+
+            is CharacterAttributesEvent.RollAllDice -> rollAllDice()
+
+            is CharacterAttributesEvent.AllAttributesRolled -> {
+                _state.value = state.value.copy(hasReceivedXpForRolling = true)
             }
 
             else -> {}
@@ -151,9 +155,39 @@ class CharacterAttributesViewModel(
         }
     }
 
+    private fun rollOneDice() {
+        val rolled = state.value.rolledDiceResults.toMutableList()
+        val notRolledIndex = rolled.indexOfFirst { it == 0 }
+
+        if (notRolledIndex == -1) return
+
+        val diceNotation = state.value.diceThrows.getOrNull(notRolledIndex) ?: return
+        val baseValue = state.value.baseAttributeValues.getOrNull(notRolledIndex) ?: 0
+
+        val regex = Regex("(\\d+)d(\\d+)")
+        val match = regex.find(diceNotation)
+        val rollSum = if (match != null) {
+            val (count, sides) = match.destructured
+            (1..count.toInt()).sumOf { (1..sides.toInt()).random() }
+        } else 0
+
+        rolled[notRolledIndex] = rollSum
+
+        val totalValues = state.value.baseAttributeValues.zip(rolled) { base, roll -> base + roll }
+        val allRolled = rolled.all { it > 0 }
+
+        _state.value = state.value.copy(
+            rolledDiceResults = rolled,
+            totalAttributeValues = totalValues,
+            hasRolledDice = rolled.any { it > 0 },
+            hasRolledAllDice = allRolled
+        )
+    }
+
     private fun rollAllDice() {
         val baseValues = state.value.baseAttributeValues
         val diceNotations = state.value.diceThrows
+        val rolled = state.value.rolledDiceResults.toMutableList()
 
         fun rollDiceSum(diceNotation: String): Int {
             val regex = Regex("(\\d+)d(\\d+)")
@@ -161,18 +195,23 @@ class CharacterAttributesViewModel(
             return if (match != null) {
                 val (count, sides) = match.destructured
                 (1..count.toInt()).sumOf { (1..sides.toInt()).random() }
-            } else {
-                0
+            } else 0
+        }
+
+        for (i in rolled.indices) {
+            if (rolled[i] == 0) {
+                rolled[i] = rollDiceSum(diceNotations[i])
             }
         }
 
-        val rolledSums = diceNotations.map { rollDiceSum(it) }
-        val totalValues = baseValues.zip(rolledSums) { base, roll -> base + roll }
+        val totalValues = baseValues.zip(rolled) { base, roll -> base + roll }
+        val allRolled = rolled.all { it > 0 }
 
         _state.value = state.value.copy(
-            rolledDiceResults = rolledSums,
+            rolledDiceResults = rolled,
             totalAttributeValues = totalValues,
-            hasRolledDice = true,
+            hasRolledDice = rolled.any { it > 0 },
+            hasRolledAllDice = allRolled
         )
     }
 }

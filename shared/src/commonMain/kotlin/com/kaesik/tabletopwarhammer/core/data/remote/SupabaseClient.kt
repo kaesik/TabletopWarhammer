@@ -1,6 +1,6 @@
 package com.kaesik.tabletopwarhammer.core.data.remote
 
-import com.kaesik.tabletopwarhammer.library.data.Const
+import com.kaesik.tabletopwarhammer.core.data.Const
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest

@@ -2,7 +2,6 @@ package com.kaesik.tabletopwarhammer.main.presentation.settings
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
@@ -14,7 +13,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaesik.tabletopwarhammer.core.presentation.MainScaffold
-import com.kaesik.tabletopwarhammer.core.presentation.components.WarhammerButton
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 

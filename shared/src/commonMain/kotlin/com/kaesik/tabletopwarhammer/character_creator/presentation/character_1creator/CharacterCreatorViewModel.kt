@@ -100,6 +100,13 @@ class CharacterCreatorViewModel : ViewModel() {
                 }
             }
 
+            is CharacterCreatorEvent.SaveRolledAttributes -> {
+                _state.value = state.value.copy(
+                    rolledAttributes = event.rolled,
+                    totalAttributes = event.total
+                )
+            }
+
             is CharacterCreatorEvent.SetAttributes -> {
                 _state.update { current ->
                     val character = current.character

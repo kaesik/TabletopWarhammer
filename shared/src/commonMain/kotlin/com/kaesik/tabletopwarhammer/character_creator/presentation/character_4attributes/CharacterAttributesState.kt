@@ -15,8 +15,12 @@ data class CharacterAttributesState(
     val species: SpeciesItem? = null,
 
     val attributeList: List<AttributeItem> = emptyList(),
+
+    val diceThrow: String = "",
     val diceThrows: List<String> = emptyList(),
     val rolledDiceResults: List<Int> = emptyList(),
+    val hasRolledAllDice: Boolean = false,
+
     val baseAttributeValues: List<Int> = emptyList(),
     val totalAttributeValues: List<Int> = emptyList(),
 
@@ -25,6 +29,8 @@ data class CharacterAttributesState(
     val baseResiliencePoints: Int = 0,
     val resiliencePoints: Int = 0,
     val extraPoints: Int = 0,
+
+    val hasReceivedXpForRolling: Boolean = false,
 
     val hasRolledDice: Boolean = false,
 )

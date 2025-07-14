@@ -40,8 +40,6 @@ fun MainScaffold(
         topBar = {
             MainTopBar(
                 title = title,
-                showBackButton = showBackButton,
-                showMenuButton = showMenuButton,
                 onBackClick = {
                     if (navController.previousBackStackEntry != null) {
                         navController.popBackStack()
@@ -68,7 +66,9 @@ fun MainScaffold(
                         popUpTo(Route.Intro) { inclusive = true }
                     }
                     SessionManager.isLoggedIn = false
-                }
+                },
+                showBackButton = showBackButton,
+                showMenuButton = showMenuButton,
             )
         },
         bottomBar = {
@@ -78,8 +78,14 @@ fun MainScaffold(
                         popUpTo(Route.Menu) { inclusive = true }
                     }
                 },
+                onFavoriteClick = {
+
+                },
                 onLibraryClick = {
                     navController.navigate(Route.Library)
+                },
+                onUserClick = {
+
                 },
             )
         }

@@ -17,4 +17,6 @@ data class CharacterCreatorState(
     val selectedSpecies: SpeciesItem? = null,
     val selectedClass: ClassItem? = null,
     val selectedCareer: CareerItem? = null,
+    val rolledAttributes: List<Int> = emptyList(),
+    val totalAttributes: List<Int> = emptyList(),
 )

@@ -9,10 +9,10 @@ import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.GetCredentialException
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.kaesik.tabletopwarhammer.core.data.Const.GOOGLE_WEB_CLIENT_ID
 import com.kaesik.tabletopwarhammer.core.data.remote.SupabaseClient
 import com.kaesik.tabletopwarhammer.core.domain.util.DataError
 import com.kaesik.tabletopwarhammer.core.domain.util.Resource
-import com.kaesik.tabletopwarhammer.library.data.Const.GOOGLE_WEB_CLIENT_ID
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.providers.Google
 import io.github.jan.supabase.auth.providers.builtin.IDToken

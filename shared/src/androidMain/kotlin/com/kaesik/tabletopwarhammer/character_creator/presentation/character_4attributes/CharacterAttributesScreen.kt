@@ -23,7 +23,6 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.character_4at
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorButton
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorSnackbarHost
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorTitle
-import com.kaesik.tabletopwarhammer.character_creator.presentation.components.DiceThrow
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.SnackbarType
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.showCharacterCreatorSnackbar
 import com.kaesik.tabletopwarhammer.core.domain.library.items.AttributeItem
@@ -57,6 +56,16 @@ fun CharacterAttributesScreenRoot(
         viewModel.onEvent(CharacterAttributesEvent.InitFateAndResilience(characterSpecies))
     }
 
+    LaunchedEffect(state.hasRolledAllDice) {
+        if (state.hasRolledAllDice && !state.hasReceivedXpForRolling) {
+            viewModel.onEvent(CharacterAttributesEvent.AllAttributesRolled)
+            creatorViewModel.onEvent(CharacterCreatorEvent.AddExperience(50))
+            creatorViewModel.onEvent(
+                CharacterCreatorEvent.ShowMessage("You gained 50 XP for rolling attributes!")
+            )
+        }
+    }
+
     val attributes = state.attributeList
     val baseAttributeValues = state.baseAttributeValues.map { it.toString() }
     val diceThrows = state.diceThrows
@@ -76,12 +85,6 @@ fun CharacterAttributesScreenRoot(
                         )
                         onNextClick()
                     }
-                }
-
-                is CharacterAttributesEvent.RollAllDice -> {
-                    viewModel.onEvent(event)
-                    creatorViewModel.onEvent(CharacterCreatorEvent.AddExperience(50))
-                    creatorViewModel.onEvent(CharacterCreatorEvent.ShowMessage("You gained 50 XP for rolling attributes!"))
                 }
 
                 else -> viewModel.onEvent(event)
@@ -120,9 +123,18 @@ fun CharacterAttributesScreen(
                 item {
                     CharacterCreatorTitle("Character Attributes Screen")
                 }
-                if (!state.hasRolledDice) {
+                if (state.rolledDiceResults.any { it == 0 }) {
                     item {
-                        DiceThrow(onClick = { onEvent(CharacterAttributesEvent.RollAllDice) })
+                        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                            CharacterCreatorButton(
+                                text = "Roll a Dice",
+                                onClick = { onEvent(CharacterAttributesEvent.RollOneDice) }
+                            )
+                            CharacterCreatorButton(
+                                text = "Roll All Dices",
+                                onClick = { onEvent(CharacterAttributesEvent.RollAllDice) }
+                            )
+                        }
                     }
                 }
                 if (state.showFateResilienceCard) {

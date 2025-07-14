@@ -1,10 +1,10 @@
 package com.kaesik.tabletopwarhammer.character_creator.presentation.character_6trappings.components.debug
 
+import com.kaesik.tabletopwarhammer.core.data.Const
 import com.kaesik.tabletopwarhammer.core.data.library.LibraryEnum
 import com.kaesik.tabletopwarhammer.core.data.library.dto.CareerPathDto
 import com.kaesik.tabletopwarhammer.core.data.library.dto.ClassDto
 import com.kaesik.tabletopwarhammer.core.data.library.dto.ItemDto
-import com.kaesik.tabletopwarhammer.library.data.Const
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.from

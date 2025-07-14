@@ -11,7 +11,9 @@ sealed class CharacterAttributesEvent {
     data object IncreaseResiliencePoints : CharacterAttributesEvent()
     data object DecreaseResiliencePoints : CharacterAttributesEvent()
 
+    data object RollOneDice : CharacterAttributesEvent()
     data object RollAllDice : CharacterAttributesEvent()
+    data object AllAttributesRolled : CharacterAttributesEvent()
 
     data object OnNextClick : CharacterAttributesEvent()
 }
