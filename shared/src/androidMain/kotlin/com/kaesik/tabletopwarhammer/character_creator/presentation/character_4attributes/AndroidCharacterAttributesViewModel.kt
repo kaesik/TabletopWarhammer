@@ -14,6 +14,11 @@ class AndroidCharacterAttributesViewModel(
     }
 
     val state = viewModel.state
+    var onAllRolled: (() -> Unit)?
+        get() = viewModel.onAllRolled
+        set(value) {
+            viewModel.onAllRolled = value
+        }
 
     fun onEvent(event: CharacterAttributesEvent) {
         viewModel.onEvent(event)

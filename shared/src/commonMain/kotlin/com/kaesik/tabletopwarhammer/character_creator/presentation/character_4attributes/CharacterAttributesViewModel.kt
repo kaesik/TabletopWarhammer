@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.kaesik.tabletopwarhammer.character_creator.domain.CharacterCreatorClient
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_4attributes.components.parseAttributeFormula
 import com.kaesik.tabletopwarhammer.core.domain.util.DataError
-import com.kaesik.tabletopwarhammer.core.domain.util.DataException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,8 +15,10 @@ class CharacterAttributesViewModel(
 ) : ViewModel() {
     private val _state = MutableStateFlow(CharacterAttributesState())
     val state = _state.asStateFlow()
+    var onAllRolled: (() -> Unit)? = null
 
     private var attributeJob: Job? = null
+
     fun onEvent(event: CharacterAttributesEvent) {
         when (event) {
             is CharacterAttributesEvent.InitAttributesList -> loadAttributesList(event.speciesName)
@@ -30,10 +31,9 @@ class CharacterAttributesViewModel(
 
             is CharacterAttributesEvent.IncreaseFatePoints -> {
                 if (state.value.extraPoints > 0) {
-                    val newExtraPoints = state.value.extraPoints - 1
                     _state.value = state.value.copy(
                         fatePoints = state.value.fatePoints + 1,
-                        extraPoints = newExtraPoints
+                        extraPoints = state.value.extraPoints - 1
                     )
                 }
             }
@@ -49,10 +49,9 @@ class CharacterAttributesViewModel(
 
             is CharacterAttributesEvent.IncreaseResiliencePoints -> {
                 if (state.value.extraPoints > 0) {
-                    val newExtraPoints = state.value.extraPoints - 1
                     _state.value = state.value.copy(
                         resiliencePoints = state.value.resiliencePoints + 1,
-                        extraPoints = newExtraPoints
+                        extraPoints = state.value.extraPoints - 1
                     )
                 }
             }
@@ -67,12 +66,7 @@ class CharacterAttributesViewModel(
             }
 
             is CharacterAttributesEvent.RollOneDice -> rollOneDice()
-
             is CharacterAttributesEvent.RollAllDice -> rollAllDice()
-
-            is CharacterAttributesEvent.AllAttributesRolled -> {
-                _state.value = state.value.copy(hasReceivedXpForRolling = true)
-            }
 
             else -> {}
         }
@@ -110,13 +104,7 @@ class CharacterAttributesViewModel(
                     diceThrows = diceThrows,
                     rolledDiceResults = List(baseAttributes.size) { 0 },
                     totalAttributeValues = baseAttributes,
-                    isLoading = false,
-                    error = null
-                )
-            } catch (e: DataException) {
-                _state.value = state.value.copy(
-                    isLoading = false,
-                    error = e.error
+                    isLoading = false
                 )
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -131,23 +119,15 @@ class CharacterAttributesViewModel(
     private fun loadFateAndResilience(speciesName: String) {
         viewModelScope.launch {
             try {
-                _state.value = state.value.copy(error = null)
-
                 val species = characterCreatorClient.getSpeciesDetails(speciesName)
 
-                val baseFate = species.fatePoints?.toIntOrNull() ?: 0
-                val baseResilience = species.resilience?.toIntOrNull() ?: 0
-                val extraPoints = species.extraPoints?.toIntOrNull() ?: 0
-
                 _state.value = state.value.copy(
-                    baseFatePoints = baseFate,
-                    baseResiliencePoints = baseResilience,
-                    fatePoints = baseFate,
-                    resiliencePoints = baseResilience,
-                    extraPoints = extraPoints
+                    baseFatePoints = species.fatePoints?.toIntOrNull() ?: 0,
+                    baseResiliencePoints = species.resilience?.toIntOrNull() ?: 0,
+                    fatePoints = species.fatePoints?.toIntOrNull() ?: 0,
+                    resiliencePoints = species.resilience?.toIntOrNull() ?: 0,
+                    extraPoints = species.extraPoints?.toIntOrNull() ?: 0
                 )
-            } catch (e: DataException) {
-                _state.value = state.value.copy(error = e.error)
             } catch (e: Exception) {
                 e.printStackTrace()
                 _state.value = state.value.copy(error = DataError.Local.UNKNOWN)
@@ -158,12 +138,9 @@ class CharacterAttributesViewModel(
     private fun rollOneDice() {
         val rolled = state.value.rolledDiceResults.toMutableList()
         val notRolledIndex = rolled.indexOfFirst { it == 0 }
-
         if (notRolledIndex == -1) return
 
         val diceNotation = state.value.diceThrows.getOrNull(notRolledIndex) ?: return
-        val baseValue = state.value.baseAttributeValues.getOrNull(notRolledIndex) ?: 0
-
         val regex = Regex("(\\d+)d(\\d+)")
         val match = regex.find(diceNotation)
         val rollSum = if (match != null) {
@@ -172,22 +149,13 @@ class CharacterAttributesViewModel(
         } else 0
 
         rolled[notRolledIndex] = rollSum
-
-        val totalValues = state.value.baseAttributeValues.zip(rolled) { base, roll -> base + roll }
-        val allRolled = rolled.all { it > 0 }
-
-        _state.value = state.value.copy(
-            rolledDiceResults = rolled,
-            totalAttributeValues = totalValues,
-            hasRolledDice = rolled.any { it > 0 },
-            hasRolledAllDice = allRolled
-        )
+        println("Rolled dice at index $notRolledIndex: $rollSum")
+        updateRolledDice(rolled)
     }
 
     private fun rollAllDice() {
-        val baseValues = state.value.baseAttributeValues
-        val diceNotations = state.value.diceThrows
         val rolled = state.value.rolledDiceResults.toMutableList()
+        val diceNotations = state.value.diceThrows
 
         fun rollDiceSum(diceNotation: String): Int {
             val regex = Regex("(\\d+)d(\\d+)")
@@ -204,14 +172,27 @@ class CharacterAttributesViewModel(
             }
         }
 
-        val totalValues = baseValues.zip(rolled) { base, roll -> base + roll }
+        updateRolledDice(rolled)
+    }
+
+    private fun updateRolledDice(rolled: List<Int>) {
+        val prevState = state.value
+
+        val totalValues = prevState.baseAttributeValues.zip(rolled) { base, roll -> base + roll }
         val allRolled = rolled.all { it > 0 }
 
-        _state.value = state.value.copy(
+        val shouldGrantXp = allRolled && !prevState.hasReceivedXpForRolling
+
+        _state.value = prevState.copy(
             rolledDiceResults = rolled,
             totalAttributeValues = totalValues,
             hasRolledDice = rolled.any { it > 0 },
-            hasRolledAllDice = allRolled
+            hasRolledAllDice = allRolled,
+            hasReceivedXpForRolling = prevState.hasReceivedXpForRolling || allRolled
         )
+
+        if (shouldGrantXp) {
+            onAllRolled?.invoke()
+        }
     }
 }

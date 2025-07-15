@@ -29,7 +29,10 @@ fun FateResilienceCard(
     onResiliencePointsDecrease: () -> Unit,
 ) {
     ElevatedCard(
-        modifier = Modifier.width(400.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight(0.6f)
+            .padding(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Box(

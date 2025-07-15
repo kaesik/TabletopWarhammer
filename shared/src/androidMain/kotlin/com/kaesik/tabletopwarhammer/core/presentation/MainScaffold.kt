@@ -107,7 +107,11 @@ fun MainScaffold(
                     color = MaterialTheme.colorScheme.error
                 )
 
-                else -> content(padding)
+                else -> Box(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    content(padding)
+                }
             }
         }
     }

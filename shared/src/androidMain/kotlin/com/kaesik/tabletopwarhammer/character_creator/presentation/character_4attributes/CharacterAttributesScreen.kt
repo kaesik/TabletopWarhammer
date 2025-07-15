@@ -1,10 +1,11 @@
 package com.kaesik.tabletopwarhammer.character_creator.presentation.character_4attributes
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Card
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -41,6 +42,15 @@ fun CharacterAttributesScreenRoot(
     val creatorState by creatorViewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
+    LaunchedEffect(state.hasReceivedXpForRolling) {
+        if (state.hasReceivedXpForRolling) {
+            creatorViewModel.onEvent(CharacterCreatorEvent.AddExperience(50))
+            creatorViewModel.onEvent(
+                CharacterCreatorEvent.ShowMessage("You gained 50 XP for rolling attributes!")
+            )
+        }
+    }
+
     LaunchedEffect(creatorState.message, creatorState.isError) {
         creatorState.message?.let { message ->
             snackbarHostState.showCharacterCreatorSnackbar(
@@ -54,16 +64,6 @@ fun CharacterAttributesScreenRoot(
     LaunchedEffect(true) {
         viewModel.onEvent(CharacterAttributesEvent.InitAttributesList(characterSpecies))
         viewModel.onEvent(CharacterAttributesEvent.InitFateAndResilience(characterSpecies))
-    }
-
-    LaunchedEffect(state.hasRolledAllDice) {
-        if (state.hasRolledAllDice && !state.hasReceivedXpForRolling) {
-            viewModel.onEvent(CharacterAttributesEvent.AllAttributesRolled)
-            creatorViewModel.onEvent(CharacterCreatorEvent.AddExperience(50))
-            creatorViewModel.onEvent(
-                CharacterCreatorEvent.ShowMessage("You gained 50 XP for rolling attributes!")
-            )
-        }
     }
 
     val attributes = state.attributeList
@@ -113,85 +113,77 @@ fun CharacterAttributesScreen(
         isError = state.isError,
         error = state.error,
         content = {
-            LazyColumn(
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                item {
-                    CharacterCreatorTitle("Character Attributes Screen")
-                }
+                CharacterCreatorTitle("Character Attributes Screen")
                 if (state.rolledDiceResults.any { it == 0 }) {
-                    item {
-                        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                            CharacterCreatorButton(
-                                text = "Roll a Dice",
-                                onClick = { onEvent(CharacterAttributesEvent.RollOneDice) }
-                            )
-                            CharacterCreatorButton(
-                                text = "Roll All Dices",
-                                onClick = { onEvent(CharacterAttributesEvent.RollAllDice) }
-                            )
-                        }
+                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                        CharacterCreatorButton(
+                            text = "Roll a Dice",
+                            onClick = { onEvent(CharacterAttributesEvent.RollOneDice) }
+                        )
+                        CharacterCreatorButton(
+                            text = "Roll All Dices",
+                            onClick = { onEvent(CharacterAttributesEvent.RollAllDice) }
+                        )
                     }
                 }
                 if (state.showFateResilienceCard) {
-                    item {
-                        FateResilienceCard(
-                            baseFatePoints = state.baseFatePoints,
-                            fatePoints = state.fatePoints,
-                            baseResiliencePoints = state.baseResiliencePoints,
-                            resiliencePoints = state.resiliencePoints,
-                            extraPoints = state.extraPoints,
-                            onFatePointsIncrease = { onEvent(CharacterAttributesEvent.IncreaseFatePoints) },
-                            onFatePointsDecrease = { onEvent(CharacterAttributesEvent.DecreaseFatePoints) },
-                            onResiliencePointsIncrease = { onEvent(CharacterAttributesEvent.IncreaseResiliencePoints) },
-                            onResiliencePointsDecrease = { onEvent(CharacterAttributesEvent.DecreaseResiliencePoints) },
-                        )
-                    }
-                    item {
-                        Row {
-                            CharacterCreatorButton(
-                                text = "Back",
-                                onClick = {
-                                    onEvent(CharacterAttributesEvent.OnDistributeFatePointsClick)
-                                }
-                            )
-                            CharacterCreatorButton(
-                                text = "Next",
-                                onClick = {
-                                    onEvent(CharacterAttributesEvent.OnNextClick)
-                                },
-                                enabled = !state.isLoading && state.extraPoints == 0
-                            )
-                        }
-                    }
-                } else {
-                    item {
-                        if (attributes.isNotEmpty() && diceThrows.isNotEmpty() && baseAttributeValues.isNotEmpty()) {
-                            Card {
-                                AttributesTable(
-                                    attributes = attributes,
-                                    diceThrow = state.rolledDiceResults.mapIndexed { index, result ->
-                                        if (result == 0) state.diceThrows.getOrNull(index) ?: "0d0"
-                                        else result.toString()
-                                    },
-                                    baseAttributeValue = baseAttributeValues,
-                                    totalAttributeValue = state.totalAttributeValues.map { it.toString() }
-                                )
-                            }
-                        }
-                    }
-                    item {
+                    FateResilienceCard(
+                        baseFatePoints = state.baseFatePoints,
+                        fatePoints = state.fatePoints,
+                        baseResiliencePoints = state.baseResiliencePoints,
+                        resiliencePoints = state.resiliencePoints,
+                        extraPoints = state.extraPoints,
+                        onFatePointsIncrease = { onEvent(CharacterAttributesEvent.IncreaseFatePoints) },
+                        onFatePointsDecrease = { onEvent(CharacterAttributesEvent.DecreaseFatePoints) },
+                        onResiliencePointsIncrease = { onEvent(CharacterAttributesEvent.IncreaseResiliencePoints) },
+                        onResiliencePointsDecrease = { onEvent(CharacterAttributesEvent.DecreaseResiliencePoints) },
+                    )
+                    Row {
                         CharacterCreatorButton(
-                            text = "Distribute fate points",
+                            text = "Back",
                             onClick = {
                                 onEvent(CharacterAttributesEvent.OnDistributeFatePointsClick)
                             }
                         )
+                        CharacterCreatorButton(
+                            text = "Next",
+                            onClick = {
+                                onEvent(CharacterAttributesEvent.OnNextClick)
+                            },
+                            enabled = !state.isLoading && state.extraPoints == 0
+                        )
                     }
+                } else {
+                    if (attributes.isNotEmpty() && diceThrows.isNotEmpty() && baseAttributeValues.isNotEmpty()) {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f)
+                        ) {
+                            AttributesTable(
+                                attributes = attributes,
+                                diceThrow = state.rolledDiceResults.mapIndexed { index, result ->
+                                    if (result == 0) state.diceThrows.getOrNull(index) ?: "0d0"
+                                    else result.toString()
+                                },
+                                baseAttributeValue = baseAttributeValues,
+                                totalAttributeValue = state.totalAttributeValues.map { it.toString() }
+                            )
+                        }
+                    }
+                    CharacterCreatorButton(
+                        text = "Distribute fate points",
+                        onClick = {
+                            onEvent(CharacterAttributesEvent.OnDistributeFatePointsClick)
+                        }
+                    )
                 }
             }
         }
