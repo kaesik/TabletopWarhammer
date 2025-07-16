@@ -14,13 +14,12 @@ class AndroidCharacterAttributesViewModel(
     }
 
     val state = viewModel.state
-    var onAllRolled: (() -> Unit)?
-        get() = viewModel.onAllRolled
-        set(value) {
-            viewModel.onAllRolled = value
-        }
 
     fun onEvent(event: CharacterAttributesEvent) {
         viewModel.onEvent(event)
+    }
+
+    fun restoreRolledAttributes(rolled: List<Int>, total: List<Int>) {
+        viewModel.restoreRolledAttributes(rolled, total)
     }
 }

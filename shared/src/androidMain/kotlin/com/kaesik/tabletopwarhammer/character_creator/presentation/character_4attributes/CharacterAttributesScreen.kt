@@ -51,6 +51,36 @@ fun CharacterAttributesScreenRoot(
         }
     }
 
+    LaunchedEffect(state.rolledDiceResults, state.totalAttributeValues) {
+        creatorViewModel.onEvent(
+            CharacterCreatorEvent.SaveRolledAttributes(
+                rolled = state.rolledDiceResults,
+                total = state.totalAttributeValues
+            )
+        )
+    }
+
+    val rolled = creatorState.rolledAttributes.takeIf { it.isNotEmpty() }
+    val total = creatorState.totalAttributes.takeIf { it.isNotEmpty() }
+    LaunchedEffect(true) {
+        viewModel.onEvent(
+            CharacterAttributesEvent.InitAttributesList(
+            speciesName = characterSpecies,
+            rolled = rolled,
+            total = total
+            )
+        )
+        viewModel.onEvent(CharacterAttributesEvent.InitFateAndResilience(characterSpecies))
+
+        if (creatorState.rolledAttributes.isNotEmpty() && creatorState.totalAttributes.isNotEmpty()) {
+            viewModel.restoreRolledAttributes(
+                rolled = creatorState.rolledAttributes,
+                total = creatorState.totalAttributes
+            )
+        }
+    }
+
+
     LaunchedEffect(creatorState.message, creatorState.isError) {
         creatorState.message?.let { message ->
             snackbarHostState.showCharacterCreatorSnackbar(
@@ -59,11 +89,6 @@ fun CharacterAttributesScreenRoot(
             )
             creatorViewModel.onEvent(CharacterCreatorEvent.ClearMessage)
         }
-    }
-
-    LaunchedEffect(true) {
-        viewModel.onEvent(CharacterAttributesEvent.InitAttributesList(characterSpecies))
-        viewModel.onEvent(CharacterAttributesEvent.InitFateAndResilience(characterSpecies))
     }
 
     val attributes = state.attributeList

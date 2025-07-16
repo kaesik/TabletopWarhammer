@@ -21,7 +21,13 @@ class CharacterAttributesViewModel(
 
     fun onEvent(event: CharacterAttributesEvent) {
         when (event) {
-            is CharacterAttributesEvent.InitAttributesList -> loadAttributesList(event.speciesName)
+            is CharacterAttributesEvent.InitAttributesList -> {
+                loadAttributesList(
+                    speciesName = event.speciesName,
+                    rolled = event.rolled,
+                    total = event.total
+                )
+            }
             is CharacterAttributesEvent.InitFateAndResilience -> loadFateAndResilience(event.speciesName)
             is CharacterAttributesEvent.OnDistributeFatePointsClick -> {
                 _state.value = state.value.copy(
@@ -72,7 +78,11 @@ class CharacterAttributesViewModel(
         }
     }
 
-    private fun loadAttributesList(speciesName: String) {
+    fun loadAttributesList(
+        speciesName: String,
+        rolled: List<Int>? = null,
+        total: List<Int>? = null
+    ) {
         attributeJob?.cancel()
         attributeJob = viewModelScope.launch {
             try {
@@ -97,13 +107,16 @@ class CharacterAttributesViewModel(
                 val baseAttributes = parsedAttributes.map { it.baseValue }
                 val diceThrows = parsedAttributes.map { it.diceThrow }
 
+                val rolledValues = rolled ?: List(baseAttributes.size) { 0 }
+                val totalValues = total ?: baseAttributes
+
                 _state.value = state.value.copy(
                     attributeList = attributeList,
                     species = species,
                     baseAttributeValues = baseAttributes,
                     diceThrows = diceThrows,
-                    rolledDiceResults = List(baseAttributes.size) { 0 },
-                    totalAttributeValues = baseAttributes,
+                    rolledDiceResults = rolledValues,
+                    totalAttributeValues = totalValues,
                     isLoading = false
                 )
             } catch (e: Exception) {
@@ -194,5 +207,16 @@ class CharacterAttributesViewModel(
         if (shouldGrantXp) {
             onAllRolled?.invoke()
         }
+    }
+
+    fun restoreRolledAttributes(rolled: List<Int>, total: List<Int>) {
+        val allRolled = rolled.all { it > 0 }
+        _state.value = _state.value.copy(
+            rolledDiceResults = rolled,
+            totalAttributeValues = total,
+            hasRolledDice = rolled.any { it > 0 },
+            hasRolledAllDice = allRolled,
+            hasReceivedXpForRolling = _state.value.hasReceivedXpForRolling || allRolled
+        )
     }
 }

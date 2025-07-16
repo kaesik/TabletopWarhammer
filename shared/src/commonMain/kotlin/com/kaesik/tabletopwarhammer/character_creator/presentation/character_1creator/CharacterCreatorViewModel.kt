@@ -59,6 +59,8 @@ class CharacterCreatorViewModel : ViewModel() {
                         selectedSpecies = event.speciesItem,
                         selectedClass = if (resetClassAndCareer) null else current.selectedClass,
                         selectedCareer = if (resetClassAndCareer) null else current.selectedCareer,
+                        rolledAttributes = if (resetClassAndCareer) emptyList() else current.rolledAttributes,
+                        totalAttributes = if (resetClassAndCareer) emptyList() else current.totalAttributes,
                         character = updatedCharacter,
                         message = "Selected species: $newSpecies"
                     )
@@ -74,6 +76,8 @@ class CharacterCreatorViewModel : ViewModel() {
                     )
                     val updated = current.copy(
                         selectedClass = event.classItem,
+                        rolledAttributes = emptyList(),
+                        totalAttributes = emptyList(),
                         character = updatedCharacter,
                         message = "Selected class: ${event.classItem.name}"
                     )
@@ -92,6 +96,8 @@ class CharacterCreatorViewModel : ViewModel() {
                     )
                     val updated = current.copy(
                         selectedCareer = event.careerItem,
+                        rolledAttributes = emptyList(),
+                        totalAttributes = emptyList(),
                         character = updatedCharacter,
                         message = "Selected career: ${event.careerItem?.name ?: ""}"
                     )
