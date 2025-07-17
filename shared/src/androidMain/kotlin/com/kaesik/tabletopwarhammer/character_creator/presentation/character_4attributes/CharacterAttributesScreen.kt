@@ -65,9 +65,9 @@ fun CharacterAttributesScreenRoot(
     LaunchedEffect(true) {
         viewModel.onEvent(
             CharacterAttributesEvent.InitAttributesList(
-            speciesName = characterSpecies,
-            rolled = rolled,
-            total = total
+                speciesName = characterSpecies,
+                rolled = rolled,
+                total = total
             )
         )
         viewModel.onEvent(CharacterAttributesEvent.InitFateAndResilience(characterSpecies))
@@ -146,6 +146,7 @@ fun CharacterAttributesScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 CharacterCreatorTitle("Character Attributes Screen")
+
                 if (state.rolledDiceResults.any { it == 0 }) {
                     Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                         CharacterCreatorButton(
@@ -158,6 +159,7 @@ fun CharacterAttributesScreen(
                         )
                     }
                 }
+
                 if (state.showFateResilienceCard) {
                     FateResilienceCard(
                         baseFatePoints = state.baseFatePoints,
@@ -170,6 +172,7 @@ fun CharacterAttributesScreen(
                         onResiliencePointsIncrease = { onEvent(CharacterAttributesEvent.IncreaseResiliencePoints) },
                         onResiliencePointsDecrease = { onEvent(CharacterAttributesEvent.DecreaseResiliencePoints) },
                     )
+
                     Row {
                         CharacterCreatorButton(
                             text = "Back",
@@ -194,21 +197,30 @@ fun CharacterAttributesScreen(
                         ) {
                             AttributesTable(
                                 attributes = attributes,
-                                diceThrow = state.rolledDiceResults.mapIndexed { index, result ->
-                                    if (result == 0) state.diceThrows.getOrNull(index) ?: "0d0"
-                                    else result.toString()
+                                diceThrows = state.rolledDiceResults.map { it.toString() },
+                                baseAttributeValues = baseAttributeValues,
+                                totalAttributeValues = state.totalAttributeValues.map { it.toString() },
+                                onOrderChange = { reordered ->
+                                    val rolled = reordered.map { it.toIntOrNull() ?: 0 }
+                                    onEvent(CharacterAttributesEvent.UpdateDiceThrowOrder(rolled))
                                 },
-                                baseAttributeValue = baseAttributeValues,
-                                totalAttributeValue = state.totalAttributeValues.map { it.toString() }
+                                isReordering = state.isReordering
                             )
                         }
                     }
-                    CharacterCreatorButton(
-                        text = "Distribute fate points",
-                        onClick = {
-                            onEvent(CharacterAttributesEvent.OnDistributeFatePointsClick)
-                        }
-                    )
+
+                    Row {
+                        CharacterCreatorButton(
+                            text = if (state.isReordering) "Done Reordering" else "Reorder Results",
+                            onClick = { onEvent(CharacterAttributesEvent.ToggleReorderMode) }
+                        )
+                        CharacterCreatorButton(
+                            text = "Distribute fate points",
+                            onClick = {
+                                onEvent(CharacterAttributesEvent.OnDistributeFatePointsClick)
+                            }
+                        )
+                    }
                 }
             }
         }

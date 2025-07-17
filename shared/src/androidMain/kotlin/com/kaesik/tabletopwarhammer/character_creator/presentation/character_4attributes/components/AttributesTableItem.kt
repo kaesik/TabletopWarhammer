@@ -1,66 +1,53 @@
 package com.kaesik.tabletopwarhammer.character_creator.presentation.character_4attributes.components
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-
 
 @Composable
 fun AttributesTableItem(
-    attribute: String,
+    attributeName: String,
     diceThrow: String,
-    baseAttributeValue: String,
-    totalAttributeValue: String,
+    baseValue: String,
+    totalValue: String,
+    isDragged: Boolean = false
 ) {
     Surface(
-        modifier = Modifier,
-        shadowElevation = 4.dp,
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                if (isDragged) MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                else Color.Transparent
+            ),
+        shadowElevation = if (isDragged) 4.dp else 0.dp
     ) {
-        Row {
-            Box(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = attribute,
-                )
-            }
-            Box(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = diceThrow,
-                )
-            }
-            Box(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = baseAttributeValue,
-                )
-            }
-            Box(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = totalAttributeValue,
-                )
-            }
+        Row(
+            modifier = Modifier.padding(4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            AttributeTableItemCell(attributeName)
+            AttributeTableItemCell(diceThrow, isDragged)
+            AttributeTableItemCell(baseValue)
+            AttributeTableItemCell(totalValue)
         }
     }
 }
 
 @Composable
-@Preview
-fun AttributesTableItemPreview() {
-    AttributesTableItem(
-        attribute = "Strength",
-        diceThrow = "12",
-        baseAttributeValue = "20",
-        totalAttributeValue = "12",
-    )
+fun AttributesTableItemHeader() {
+    Surface(shadowElevation = 4.dp) {
+        Row(modifier = Modifier.padding(4.dp)) {
+            AttributeTableItemCell("Attribute")
+            AttributeTableItemCell("Base Value")
+            AttributeTableItemCell("Total Value")
+        }
+    }
 }

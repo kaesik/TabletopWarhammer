@@ -28,6 +28,7 @@ class CharacterAttributesViewModel(
                     total = event.total
                 )
             }
+
             is CharacterAttributesEvent.InitFateAndResilience -> loadFateAndResilience(event.speciesName)
             is CharacterAttributesEvent.OnDistributeFatePointsClick -> {
                 _state.value = state.value.copy(
@@ -74,11 +75,45 @@ class CharacterAttributesViewModel(
             is CharacterAttributesEvent.RollOneDice -> rollOneDice()
             is CharacterAttributesEvent.RollAllDice -> rollAllDice()
 
+            is CharacterAttributesEvent.ToggleReorderMode -> {
+                _state.value = state.value.copy(isReordering = !state.value.isReordering)
+            }
+
+            is CharacterAttributesEvent.SwapAttributes -> {
+                val rolled = state.value.rolledDiceResults.toMutableList()
+                val total = state.value.totalAttributeValues.toMutableList()
+
+                rolled.swap(event.fromIndex, event.toIndex)
+                total.swap(event.fromIndex, event.toIndex)
+
+                _state.value = state.value.copy(
+                    rolledDiceResults = rolled,
+                    totalAttributeValues = total
+                )
+            }
+
+            is CharacterAttributesEvent.UpdateDiceThrowOrder -> {
+                val newRolled = event.reordered
+                val newTotal =
+                    state.value.baseAttributeValues.zip(newRolled) { base, roll -> base + roll }
+
+                _state.value = state.value.copy(
+                    rolledDiceResults = newRolled,
+                    totalAttributeValues = newTotal
+                )
+            }
+
             else -> {}
         }
     }
 
-    fun loadAttributesList(
+    private fun <T> MutableList<T>.swap(i: Int, j: Int) {
+        val tmp = this[i]
+        this[i] = this[j]
+        this[j] = tmp
+    }
+
+    private fun loadAttributesList(
         speciesName: String,
         rolled: List<Int>? = null,
         total: List<Int>? = null

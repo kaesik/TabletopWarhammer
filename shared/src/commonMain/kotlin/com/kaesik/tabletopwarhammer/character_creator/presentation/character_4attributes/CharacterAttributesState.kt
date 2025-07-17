@@ -9,6 +9,7 @@ data class CharacterAttributesState(
     val message: String? = null,
     val isError: Boolean = false,
     val isLoading: Boolean = false,
+    val isReordering: Boolean = false,
 
     val showFateResilienceCard: Boolean = false,
 

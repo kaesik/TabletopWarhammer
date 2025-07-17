@@ -62,6 +62,7 @@ kotlin {
             //put your multiplatform dependencies here
             implementation(libs.jetbrains.compose.navigation)
             implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.reorderable)
 
             implementation(libs.googleid)
 

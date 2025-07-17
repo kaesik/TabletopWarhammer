@@ -18,6 +18,7 @@ kotlinDateTime = "0.5.0"
 junit = "4.13.2"
 ksp = "2.0.21-1.0.28"
 coil3 = "3.0.0-rc02"
+reorderable = "2.5.1"
 
 #GOOGLE
 credentials = "1.2.0"
@@ -56,6 +57,7 @@ kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotl
 kotlin-date-time = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinDateTime" }
 #coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
+reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
 
 androidx-credentials = { module = "androidx.credentials:credentials", version.ref = "credentials" }
 androidx-credentials-play-services-auth = { module = "androidx.credentials:credentials-play-services-auth", version.ref = "credentials" }

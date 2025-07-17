@@ -6,6 +6,7 @@ sealed class CharacterAttributesEvent {
         val rolled: List<Int>?,
         val total: List<Int>?
     ) : CharacterAttributesEvent()
+
     data class InitFateAndResilience(val speciesName: String) : CharacterAttributesEvent()
 
     data object OnDistributeFatePointsClick : CharacterAttributesEvent()
@@ -17,6 +18,10 @@ sealed class CharacterAttributesEvent {
 
     data object RollOneDice : CharacterAttributesEvent()
     data object RollAllDice : CharacterAttributesEvent()
+
+    data object ToggleReorderMode : CharacterAttributesEvent()
+    data class SwapAttributes(val fromIndex: Int, val toIndex: Int) : CharacterAttributesEvent()
+    data class UpdateDiceThrowOrder(val reordered: List<Int>) : CharacterAttributesEvent()
 
     data object OnNextClick : CharacterAttributesEvent()
 }
