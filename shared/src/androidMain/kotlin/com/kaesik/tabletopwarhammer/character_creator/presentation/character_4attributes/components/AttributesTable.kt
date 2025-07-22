@@ -1,8 +1,10 @@
 package com.kaesik.tabletopwarhammer.character_creator.presentation.character_4attributes.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.draganddrop.dragAndDropTarget
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -35,76 +37,73 @@ fun AttributesTable(
     baseAttributeValues: List<String>,
     totalAttributeValues: List<String>,
     onOrderChange: (List<String>) -> Unit,
+    isReordering: Boolean,
     modifier: Modifier = Modifier
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(8.dp)
-    ) {
-        // Stała lewa kolumna
-        LazyColumn(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+    Column {
+        AttributesTableItemHeader()
+        Row(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(8.dp)
         ) {
-            item {
-                AttributesTableItemHeader()
+            LazyColumn(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                itemsIndexed(attributes) { index, attr ->
+                    AttributesTableItem(
+                        attributeName = attr.name,
+                        diceThrow = diceThrows.getOrElse(index) { "" },
+                        baseValue = baseAttributeValues.getOrElse(index) { "0" },
+                        totalValue = totalAttributeValues.getOrElse(index) { "0" },
+                        isDragged = isReordering
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+
+            val gridState = rememberLazyGridState()
+            val reorderableState = rememberReorderableLazyGridState(gridState) { from, to ->
+                val newOrder = diceThrows.toMutableList().apply {
+                    add(to.index, removeAt(from.index))
+                }
+                onOrderChange(newOrder)
             }
 
-            itemsIndexed(attributes) { index, attr ->
-                AttributesTableItem(
-                    attributeName = attr.name,
-                    diceThrow = diceThrows.getOrElse(index) { "" },
-                    baseValue = baseAttributeValues.getOrElse(index) { "0" },
-                    totalValue = totalAttributeValues.getOrElse(index) { "0" },
-                    isDragged = isReordering
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.width(16.dp))
-
-        val gridState = rememberLazyGridState()
-        val reorderableState = rememberReorderableLazyGridState(gridState) { from, to ->
-            val newOrder = diceThrows.toMutableList().apply {
-                add(to.index, removeAt(from.index))
-            }
-            onOrderChange(newOrder)
-        }
-
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(1), // jedna kolumna (bo mamy tyle samo wierszy co attributes)
-            state = gridState,
-            modifier = Modifier
-                .weight(0.5f),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            itemsIndexed(
-                diceThrows,
-                key = { index, value -> "$value-$index" }) { index, diceThrow ->
-                ReorderableItem(reorderableState, key = "$diceThrow-$index") { isDragging ->
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(
-                                if (isDragging) MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-                                else MaterialTheme.colorScheme.surface
-                            )
-                            .padding(8.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(1),
+                state = gridState,
+                modifier = Modifier
+                    .weight(0.5f),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                itemsIndexed(
+                    diceThrows,
+                    key = { index, value -> "$value-$index" }
+                ) { index, diceThrow ->
+                    ReorderableItem(reorderableState, key = "$diceThrow-$index") { isDragging ->
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(
+                                    if (isDragging) MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                                    else MaterialTheme.colorScheme.surface
+                                )
+                                .padding(8.dp)
                         ) {
-                            Text(text = diceThrow)
-
-                            if (isReordering) {
-                                IconButton(
-                                    modifier = Modifier.draggableHandle(),
-                                    onClick = {}
-                                ) {
-                                    Icon(Icons.Rounded.DragHandle, contentDescription = "Reorder")
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                if (isReordering) {
+                                    Text(
+                                        text = diceThrow,
+                                        modifier = Modifier.draggableHandle()
+                                    )
+                                } else {
+                                    Text(text = diceThrow)
                                 }
                             }
                         }
