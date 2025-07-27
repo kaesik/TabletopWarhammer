@@ -26,7 +26,7 @@ import com.kaesik.tabletopwarhammer.core.data.remote.HttpClientFactory
 import com.kaesik.tabletopwarhammer.core.domain.character.CharacterDataSource
 import com.kaesik.tabletopwarhammer.core.domain.library.items.AttributeItem
 import com.kaesik.tabletopwarhammer.database.TabletopWarhammerDatabase
-import com.kaesik.tabletopwarhammer.library.data.library.LibraryClientImpl
+import com.kaesik.tabletopwarhammer.library.data.LibraryClientImpl
 import com.kaesik.tabletopwarhammer.library.domain.library.LibraryClient
 import com.kaesik.tabletopwarhammer.library.domain.library.items.LibraryItem
 import com.kaesik.tabletopwarhammer.library.presentation.library_1.LibraryViewModel
@@ -37,6 +37,9 @@ import com.kaesik.tabletopwarhammer.main.domain.menu.MenuClient
 import com.kaesik.tabletopwarhammer.main.presentation.about.AboutViewModel
 import com.kaesik.tabletopwarhammer.main.presentation.menu.MenuViewModel
 import com.kaesik.tabletopwarhammer.main.presentation.settings.SettingsViewModel
+import com.kaesik.tabletopwarhammer.user.data.UserClientImpl
+import com.kaesik.tabletopwarhammer.user.domain.UserClient
+import com.kaesik.tabletopwarhammer.user.presentation.UserViewModel
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
@@ -69,6 +72,10 @@ val sharedModule = module {
         )
     }
     viewModelOf(::RegisterViewModel)
+
+    // User
+    single<UserClient> { UserClientImpl() }
+    viewModelOf(::UserViewModel)
 
     // Main
     single<MenuClient> { MenuClientImpl() }

@@ -52,6 +52,8 @@ import com.kaesik.tabletopwarhammer.main.presentation.menu.AndroidMenuViewModel
 import com.kaesik.tabletopwarhammer.main.presentation.menu.MenuScreenRoot
 import com.kaesik.tabletopwarhammer.main.presentation.settings.AndroidSettingsViewModel
 import com.kaesik.tabletopwarhammer.main.presentation.settings.SettingsScreenRoot
+import com.kaesik.tabletopwarhammer.user.presentation.AndroidUserViewModel
+import com.kaesik.tabletopwarhammer.user.presentation.UserScreenRoot
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.getKoin
 
@@ -159,6 +161,16 @@ fun App() {
                     val viewModel = koinViewModel<AndroidAboutViewModel>()
                     AboutScreenRoot(
                         viewModel = viewModel,
+                    )
+                }
+            }
+            navigation<Route.UserGraph>(
+                startDestination = Route.User
+            ) {
+                composable<Route.User> {
+                    val viewModel = koinViewModel<AndroidUserViewModel>()
+                    UserScreenRoot(
+                        viewModel = viewModel
                     )
                 }
             }

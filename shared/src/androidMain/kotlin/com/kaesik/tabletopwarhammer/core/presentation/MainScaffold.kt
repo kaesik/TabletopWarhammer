@@ -85,7 +85,7 @@ fun MainScaffold(
                     navController.navigate(Route.Library)
                 },
                 onUserClick = {
-
+                    navController.navigate(Route.User)
                 },
             )
         }

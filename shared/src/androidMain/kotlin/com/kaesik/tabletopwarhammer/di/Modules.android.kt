@@ -24,6 +24,7 @@ import com.kaesik.tabletopwarhammer.library.presentation.library_3item.AndroidLi
 import com.kaesik.tabletopwarhammer.main.presentation.about.AndroidAboutViewModel
 import com.kaesik.tabletopwarhammer.main.presentation.menu.AndroidMenuViewModel
 import com.kaesik.tabletopwarhammer.main.presentation.settings.AndroidSettingsViewModel
+import com.kaesik.tabletopwarhammer.user.presentation.AndroidUserViewModel
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.okhttp.OkHttp
 import org.koin.android.ext.koin.androidApplication
@@ -44,6 +45,9 @@ actual val platformModule: Module
         viewModelOf(::AndroidIntroViewModel)
         viewModelOf(::AndroidLoginViewModel)
         viewModelOf(::AndroidRegisterViewModel)
+
+        //User
+        viewModelOf(::AndroidUserViewModel)
 
         // Main
         viewModelOf(::AndroidMenuViewModel)

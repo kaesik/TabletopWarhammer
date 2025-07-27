@@ -80,7 +80,6 @@ fun CharacterAttributesScreenRoot(
         }
     }
 
-
     LaunchedEffect(creatorState.message, creatorState.isError) {
         creatorState.message?.let { message ->
             snackbarHostState.showCharacterCreatorSnackbar(
@@ -137,11 +136,11 @@ fun CharacterAttributesScreen(
         isLoading = state.isLoading,
         isError = state.isError,
         error = state.error,
-        content = {
+        content = { padding ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp),
+                    .padding(padding),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {

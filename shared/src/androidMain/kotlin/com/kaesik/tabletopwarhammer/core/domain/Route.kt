@@ -33,6 +33,13 @@ sealed interface Route {
     @Serializable
     data object Register : Route
 
+    // USER
+    @Serializable
+    data object UserGraph : Route
+
+    @Serializable
+    data object User : Route
+
     // LIBRARY
     @Serializable
     data object LibraryGraph : Route

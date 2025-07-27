@@ -415,7 +415,10 @@ class CharacterCreatorClientImpl : CharacterCreatorClient {
         }
     }
 
-    override suspend fun getTrappingsDetails(className: String, careerPathName: String): ItemItem {
+    override suspend fun getTrappingsDetails(
+        className: String,
+        careerPathName: String
+    ): ItemItem {
         TODO("Not yet implemented")
     }
 

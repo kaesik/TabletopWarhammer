@@ -1,4 +1,4 @@
-package com.kaesik.tabletopwarhammer.library.data.library
+package com.kaesik.tabletopwarhammer.library.data
 
 import com.kaesik.tabletopwarhammer.core.data.handleException
 import com.kaesik.tabletopwarhammer.core.data.library.LibraryEnum
