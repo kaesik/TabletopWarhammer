@@ -12,10 +12,17 @@ import androidx.compose.ui.unit.dp
 
 
 @Composable
-fun AttributeTableItemCell(text: String, isDragged: Boolean = false) {
+fun AttributeTableItemCell(
+    text: String,
+    isDragged: Boolean = false,
+    modifier: Modifier = Modifier
+) {
     Box(
-        modifier = Modifier
-            .background(if (isDragged) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f) else Color.Transparent)
+        modifier = modifier
+            .background(
+                if (isDragged) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+                else Color.Transparent
+            )
             .padding(4.dp)
     ) {
         Text(text)

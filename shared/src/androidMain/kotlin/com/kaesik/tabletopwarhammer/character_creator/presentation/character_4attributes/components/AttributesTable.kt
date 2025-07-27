@@ -48,7 +48,7 @@ fun AttributesTable(
                 .padding(8.dp)
         ) {
             LazyColumn(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1.5f),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 itemsIndexed(attributes) { index, attr ->
@@ -74,8 +74,7 @@ fun AttributesTable(
             LazyVerticalGrid(
                 columns = GridCells.Fixed(1),
                 state = gridState,
-                modifier = Modifier
-                    .weight(0.5f),
+                modifier = Modifier.weight(0.5f),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 itemsIndexed(

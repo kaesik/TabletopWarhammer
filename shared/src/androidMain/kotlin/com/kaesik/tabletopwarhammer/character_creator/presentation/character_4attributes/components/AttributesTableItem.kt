@@ -1,6 +1,7 @@
 package com.kaesik.tabletopwarhammer.character_creator.presentation.character_4attributes.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -18,10 +19,11 @@ fun AttributesTableItem(
     diceThrow: String,
     baseValue: String,
     totalValue: String,
-    isDragged: Boolean = false
+    isDragged: Boolean = false,
+    modifier: Modifier = Modifier
 ) {
     Surface(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .background(
                 if (isDragged) MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
@@ -31,12 +33,12 @@ fun AttributesTableItem(
     ) {
         Row(
             modifier = Modifier.padding(4.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            AttributeTableItemCell(attributeName)
-            AttributeTableItemCell(diceThrow, isDragged)
-            AttributeTableItemCell(baseValue)
-            AttributeTableItemCell(totalValue)
+            AttributeTableItemCell(attributeName, modifier = Modifier.weight(1f))
+            AttributeTableItemCell(baseValue, modifier = Modifier.weight(0.5f))
+            AttributeTableItemCell(totalValue, modifier = Modifier.weight(0.5f))
         }
     }
 }
@@ -44,10 +46,11 @@ fun AttributesTableItem(
 @Composable
 fun AttributesTableItemHeader() {
     Surface(shadowElevation = 4.dp) {
-        Row(modifier = Modifier.padding(4.dp)) {
+        Row(modifier = Modifier.padding(4.dp).fillMaxWidth()) {
             AttributeTableItemCell("Attribute")
             AttributeTableItemCell("Base Value")
             AttributeTableItemCell("Total Value")
+            AttributeTableItemCell("Dice Throw")
         }
     }
 }
