@@ -15,7 +15,7 @@ class CharacterAttributesViewModel(
 ) : ViewModel() {
     private val _state = MutableStateFlow(CharacterAttributesState())
     val state = _state.asStateFlow()
-    var onAllRolled: (() -> Unit)? = null
+    private var onAllRolled: (() -> Unit)? = null
 
     private var attributeJob: Job? = null
 

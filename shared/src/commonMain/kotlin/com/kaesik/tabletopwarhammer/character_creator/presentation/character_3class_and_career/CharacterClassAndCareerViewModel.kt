@@ -23,17 +23,18 @@ class CharacterClassAndCareerViewModel(
 
     fun onEvent(event: CharacterClassAndCareerEvent) {
         when (event) {
+            // Initialize the class and career list when the view model is created
+            is CharacterClassAndCareerEvent.InitClassList -> {
+                loadClassList()
+            }
             is CharacterClassAndCareerEvent.InitCareerList -> {
-                loadCareersList(
+                loadCareerList(
                     speciesName = event.speciesName,
                     className = event.className
                 )
             }
 
-            is CharacterClassAndCareerEvent.InitClassList -> {
-                loadClassesList()
-            }
-
+            // Select a class and career from the class list
             is CharacterClassAndCareerEvent.OnClassSelect -> {
                 val selected = state.value.classList.find { it.id == event.id }
                 _state.value = state.value.copy(
@@ -41,20 +42,22 @@ class CharacterClassAndCareerViewModel(
                     selectedCareer = null
                 )
             }
-
             is CharacterClassAndCareerEvent.OnCareerSelect -> {
                 val selected = state.value.careerList.find { it.id == event.id }
-                _state.value = state.value.copy(selectedCareer = selected)
+                _state.value = state.value.copy(
+                    selectedCareer = selected
+                )
             }
 
+            // Set the selected class and career
             is CharacterClassAndCareerEvent.SetSelectedClass -> {
                 _state.update { it.copy(selectedClass = event.classItem) }
             }
-
             is CharacterClassAndCareerEvent.SetSelectedCareer -> {
                 _state.update { it.copy(selectedCareer = event.careerItem) }
             }
 
+            // Set the rolled class and career
             is CharacterClassAndCareerEvent.SetHasRolledClassAndCareer -> {
                 _state.update { it.copy(hasRolledClassAndCareer = true) }
             }
@@ -63,7 +66,7 @@ class CharacterClassAndCareerViewModel(
         }
     }
 
-    private fun loadClassesList() {
+    private fun loadClassList() {
         classJob?.cancel()
         classJob = viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
@@ -79,7 +82,6 @@ class CharacterClassAndCareerViewModel(
                 }
 
             } catch (e: CancellationException) {
-                println("Classes fetch cancelled normally")
                 _state.update { it.copy(isLoading = false) }
 
             } catch (e: DataException) {
@@ -89,7 +91,6 @@ class CharacterClassAndCareerViewModel(
                         isLoading = false
                     )
                 }
-
             } catch (e: Exception) {
                 e.printStackTrace()
                 _state.update {
@@ -102,10 +103,7 @@ class CharacterClassAndCareerViewModel(
         }
     }
 
-    private fun loadCareersList(
-        speciesName: String,
-        className: String,
-    ) {
+    private fun loadCareerList(speciesName: String, className: String ) {
         careerJob?.cancel()
         careerJob = viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }

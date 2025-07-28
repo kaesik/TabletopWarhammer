@@ -13,6 +13,7 @@ sealed class CharacterClassAndCareerEvent {
 
     data class SetSelectedClass(val classItem: ClassItem) : CharacterClassAndCareerEvent()
     data class OnClassSelect(val id: String) : CharacterClassAndCareerEvent()
+
     data class SetSelectedCareer(val careerItem: CareerItem) : CharacterClassAndCareerEvent()
     data class OnCareerSelect(val id: String) : CharacterClassAndCareerEvent()
 

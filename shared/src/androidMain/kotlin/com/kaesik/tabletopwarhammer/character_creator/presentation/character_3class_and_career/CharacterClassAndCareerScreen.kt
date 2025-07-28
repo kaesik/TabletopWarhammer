@@ -48,8 +48,9 @@ fun CharacterClassAndCareerScreenRoot(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val creatorState by creatorViewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
-    val coroutineScope = rememberCoroutineScope()
+    val coroutineScope = rememberCoroutineScope() // ?
 
+    // Handle messages from the creatorViewModel
     LaunchedEffect(creatorState.message, creatorState.isError) {
         creatorState.message?.let { message ->
             snackbarHostState.showCharacterCreatorSnackbar(
@@ -60,11 +61,15 @@ fun CharacterClassAndCareerScreenRoot(
         }
     }
 
+    // Initialize class and career list and set selected class and career if they exist
     LaunchedEffect(creatorState.selectedClass, creatorState.selectedCareer) {
         viewModel.onEvent(CharacterClassAndCareerEvent.InitClassList)
 
+        // If a class or career is already selected, set them in the view model
         creatorState.selectedClass?.let { classItem ->
             viewModel.onEvent(CharacterClassAndCareerEvent.SetSelectedClass(classItem))
+
+            // Initialize career list based on selected class
             viewModel.onEvent(
                 CharacterClassAndCareerEvent.InitCareerList(
                     speciesName = creatorViewModel.state.value.character.species,
@@ -73,15 +78,10 @@ fun CharacterClassAndCareerScreenRoot(
             )
         }
 
+        // If a career is already selected, set it in the view model
         creatorState.selectedCareer?.let { careerItem ->
             viewModel.onEvent(CharacterClassAndCareerEvent.SetSelectedCareer(careerItem))
         }
-    }
-
-    LaunchedEffect(true) {
-        println("CharacterSpeciesScreenRoot: cLass = ${creatorState.character.cLass}")
-        println("CharacterSpeciesScreenRoot: career = ${creatorState.character.career}")
-        println("CharacterSpeciesScreenRoot: careerPath = ${creatorState.character.careerPath}")
     }
 
     CharacterClassAndCareerScreen(

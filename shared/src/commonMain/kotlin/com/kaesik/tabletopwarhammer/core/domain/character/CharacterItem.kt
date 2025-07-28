@@ -1,7 +1,7 @@
 package com.kaesik.tabletopwarhammer.core.domain.character
 
 data class CharacterItem(
-    val id: Int,
+    val id: Int ,
 
     // CHARACTER
     val name: String,

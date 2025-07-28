@@ -1,6 +1,7 @@
 package com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator
 
 import androidx.lifecycle.ViewModel
+import com.kaesik.tabletopwarhammer.core.domain.character.CharacterItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -15,6 +16,19 @@ class CharacterCreatorViewModel : ViewModel() {
 
     fun onEvent(event: CharacterCreatorEvent) {
         when (event) {
+            is CharacterCreatorEvent.OnCreateCharacterSelect -> {
+                _state.update { current ->
+                    val updated = current.copy(
+                        character = CharacterItem.default(),
+                        selectedSpecies = null,
+                        selectedClass = null,
+                        selectedCareer = null,
+                        rolledAttributes = emptyList(),
+                        totalAttributes = emptyList(),
+                    )
+                    updated
+                }
+            }
             is CharacterCreatorEvent.ShowMessage -> {
                 _state.update { it.copy(message = event.message) }
             }

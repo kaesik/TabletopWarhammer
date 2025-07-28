@@ -48,6 +48,5 @@ fun MainBottomBar(
 @Preview
 @Composable
 fun MainBottomBarPreview() {
-    MainBottomBar(
-    )
+    MainBottomBar()
 }

@@ -39,6 +39,7 @@ fun CharacterSpeciesScreenRoot(
     val creatorState by creatorViewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
+    // Handle messages from the creatorViewModel
     LaunchedEffect(creatorState.message, creatorState.isError) {
         creatorState.message?.let { message ->
             snackbarHostState.showCharacterCreatorSnackbar(
@@ -49,16 +50,14 @@ fun CharacterSpeciesScreenRoot(
         }
     }
 
+    // Initialize species list and set selected species if already chosen
     LaunchedEffect(true) {
         viewModel.onEvent(CharacterSpeciesEvent.InitSpeciesList)
-        val alreadySelectedSpecies = creatorViewModel.state.value.selectedSpecies
-        if (alreadySelectedSpecies != null) {
-            viewModel.onEvent(CharacterSpeciesEvent.OnSpeciesSelect(alreadySelectedSpecies.id))
-        }
-    }
 
-    LaunchedEffect(true) {
-        println("CharacterSpeciesScreenRoot: species = ${creatorState.character.species}")
+        // If a species is already selected in the creator state, set it in the species view model
+        creatorState.selectedSpecies?.let { speciesItem ->
+            viewModel.onEvent(CharacterSpeciesEvent.SetSelectedSpecies(speciesItem))
+        }
     }
 
     CharacterSpeciesScreen(
