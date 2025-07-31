@@ -32,7 +32,9 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.components.sh
 import com.kaesik.tabletopwarhammer.core.domain.library.items.CareerItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.ClassItem
 import com.kaesik.tabletopwarhammer.core.presentation.MainScaffold
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.getKoin
 
@@ -52,35 +54,39 @@ fun CharacterClassAndCareerScreenRoot(
 
     // Handle messages from the creatorViewModel
     LaunchedEffect(creatorState.message, creatorState.isError) {
-        creatorState.message?.let { message ->
-            snackbarHostState.showCharacterCreatorSnackbar(
-                message = message,
-                type = if (creatorState.isError == true) SnackbarType.Error else SnackbarType.Success
-            )
-            creatorViewModel.onEvent(CharacterCreatorEvent.ClearMessage)
+        withContext(Dispatchers.IO) {
+            creatorState.message?.let { message ->
+                snackbarHostState.showCharacterCreatorSnackbar(
+                    message = message,
+                    type = if (creatorState.isError == true) SnackbarType.Error else SnackbarType.Success
+                )
+                creatorViewModel.onEvent(CharacterCreatorEvent.ClearMessage)
+            }
         }
     }
 
     // Initialize class and career list and set selected class and career if they exist
     LaunchedEffect(creatorState.selectedClass, creatorState.selectedCareer) {
-        viewModel.onEvent(CharacterClassAndCareerEvent.InitClassList)
+        withContext(Dispatchers.IO) {
+            viewModel.onEvent(CharacterClassAndCareerEvent.InitClassList)
 
-        // If a class or career is already selected, set them in the view model
-        creatorState.selectedClass?.let { classItem ->
-            viewModel.onEvent(CharacterClassAndCareerEvent.SetSelectedClass(classItem))
+            // If a class or career is already selected, set them in the view model
+            creatorState.selectedClass?.let { classItem ->
+                viewModel.onEvent(CharacterClassAndCareerEvent.SetSelectedClass(classItem))
 
-            // Initialize career list based on selected class
-            viewModel.onEvent(
-                CharacterClassAndCareerEvent.InitCareerList(
-                    speciesName = creatorViewModel.state.value.character.species,
-                    className = classItem.name
+                // Initialize career list based on selected class
+                viewModel.onEvent(
+                    CharacterClassAndCareerEvent.InitCareerList(
+                        speciesName = creatorViewModel.state.value.character.species,
+                        className = classItem.name
+                    )
                 )
-            )
-        }
+            }
 
-        // If a career is already selected, set it in the view model
-        creatorState.selectedCareer?.let { careerItem ->
-            viewModel.onEvent(CharacterClassAndCareerEvent.SetSelectedCareer(careerItem))
+            // If a career is already selected, set it in the view model
+            creatorState.selectedCareer?.let { careerItem ->
+                viewModel.onEvent(CharacterClassAndCareerEvent.SetSelectedCareer(careerItem))
+            }
         }
     }
 

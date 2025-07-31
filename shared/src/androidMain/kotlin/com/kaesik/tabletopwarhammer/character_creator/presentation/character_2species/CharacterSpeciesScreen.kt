@@ -25,6 +25,8 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.components.Sn
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.showCharacterCreatorSnackbar
 import com.kaesik.tabletopwarhammer.core.domain.library.items.SpeciesItem
 import com.kaesik.tabletopwarhammer.core.presentation.MainScaffold
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.getKoin
 
@@ -41,22 +43,26 @@ fun CharacterSpeciesScreenRoot(
 
     // Handle messages from the creatorViewModel
     LaunchedEffect(creatorState.message, creatorState.isError) {
-        creatorState.message?.let { message ->
-            snackbarHostState.showCharacterCreatorSnackbar(
-                message = message,
-                type = if (creatorState.isError == true) SnackbarType.Error else SnackbarType.Success
-            )
-            creatorViewModel.onEvent(CharacterCreatorEvent.ClearMessage)
+        withContext(Dispatchers.IO) {
+            creatorState.message?.let { message ->
+                snackbarHostState.showCharacterCreatorSnackbar(
+                    message = message,
+                    type = if (creatorState.isError == true) SnackbarType.Error else SnackbarType.Success
+                )
+                creatorViewModel.onEvent(CharacterCreatorEvent.ClearMessage)
+            }
         }
     }
 
     // Initialize species list and set selected species if already chosen
     LaunchedEffect(true) {
-        viewModel.onEvent(CharacterSpeciesEvent.InitSpeciesList)
+        withContext(Dispatchers.IO) {
+            viewModel.onEvent(CharacterSpeciesEvent.InitSpeciesList)
 
-        // If a species is already selected in the creator state, set it in the species view model
-        creatorState.selectedSpecies?.let { speciesItem ->
-            viewModel.onEvent(CharacterSpeciesEvent.SetSelectedSpecies(speciesItem))
+            // If a species is already selected in the creator state, set it in the species view model
+            creatorState.selectedSpecies?.let { speciesItem ->
+                viewModel.onEvent(CharacterSpeciesEvent.SetSelectedSpecies(speciesItem))
+            }
         }
     }
 

@@ -29,6 +29,7 @@ class CharacterCreatorViewModel : ViewModel() {
                     updated
                 }
             }
+
             is CharacterCreatorEvent.ShowMessage -> {
                 _state.update { it.copy(message = event.message) }
             }
