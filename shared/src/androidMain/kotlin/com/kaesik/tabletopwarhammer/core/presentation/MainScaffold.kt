@@ -78,9 +78,6 @@ fun MainScaffold(
                         popUpTo(Route.Menu) { inclusive = true }
                     }
                 },
-                onFavoriteClick = {
-
-                },
                 onLibraryClick = {
                     navController.navigate(Route.Library)
                 },
