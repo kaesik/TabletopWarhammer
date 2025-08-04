@@ -32,9 +32,7 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.components.sh
 import com.kaesik.tabletopwarhammer.core.domain.library.items.CareerItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.ClassItem
 import com.kaesik.tabletopwarhammer.core.presentation.MainScaffold
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.getKoin
 
@@ -54,39 +52,35 @@ fun CharacterClassAndCareerScreenRoot(
 
     // Handle messages from the creatorViewModel
     LaunchedEffect(creatorState.message, creatorState.isError) {
-        withContext(Dispatchers.IO) {
-            creatorState.message?.let { message ->
-                snackbarHostState.showCharacterCreatorSnackbar(
-                    message = message,
-                    type = if (creatorState.isError == true) SnackbarType.Error else SnackbarType.Success
-                )
-                creatorViewModel.onEvent(CharacterCreatorEvent.ClearMessage)
-            }
+        creatorState.message?.let { message ->
+            snackbarHostState.showCharacterCreatorSnackbar(
+                message = message,
+                type = if (creatorState.isError == true) SnackbarType.Error else SnackbarType.Success
+            )
+            creatorViewModel.onEvent(CharacterCreatorEvent.ClearMessage)
         }
     }
 
     // Initialize class and career list and set selected class and career if they exist
     LaunchedEffect(creatorState.selectedClass, creatorState.selectedCareer) {
-        withContext(Dispatchers.IO) {
-            viewModel.onEvent(CharacterClassAndCareerEvent.InitClassList)
+        viewModel.onEvent(CharacterClassAndCareerEvent.InitClassList)
 
-            // If a class or career is already selected, set them in the view model
-            creatorState.selectedClass?.let { classItem ->
-                viewModel.onEvent(CharacterClassAndCareerEvent.SetSelectedClass(classItem))
+        // If a class or career is already selected, set them in the view model
+        creatorState.selectedClass?.let { classItem ->
+            viewModel.onEvent(CharacterClassAndCareerEvent.SetSelectedClass(classItem))
 
-                // Initialize career list based on selected class
-                viewModel.onEvent(
-                    CharacterClassAndCareerEvent.InitCareerList(
-                        speciesName = creatorViewModel.state.value.character.species,
-                        className = classItem.name
-                    )
+            // Initialize career list based on selected class
+            viewModel.onEvent(
+                CharacterClassAndCareerEvent.InitCareerList(
+                    speciesName = creatorViewModel.state.value.character.species,
+                    className = classItem.name
                 )
-            }
+            )
+        }
 
-            // If a career is already selected, set it in the view model
-            creatorState.selectedCareer?.let { careerItem ->
-                viewModel.onEvent(CharacterClassAndCareerEvent.SetSelectedCareer(careerItem))
-            }
+        // If a career is already selected, set it in the view model
+        creatorState.selectedCareer?.let { careerItem ->
+            viewModel.onEvent(CharacterClassAndCareerEvent.SetSelectedCareer(careerItem))
         }
     }
 
@@ -94,49 +88,58 @@ fun CharacterClassAndCareerScreenRoot(
         state = state,
         onEvent = { event ->
             when (event) {
+
+                // Initialize and set class
                 is CharacterClassAndCareerEvent.OnClassSelect -> {
                     viewModel.onEvent(event)
-                    state.classList.find { it.id == event.id }?.let { classItem ->
-                        creatorViewModel.onEvent(CharacterCreatorEvent.SetClass(classItem))
+
+                    val selectedClass = state.classList.find { it.id == event.id }
+                    val currentClassId = creatorState.selectedClass?.id
+
+                    // Check if the selected class is different from the current class
+                    if (selectedClass != null && selectedClass.id != currentClassId) {
+                        println(selectedClass.id)
+                        println(currentClassId)
+                        creatorViewModel.onEvent(CharacterCreatorEvent.SetClass(selectedClass))
                         creatorViewModel.onEvent(CharacterCreatorEvent.SetCareer(null, null))
                         viewModel.onEvent(
                             CharacterClassAndCareerEvent.InitCareerList(
                                 speciesName = creatorViewModel.state.value.character.species,
-                                className = classItem.name
+                                className = selectedClass.name
                             )
                         )
-                        onClassSelect(classItem)
+                        onClassSelect(selectedClass)
                     }
-
                 }
 
+                // Initialize and set career
                 is CharacterClassAndCareerEvent.OnCareerSelect -> {
-                    val selectedCareer = state.careerList.find { it.id == event.id }
-                        ?: return@CharacterClassAndCareerScreen
-                    val firstCareerPathName = selectedCareer.careerPath
-                        ?.split(",")?.firstOrNull()?.trim()
+                    viewModel.onEvent(event)
 
-                    coroutineScope.launch {
-                        if (!firstCareerPathName.isNullOrEmpty()) {
-                            try {
+                    val selectedCareer = state.careerList.find { it.id == event.id }
+                    val currentCareerId = creatorState.selectedCareer?.id
+
+                    // Check if the selected career is different from the current career
+                    if (selectedCareer != null && selectedCareer.id != currentCareerId) {
+                        val firstCareerPathName = selectedCareer.careerPath
+                            ?.split(",")?.firstOrNull()?.trim()
+
+                        // If the career has a path, fetch it
+                        coroutineScope.launch {
+                            if (!firstCareerPathName.isNullOrEmpty()) {
                                 val careerPathItem = viewModel
                                     .characterCreatorClient
                                     .getCareerPath(pathName = firstCareerPathName)
+
                                 creatorViewModel.onEvent(
                                     CharacterCreatorEvent.SetCareer(
                                         careerItem = selectedCareer,
                                         careerPathItem = careerPathItem
                                     )
                                 )
-                            } catch (e: Exception) {
-                                println("Error fetching career path: ${e.message}")
                             }
-                        } else {
-                            println("CareerPath jest puste, nie szukamy w bazie.")
+                            onCareerSelect(selectedCareer)
                         }
-
-                        viewModel.onEvent(event)
-                        onCareerSelect(selectedCareer)
                     }
                 }
 

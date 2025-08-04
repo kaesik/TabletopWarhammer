@@ -1,6 +1,7 @@
 package com.kaesik.tabletopwarhammer.character_creator.presentation.character_2species
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,14 +20,10 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1cr
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator.CharacterCreatorEvent
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorButton
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorSnackbarHost
-import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorTitle
-import com.kaesik.tabletopwarhammer.character_creator.presentation.components.DiceThrow
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.SnackbarType
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.showCharacterCreatorSnackbar
 import com.kaesik.tabletopwarhammer.core.domain.library.items.SpeciesItem
 import com.kaesik.tabletopwarhammer.core.presentation.MainScaffold
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.getKoin
 
@@ -43,26 +40,22 @@ fun CharacterSpeciesScreenRoot(
 
     // Handle messages from the creatorViewModel
     LaunchedEffect(creatorState.message, creatorState.isError) {
-        withContext(Dispatchers.IO) {
-            creatorState.message?.let { message ->
-                snackbarHostState.showCharacterCreatorSnackbar(
-                    message = message,
-                    type = if (creatorState.isError == true) SnackbarType.Error else SnackbarType.Success
-                )
-                creatorViewModel.onEvent(CharacterCreatorEvent.ClearMessage)
-            }
+        creatorState.message?.let { message ->
+            snackbarHostState.showCharacterCreatorSnackbar(
+                message = message,
+                type = if (creatorState.isError == true) SnackbarType.Error else SnackbarType.Success
+            )
+            creatorViewModel.onEvent(CharacterCreatorEvent.ClearMessage)
         }
     }
 
     // Initialize species list and set selected species if already chosen
     LaunchedEffect(true) {
-        withContext(Dispatchers.IO) {
-            viewModel.onEvent(CharacterSpeciesEvent.InitSpeciesList)
+        viewModel.onEvent(CharacterSpeciesEvent.InitSpeciesList)
 
-            // If a species is already selected in the creator state, set it in the species view model
-            creatorState.selectedSpecies?.let { speciesItem ->
-                viewModel.onEvent(CharacterSpeciesEvent.SetSelectedSpecies(speciesItem))
-            }
+        // If a species is already selected in the creator state, set it in the species view model
+        creatorState.selectedSpecies?.let { speciesItem ->
+            viewModel.onEvent(CharacterSpeciesEvent.SetSelectedSpecies(speciesItem))
         }
     }
 
@@ -70,6 +63,8 @@ fun CharacterSpeciesScreenRoot(
         state = state,
         onEvent = { event ->
             when (event) {
+
+                // Select a species from the list and get nothing
                 is CharacterSpeciesEvent.OnSpeciesSelect -> {
                     viewModel.onEvent(event)
 
@@ -77,33 +72,53 @@ fun CharacterSpeciesScreenRoot(
                     val currentSpeciesId = creatorState.selectedSpecies?.id
 
                     if (selectedSpecies != null && selectedSpecies.id != currentSpeciesId) {
-                        onSpeciesSelect(selectedSpecies)
                         creatorViewModel.onEvent(CharacterCreatorEvent.SetSpecies(selectedSpecies))
+
+                        onSpeciesSelect(selectedSpecies)
                     }
                 }
 
-                is CharacterSpeciesEvent.OnNextClick -> {
-                    val selected = state.selectedSpecies
-                    if (selected != null && selected.id != creatorState.selectedSpecies?.id) {
-                        creatorViewModel.onEvent(CharacterCreatorEvent.SetSpecies(selected))
-                        onSpeciesSelect(selected)
-                    }
-                    onNextClick()
-                }
-
-                is CharacterSpeciesEvent.RollRandomSpecies -> {
+                // Roll a random species and get 25 XP
+                is CharacterSpeciesEvent.OnSpeciesRoll -> {
                     viewModel.onEvent(event)
 
                     val randomSpecies = viewModel.state.value.selectedSpecies
                     val currentSpeciesId = creatorState.selectedSpecies?.id
 
+                    viewModel.onEvent(CharacterSpeciesEvent.SetSelectingSpecies(false))
+
                     if (randomSpecies != null && randomSpecies.id != currentSpeciesId) {
-                        onSpeciesSelect(randomSpecies)
                         creatorViewModel.onEvent(CharacterCreatorEvent.SetSpecies(randomSpecies))
                         creatorViewModel.onEvent(CharacterCreatorEvent.AddExperience(25))
                         creatorViewModel.onEvent(CharacterCreatorEvent.ShowMessage("Randomly selected species: ${randomSpecies.name} (+25 XP)"))
+
+                        onSpeciesSelect(randomSpecies)
                     }
                 }
+
+                // Choose a species after rolling one and remove 25 XP
+                is CharacterSpeciesEvent.OnSpeciesChange -> {
+                    viewModel.onEvent(event)
+
+                    val selectedSpecies = state.speciesList.find { it.id == event.id }
+                    val currentSpeciesId = creatorState.selectedSpecies?.id
+
+                    viewModel.onEvent(CharacterSpeciesEvent.SetSelectingSpecies(true))
+
+                    if (selectedSpecies != null && selectedSpecies.id != currentSpeciesId) {
+                        creatorViewModel.onEvent(CharacterCreatorEvent.SetSpecies(selectedSpecies))
+                        creatorViewModel.onEvent(CharacterCreatorEvent.RemoveExperience(25))
+                        creatorViewModel.onEvent(CharacterCreatorEvent.ShowMessage("Changed species to: ${selectedSpecies.name} (-25 XP)"))
+
+                        onSpeciesSelect(selectedSpecies)
+                    }
+                }
+
+                // Toggle species selection mode
+                is CharacterSpeciesEvent.SetSelectingSpecies -> viewModel.onEvent(event)
+
+                // If species is selected go to next
+                is CharacterSpeciesEvent.OnNextClick -> if (state.selectedSpecies != null) onNextClick()
 
                 else -> Unit
             }
@@ -135,20 +150,25 @@ fun CharacterSpeciesScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 item {
-                    CharacterCreatorTitle("Character Species Screen")
-                }
-                if (!state.hasRolledSpecies) {
-                    item {
-                        DiceThrow(onClick = { onEvent(CharacterSpeciesEvent.RollRandomSpecies) })
+                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                        CharacterCreatorButton(
+                            text = "Random +25XP",
+                            onClick = { onEvent(CharacterSpeciesEvent.OnSpeciesRoll) },
+                            enabled = !state.hasRolledSpecies
+                        )
+                        CharacterCreatorButton(
+                            text = if (state.hasRolledSpecies) "Choose -25XP" else "Choose +0XP",
+                            onClick = { onEvent(CharacterSpeciesEvent.SetSelectingSpecies(true)) },
+                            enabled = !state.canSelectSpecies
+                        )
                     }
                 }
                 items(species) { speciesItem ->
                     CharacterCreatorButton(
                         text = speciesItem.name,
-                        onClick = {
-                            onEvent(CharacterSpeciesEvent.OnSpeciesSelect(speciesItem.id))
-                            println("CharacterSpeciesScreen: $speciesItem")
-                        }
+                        onClick = { onEvent(CharacterSpeciesEvent.OnSpeciesSelect(speciesItem.id)) },
+                        isSelected = state.selectedSpecies?.id == speciesItem.id,
+                        enabled = state.canSelectSpecies && (state.selectedSpecies?.id != speciesItem.id),
                     )
                 }
                 item {

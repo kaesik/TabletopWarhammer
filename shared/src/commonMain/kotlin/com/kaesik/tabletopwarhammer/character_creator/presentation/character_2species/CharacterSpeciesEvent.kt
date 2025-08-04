@@ -6,8 +6,11 @@ sealed class CharacterSpeciesEvent {
     data object InitSpeciesList : CharacterSpeciesEvent()
 
     data class SetSelectedSpecies(val speciesItem: SpeciesItem) : CharacterSpeciesEvent()
+    data class SetSelectingSpecies(val canSelect: Boolean) : CharacterSpeciesEvent()
+
     data class OnSpeciesSelect(val id: String) : CharacterSpeciesEvent()
-    data object RollRandomSpecies : CharacterSpeciesEvent()
+    data class OnSpeciesChange(val id: String) : CharacterSpeciesEvent()
+    data object OnSpeciesRoll : CharacterSpeciesEvent()
 
     data object OnNextClick : CharacterSpeciesEvent()
 }

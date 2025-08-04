@@ -42,18 +42,44 @@ class CharacterCreatorViewModel : ViewModel() {
                 _state.update { current ->
                     val (currentExp, spentExp, totalExp) = current.character.experience
 
+                    val newCurrentExp = currentExp + event.experience
+                    val newTotalExp = totalExp + event.experience
+
                     val updatedCharacter = current.character.copy(
                         experience = listOf(
-                            currentExp + event.experience,
+                            newCurrentExp,
                             spentExp,
-                            totalExp + event.experience
+                            newTotalExp
                         )
                     )
                     val updated = current.copy(
                         character = updatedCharacter,
                         message = "Experience added: ${event.experience}"
                     )
-                    println("Updated CharacterItem: $updatedCharacter")
+                    updated
+                }
+            }
+
+            is CharacterCreatorEvent.RemoveExperience -> {
+                _state.update { current ->
+                    val (currentExp, spentExp, totalExp) = current.character.experience
+
+                    // Experience cant drop below removed experience
+                    val newCurrentExp = (currentExp - event.experience).coerceAtLeast(0)
+                    val newTotalExp = (totalExp - event.experience).coerceAtLeast(spentExp)
+
+                    val updatedCharacter = current.character.copy(
+                        experience = listOf(
+                            newCurrentExp,
+                            spentExp,
+                            newTotalExp
+                        )
+                    )
+
+                    val updated = current.copy(
+                        character = updatedCharacter,
+                        message = "Experience removed: ${event.experience}"
+                    )
                     updated
                 }
             }

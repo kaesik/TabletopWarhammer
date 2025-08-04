@@ -42,7 +42,7 @@ class CharacterSpeciesViewModel(
             }
 
             // Roll a random species from the list and update the state with the rolled species
-            is CharacterSpeciesEvent.RollRandomSpecies -> {
+            is CharacterSpeciesEvent.OnSpeciesRoll -> {
                 val list = _state.value.speciesList
                 if (list.isNotEmpty()) {
                     val random = list.random()
@@ -51,6 +51,11 @@ class CharacterSpeciesViewModel(
                         hasRolledSpecies = true,
                     )
                 }
+            }
+
+            // Set the state to indicate whether species selection is allowed
+            is CharacterSpeciesEvent.SetSelectingSpecies -> {
+                _state.update { it.copy(canSelectSpecies = event.canSelect) }
             }
 
             else -> Unit
@@ -65,8 +70,8 @@ class CharacterSpeciesViewModel(
             try {
                 val speciesList = characterCreatorClient.getSpecies()
 
-                    _state.update {
-                        it.copy(
+                _state.update {
+                    it.copy(
                         speciesList = speciesList,
                         isLoading = false
                     )

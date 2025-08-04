@@ -23,12 +23,15 @@ import androidx.compose.ui.unit.dp
 fun CharacterCreatorButton(
     text: String,
     isLoading: Boolean = false,
+    isSelected: Boolean = false,
     onClick: () -> Unit,
     enabled: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     val backgroundColor = if (enabled) {
         MaterialTheme.colorScheme.primary
+    } else if (isSelected) {
+        MaterialTheme.colorScheme.inverseSurface.copy(alpha = 0.5f)
     } else {
         MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
     }
