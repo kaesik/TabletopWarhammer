@@ -149,6 +149,7 @@ fun CharacterSpeciesScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
+                // Button to roll a random species or choose one
                 item {
                     Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                         CharacterCreatorButton(
@@ -163,6 +164,7 @@ fun CharacterSpeciesScreen(
                         )
                     }
                 }
+                // Display the selected species or a message if none is selected
                 items(species) { speciesItem ->
                     CharacterCreatorButton(
                         text = speciesItem.name,
@@ -171,6 +173,7 @@ fun CharacterSpeciesScreen(
                         enabled = state.canSelectSpecies && (state.selectedSpecies?.id != speciesItem.id),
                     )
                 }
+                // If no species is selected, show a next button
                 item {
                     CharacterCreatorButton(
                         text = "Next",

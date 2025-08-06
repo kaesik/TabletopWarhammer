@@ -27,6 +27,7 @@ class CharacterClassAndCareerViewModel(
             is CharacterClassAndCareerEvent.InitClassList -> {
                 loadClassList()
             }
+
             is CharacterClassAndCareerEvent.InitCareerList -> {
                 loadCareerList(
                     speciesName = event.speciesName,
@@ -42,6 +43,7 @@ class CharacterClassAndCareerViewModel(
                     selectedCareer = null
                 )
             }
+
             is CharacterClassAndCareerEvent.OnCareerSelect -> {
                 val selected = state.value.careerList.find { it.id == event.id }
                 _state.value = state.value.copy(
@@ -53,13 +55,37 @@ class CharacterClassAndCareerViewModel(
             is CharacterClassAndCareerEvent.SetSelectedClass -> {
                 _state.update { it.copy(selectedClass = event.classItem) }
             }
+
             is CharacterClassAndCareerEvent.SetSelectedCareer -> {
                 _state.update { it.copy(selectedCareer = event.careerItem) }
             }
 
-            // Set the rolled class and career
-            is CharacterClassAndCareerEvent.SetHasRolledClassAndCareer -> {
-                _state.update { it.copy(hasRolledClassAndCareer = true) }
+            // Roll a random class and career from the list and update the state with the rolled class and career
+            is CharacterClassAndCareerEvent.OnClassAndCareerRoll -> {
+                val classList = _state.value.classList
+                if (classList.isNotEmpty()) {
+                    val randomClass = classList.random()
+                    _state.update {
+                        it.copy(
+                            selectedClass = randomClass,
+                            hasRolledClassAndCareer = true,
+                        )
+                    }
+                    loadCareerList(
+                        speciesName = event.speciesName,
+                        className = randomClass.name,
+                    )
+                }
+            }
+
+            // Set the state to indicate whether class or career selection is allowed
+            is CharacterClassAndCareerEvent.SetSelectingClassAndCareer -> {
+                _state.update {
+                    it.copy(
+                        canSelectClass = event.canSelectClass,
+                        canSelectCareer = event.canSelectCareer
+                    )
+                }
             }
 
             else -> Unit
@@ -103,7 +129,7 @@ class CharacterClassAndCareerViewModel(
         }
     }
 
-    private fun loadCareerList(speciesName: String, className: String ) {
+    private fun loadCareerList(speciesName: String, className: String) {
         careerJob?.cancel()
         careerJob = viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }

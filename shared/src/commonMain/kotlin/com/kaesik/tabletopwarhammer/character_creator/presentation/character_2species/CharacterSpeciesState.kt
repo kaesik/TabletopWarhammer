@@ -12,7 +12,7 @@ data class CharacterSpeciesState(
     val selectedSpecies: SpeciesItem? = null,
 
     var canSelectSpecies: Boolean = false,
-    var hasRolledSpecies: Boolean = false,
+    val hasRolledSpecies: Boolean = false,
 
     val speciesList: List<SpeciesItem> = emptyList(),
 )

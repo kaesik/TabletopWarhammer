@@ -12,9 +12,11 @@ data class CharacterClassAndCareerState(
 
     val selectedClass: ClassItem? = null,
     val selectedCareer: CareerItem? = null,
+
+    var canSelectClass: Boolean = false,
+    var canSelectCareer: Boolean = false,
     val hasRolledClassAndCareer: Boolean = false,
 
     val classList: List<ClassItem> = emptyList(),
-    val careerList: List<CareerItem> = emptyList(),
-
-    )
+    val careerList: List<CareerItem> = emptyList()
+)

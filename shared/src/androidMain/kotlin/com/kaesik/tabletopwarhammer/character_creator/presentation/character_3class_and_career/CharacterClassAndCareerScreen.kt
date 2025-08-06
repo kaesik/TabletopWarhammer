@@ -2,6 +2,7 @@ package com.kaesik.tabletopwarhammer.character_creator.presentation.character_3c
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,13 +26,15 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1cr
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator.CharacterCreatorEvent
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorButton
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorSnackbarHost
-import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorTitle
-import com.kaesik.tabletopwarhammer.character_creator.presentation.components.DiceThrow
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.SnackbarType
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.showCharacterCreatorSnackbar
 import com.kaesik.tabletopwarhammer.core.domain.library.items.CareerItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.ClassItem
 import com.kaesik.tabletopwarhammer.core.presentation.MainScaffold
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.dropWhile
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.getKoin
@@ -89,7 +92,7 @@ fun CharacterClassAndCareerScreenRoot(
         onEvent = { event ->
             when (event) {
 
-                // Initialize and set class
+                // Select a class and career from the list and get nothing
                 is CharacterClassAndCareerEvent.OnClassSelect -> {
                     viewModel.onEvent(event)
 
@@ -98,21 +101,20 @@ fun CharacterClassAndCareerScreenRoot(
 
                     // Check if the selected class is different from the current class
                     if (selectedClass != null && selectedClass.id != currentClassId) {
-                        println(selectedClass.id)
-                        println(currentClassId)
                         creatorViewModel.onEvent(CharacterCreatorEvent.SetClass(selectedClass))
                         creatorViewModel.onEvent(CharacterCreatorEvent.SetCareer(null, null))
+
                         viewModel.onEvent(
                             CharacterClassAndCareerEvent.InitCareerList(
                                 speciesName = creatorViewModel.state.value.character.species,
                                 className = selectedClass.name
                             )
                         )
+
                         onClassSelect(selectedClass)
                     }
                 }
 
-                // Initialize and set career
                 is CharacterClassAndCareerEvent.OnCareerSelect -> {
                     viewModel.onEvent(event)
 
@@ -138,74 +140,83 @@ fun CharacterClassAndCareerScreenRoot(
                                     )
                                 )
                             }
+
                             onCareerSelect(selectedCareer)
                         }
                     }
                 }
 
-                is CharacterClassAndCareerEvent.RollRandomClassAndCareer -> {
-                    val classList = state.classList
-                    if (classList.isEmpty()) return@CharacterClassAndCareerScreen
+                // Roll a random class and career and get 35 XP
+                is CharacterClassAndCareerEvent.OnClassAndCareerRoll -> {
+                    viewModel.onEvent(
+                        CharacterClassAndCareerEvent.SetSelectingClassAndCareer(
+                            canSelectClass = false,
+                            canSelectCareer = false
+                        )
+                    )
 
-                    val randomClass = classList.random()
+                    viewModel.onEvent(
+                        CharacterClassAndCareerEvent.OnClassAndCareerRoll(
+                            speciesName = speciesName
+                        )
+                    )
 
                     coroutineScope.launch {
-                        val careers = viewModel.characterCreatorClient.getCareers(
-                            speciesName,
-                            randomClass.name
-                        )
-                        if (careers.isEmpty()) return@launch
+                        viewModel.state
+                            .map { it.isLoading }
+                            .distinctUntilChanged()
+                            .dropWhile { it }
+                            .first { !it }
 
-                        val randomCareer = careers.random()
-                        val firstCareerPath =
-                            randomCareer.careerPath?.split(",")?.firstOrNull()?.trim()
+                        val randomClass = viewModel.state.value.selectedClass
+                        val randomCareer = viewModel.state.value.careerList.randomOrNull()
+                        val currentClassId = creatorState.selectedClass?.id
+                        val currentCareerId = creatorState.selectedCareer?.id
 
-                        val careerPathItem = if (!firstCareerPath.isNullOrEmpty()) {
-                            try {
-                                viewModel.characterCreatorClient.getCareerPath(firstCareerPath)
-                            } catch (e: Exception) {
-                                null
-                            }
-                        } else null
+                        if (randomClass != null && randomClass.id != currentClassId &&
+                            randomCareer != null && randomCareer.id != currentCareerId
+                        ) {
+                            val firstCareerPath = randomCareer.careerPath
+                                ?.split(",")
+                                ?.firstOrNull()
+                                ?.trim()
 
-                        creatorViewModel.onEvent(CharacterCreatorEvent.SetClass(randomClass))
-                        creatorViewModel.onEvent(
-                            CharacterCreatorEvent.SetCareer(
-                                randomCareer,
-                                careerPathItem
+                            val careerPathItem = if (!firstCareerPath.isNullOrEmpty()) {
+                                try {
+                                    viewModel.characterCreatorClient.getCareerPath(firstCareerPath)
+                                } catch (e: Exception) {
+                                    null
+                                }
+                            } else null
+
+                            creatorViewModel.onEvent(CharacterCreatorEvent.SetClass(randomClass))
+                            creatorViewModel.onEvent(
+                                CharacterCreatorEvent.SetCareer(
+                                    randomCareer,
+                                    careerPathItem
+                                )
                             )
-                        )
-                        creatorViewModel.onEvent(CharacterCreatorEvent.AddExperience(35))
-                        creatorViewModel.onEvent(CharacterCreatorEvent.ShowMessage("Randomly selected class & career: ${randomClass.name} / ${randomCareer.name} (+35 XP)"))
-
-                        viewModel.onEvent(CharacterClassAndCareerEvent.SetSelectedClass(randomClass))
-                        viewModel.onEvent(
-                            CharacterClassAndCareerEvent.SetSelectedCareer(
-                                randomCareer
+                            creatorViewModel.onEvent(CharacterCreatorEvent.AddExperience(35))
+                            creatorViewModel.onEvent(
+                                CharacterCreatorEvent.ShowMessage(
+                                    "Randomly selected class & career: ${randomClass.name} / ${randomCareer.name} (+35 XP)"
+                                )
                             )
-                        )
-                        viewModel.onEvent(
-                            CharacterClassAndCareerEvent.InitCareerList(
-                                speciesName,
-                                randomClass.name
-                            )
-                        )
-                        viewModel.onEvent(CharacterClassAndCareerEvent.SetHasRolledClassAndCareer)
 
-                        onClassSelect(randomClass)
-                        onCareerSelect(randomCareer)
+                            onClassSelect(randomClass)
+                            onCareerSelect(randomCareer)
+                        }
                     }
                 }
 
-                is CharacterClassAndCareerEvent.OnNextClick -> {
-                    onNextClick()
-                }
+                is CharacterClassAndCareerEvent.OnNextClick -> if (state.selectedCareer != null) onNextClick()
 
                 else -> Unit
             }
         },
         classes = state.classList,
         careers = state.careerList,
+        speciesName = speciesName,
         snackbarHostState = snackbarHostState
     )
 }
@@ -216,6 +227,7 @@ fun CharacterClassAndCareerScreen(
     onEvent: (CharacterClassAndCareerEvent) -> Unit,
     classes: List<ClassItem>,
     careers: List<CareerItem>,
+    speciesName: String,
     snackbarHostState: SnackbarHostState,
 ) {
     MainScaffold(
@@ -232,12 +244,32 @@ fun CharacterClassAndCareerScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
+                // Button to roll a random class and career or choose one
                 item {
-                    CharacterCreatorTitle("Character ClassAndCareer Screen")
-                }
-                if (!state.hasRolledClassAndCareer) {
-                    item {
-                        DiceThrow(onClick = { onEvent(CharacterClassAndCareerEvent.RollRandomClassAndCareer) })
+                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                        CharacterCreatorButton(
+                            text = "Random +35XP",
+                            onClick = {
+                                onEvent(
+                                    CharacterClassAndCareerEvent.OnClassAndCareerRoll(
+                                        speciesName = speciesName
+                                    )
+                                )
+                            },
+                            enabled = !state.hasRolledClassAndCareer
+                        )
+                        CharacterCreatorButton(
+                            text = if (state.hasRolledClassAndCareer) "Choose -35XP" else "Choose +0XP",
+                            onClick = {
+                                onEvent(
+                                    CharacterClassAndCareerEvent.SetSelectingClassAndCareer(
+                                        canSelectClass = true,
+                                        canSelectCareer = false
+                                    )
+                                )
+                            },
+                            enabled = !state.canSelectClass
+                        )
                     }
                 }
                 item {
@@ -246,7 +278,7 @@ fun CharacterClassAndCareerScreen(
                         CharacterCreatorButton(
                             text = state.selectedClass?.name ?: "Select Class",
                             onClick = { expanded = true },
-                            enabled = !state.isLoading
+                            enabled = state.canSelectClass
                         )
                         DropdownMenu(
                             expanded = expanded,
@@ -257,7 +289,17 @@ fun CharacterClassAndCareerScreen(
                                     text = { Text(classItem.name) },
                                     onClick = {
                                         expanded = false
-                                        onEvent(CharacterClassAndCareerEvent.OnClassSelect(classItem.id))
+                                        onEvent(
+                                            CharacterClassAndCareerEvent.OnClassSelect(
+                                                classItem.id
+                                            )
+                                        )
+                                        onEvent(
+                                            CharacterClassAndCareerEvent.SetSelectingClassAndCareer(
+                                                canSelectClass = true,
+                                                canSelectCareer = true,
+                                            )
+                                        )
                                     }
                                 )
                             }
@@ -272,7 +314,7 @@ fun CharacterClassAndCareerScreen(
                             onClick = {
                                 if (state.selectedClass != null) expanded = true
                             },
-                            enabled = !state.isLoading && state.selectedClass != null
+                            enabled = state.canSelectCareer
                         )
                         DropdownMenu(
                             expanded = expanded,
@@ -303,6 +345,15 @@ fun CharacterClassAndCareerScreen(
                         enabled = !state.isLoading && state.selectedCareer != null
                     )
                 }
+                item {
+                    Text("DEBUG → hasRolledClassAndCareer: ${state.hasRolledClassAndCareer}")
+                    Text("DEBUG → canSelectClass: ${state.canSelectClass}")
+                    Text("DEBUG → canSelectCareer: ${state.canSelectCareer}")
+                    Text("DEBUG → isLoading: ${state.isLoading}")
+                    Text("DEBUG → selectedClass: ${state.selectedClass?.name ?: "null"}")
+                    Text("DEBUG → selectedCareer: ${state.selectedCareer?.name ?: "null"}")
+                }
+
             }
         }
     )
@@ -316,6 +367,7 @@ fun CharacterClassAndCareerScreenPreview() {
         onEvent = {},
         classes = listOf(),
         careers = listOf(),
-        snackbarHostState = remember { SnackbarHostState() }
+        snackbarHostState = remember { SnackbarHostState() },
+        speciesName = "Human"
     )
 }

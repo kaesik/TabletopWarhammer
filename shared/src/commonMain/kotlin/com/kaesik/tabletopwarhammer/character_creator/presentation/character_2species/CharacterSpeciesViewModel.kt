@@ -43,9 +43,9 @@ class CharacterSpeciesViewModel(
 
             // Roll a random species from the list and update the state with the rolled species
             is CharacterSpeciesEvent.OnSpeciesRoll -> {
-                val list = _state.value.speciesList
-                if (list.isNotEmpty()) {
-                    val random = list.random()
+                val speciesList = _state.value.speciesList
+                if (speciesList.isNotEmpty()) {
+                    val random = speciesList.random()
                     _state.value = _state.value.copy(
                         selectedSpecies = random,
                         hasRolledSpecies = true,
