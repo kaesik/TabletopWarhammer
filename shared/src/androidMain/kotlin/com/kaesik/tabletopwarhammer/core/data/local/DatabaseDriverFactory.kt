@@ -10,6 +10,10 @@ actual class DatabaseDriverFactory(
     private val context: Context
 ) {
     actual fun create(): SqlDriver {
-        return AndroidSqliteDriver(TabletopWarhammerDatabase.Schema, context, "character_sheet.db")
+        return AndroidSqliteDriver(
+            TabletopWarhammerDatabase.Schema,
+            context,
+            null
+        )
     }
 }

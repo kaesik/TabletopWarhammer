@@ -47,6 +47,16 @@ class SqlDelightLibraryDataSource(
             .toCommonFlow()
     }
 
+    override suspend fun insertAttribute(item: AttributeItem) {
+        queries.insertAttributeEntity(
+            id = item.id,
+            name = item.name,
+            description = item.description,
+            shortName = item.shortName,
+            page = item.page?.toLong()
+        )
+    }
+
     override fun getAllCareers(): List<CareerItem> {
         return queries.getCareerEntity()
             .executeAsList()
@@ -59,6 +69,22 @@ class SqlDelightLibraryDataSource(
             .mapToList(context)
             .map { it.map { it.toCareerItem() } }
             .toCommonFlow()
+    }
+
+    override suspend fun insertCareer(item: CareerItem) {
+        queries.insertCareerEntity(
+            id = item.id,
+            name = item.name,
+            limitations = item.limitations,
+            description = item.description,
+            advanceScheme = item.advanceScheme,
+            quotations = item.quotations,
+            adventuring = item.adventuring,
+            source = item.source,
+            careerPath = item.careerPath,
+            className = item.className,
+            page = item.page?.toLong()
+        )
     }
 
     override fun getAllCareerPaths(): List<CareerPathItem> {
@@ -75,6 +101,17 @@ class SqlDelightLibraryDataSource(
             .toCommonFlow()
     }
 
+    override suspend fun insertCareerPath(item: CareerPathItem) {
+        queries.insertCareerPathEntity(
+            id = item.id,
+            name = item.name,
+            status = item.status,
+            skills = item.skills,
+            trappings = item.trappings,
+            talents = item.talents
+        )
+    }
+
     override fun getAllClasses(): List<ClassItem> {
         return queries.getClassEntity()
             .executeAsList()
@@ -87,6 +124,17 @@ class SqlDelightLibraryDataSource(
             .mapToList(context)
             .map { it.map { it.toClassItem() } }
             .toCommonFlow()
+    }
+
+    override suspend fun insertClass(item: ClassItem) {
+        queries.insertClassEntity(
+            id = item.id,
+            name = item.name,
+            description = item.description,
+            trappings = item.trappings,
+            careers = item.careers,
+            page = item.page?.toLong()
+        )
     }
 
     override fun getAllItems(): List<ItemItem> {
@@ -103,6 +151,31 @@ class SqlDelightLibraryDataSource(
             .toCommonFlow()
     }
 
+    override suspend fun insertItem(item: ItemItem) {
+        queries.insertItemEntity(
+            id = item.id,
+            name = item.name,
+            group = item.group,
+            source = item.source,
+            ap = item.ap,
+            availability = item.availability,
+            carries = item.carries,
+            damage = item.damage,
+            description = item.description,
+            encumbrance = item.encumbrance,
+            isTwoHanded = if (item.isTwoHanded == true) 1 else 0,
+            locations = item.locations,
+            penalty = item.penalty,
+            price = item.price,
+            qualitiesAndFlaws = item.qualitiesAndFlaws,
+            quantity = item.quantity,
+            range = item.range,
+            meeleRanged = item.meeleRanged,
+            type = item.type,
+            page = item.page?.toLong()
+        )
+    }
+
     override fun getAllQualityFlaws(): List<QualityFlawItem> {
         return queries.getQualityFlawEntity()
             .executeAsList()
@@ -115,6 +188,18 @@ class SqlDelightLibraryDataSource(
             .mapToList(context)
             .map { it.map { it.toQualityFlawItem() } }
             .toCommonFlow()
+    }
+
+    override suspend fun insertQualityFlaw(item: QualityFlawItem) {
+        queries.insertQualityFlawEntity(
+            id = item.id,
+            name = item.name,
+            group = item.group,
+            description = item.description,
+            isQuality = if (item.isQuality == true) 1 else 0,
+            source = item.source,
+            page = item.page?.toLong()
+        )
     }
 
     override fun getAllSkills(): List<SkillItem> {
@@ -131,6 +216,20 @@ class SqlDelightLibraryDataSource(
             .toCommonFlow()
     }
 
+    override suspend fun insertSkill(item: SkillItem) {
+        queries.insertSkillEntity(
+            id = item.id,
+            name = item.name,
+            attribute = item.attribute,
+            isBasic = if (item.isBasic == true) 1 else 0,
+            isGrouped = if (item.isGrouped == true) 1 else 0,
+            description = item.description,
+            specialization = item.specialization,
+            source = item.source,
+            page = item.page?.toLong()
+        )
+    }
+
     override fun getAllSpecies(): List<SpeciesItem> {
         return queries.getSpeciesEntity()
             .executeAsList()
@@ -145,6 +244,43 @@ class SqlDelightLibraryDataSource(
             .toCommonFlow()
     }
 
+    override suspend fun insertSpecies(item: SpeciesItem) {
+        queries.insertSpeciesEntity(
+            id = item.id,
+            name = item.name,
+            description = item.description,
+            opinions = item.opinions,
+            source = item.source,
+            weaponSkill = item.weaponSkill,
+            ballisticSkill = item.ballisticSkill,
+            strength = item.strength,
+            toughness = item.toughness,
+            agility = item.agility,
+            dexterity = item.dexterity,
+            intelligence = item.intelligence,
+            willpower = item.willpower,
+            fellowship = item.fellowship,
+            wounds = item.wounds,
+            fatePoints = item.fatePoints,
+            resilience = item.resilience,
+            extraPoints = item.extraPoints,
+            movement = item.movement,
+            skills = item.skills,
+            talents = item.talents,
+            forenames = item.forenames,
+            surnames = item.surnames,
+            clans = item.clans,
+            epithets = item.epithets,
+            age = item.age,
+            eyeColour = item.eyeColour,
+            hairColour = item.hairColour,
+            height = item.height,
+            initiative = item.initiative,
+            page = item.page?.toLong(),
+            names = item.names
+        )
+    }
+
     override fun getAllTalents(): List<TalentItem> {
         return queries.getTalentEntity()
             .executeAsList()
@@ -157,5 +293,17 @@ class SqlDelightLibraryDataSource(
             .mapToList(context)
             .map { it.map { it.toTalentItem() } }
             .toCommonFlow()
+    }
+
+    override suspend fun insertTalent(item: TalentItem) {
+        return queries.insertTalentEntity(
+            id = item.id,
+            name = item.name,
+            max = item.max,
+            tests = item.tests,
+            description = item.description,
+            source = item.source,
+            page = item.page?.toLong()
+        )
     }
 }

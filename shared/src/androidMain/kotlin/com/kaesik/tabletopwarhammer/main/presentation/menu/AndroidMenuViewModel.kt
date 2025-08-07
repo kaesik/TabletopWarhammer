@@ -1,21 +1,24 @@
 package com.kaesik.tabletopwarhammer.main.presentation.menu
 
 import androidx.lifecycle.ViewModel
+import com.kaesik.tabletopwarhammer.core.domain.remote.SupabaseLibrarySyncManager
 import com.kaesik.tabletopwarhammer.main.domain.menu.MenuClient
 
 class AndroidMenuViewModel(
-    private val client: MenuClient
+    private val client: MenuClient,
+    private val librarySyncManager: SupabaseLibrarySyncManager
 ) : ViewModel() {
 
     private val viewModel by lazy {
         MenuViewModel(
             client = client,
+            librarySyncManager = librarySyncManager
         )
     }
 
     val state = viewModel.state
 
-    suspend fun onEvent(event: MenuEvent) {
+    fun onEvent(event: MenuEvent) {
         viewModel.onEvent(event)
     }
 }

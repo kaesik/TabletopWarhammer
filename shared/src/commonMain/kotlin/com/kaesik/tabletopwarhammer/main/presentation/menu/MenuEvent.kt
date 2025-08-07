@@ -4,4 +4,5 @@ sealed class MenuEvent {
     data object NavigateToLibraryScreen : MenuEvent()
     data object NavigateToCharacterSheetScreen : MenuEvent()
     data object NavigateToCharacterCreatorScreen : MenuEvent()
+    data object SyncLibraryData : MenuEvent()
 }

@@ -273,26 +273,81 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,
 getAttributeEntity:
 SELECT * FROM attributeEntity ORDER BY id DESC;
 
+insertAttributeEntity:
+INSERT OR REPLACE INTO attributeEntity (
+    id, name, description, shortName, page
+) VALUES (?, ?, ?, ?, ?);
+
 getCareerEntity:
 SELECT * FROM careerEntity ORDER BY id DESC;
+
+insertCareerEntity:
+INSERT OR REPLACE INTO careerEntity (
+    id, name, limitations, description, advanceScheme,
+    quotations, adventuring, source, careerPath, className, page
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 getCareerPathEntity:
 SELECT * FROM careerPathEntity ORDER BY id DESC;
 
+insertCareerPathEntity:
+INSERT OR REPLACE INTO careerPathEntity (
+    id, name, status, skills, trappings, talents
+) VALUES (?, ?, ?, ?, ?, ?);
+
 getClassEntity:
 SELECT * FROM classEntity ORDER BY id DESC;
+
+insertClassEntity:
+INSERT OR REPLACE INTO classEntity (
+    id, name, description, trappings, careers, page
+) VALUES (?, ?, ?, ?, ?, ?);
 
 getItemEntity:
 SELECT * FROM itemEntity ORDER BY id DESC;
 
+insertItemEntity:
+INSERT OR REPLACE INTO itemEntity (
+    id, name, `group`, source, ap, availability,
+    carries, damage, description, encumbrance, isTwoHanded,
+    locations, penalty, price, qualitiesAndFlaws, quantity,
+    range, meeleRanged, type, page
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
 getQualityFlawEntity:
 SELECT * FROM qualityFlawEntity ORDER BY id DESC;
+
+insertQualityFlawEntity:
+INSERT OR REPLACE INTO qualityFlawEntity (
+    id, name, `group`, description, isQuality, source, page
+) VALUES (?, ?, ?, ?, ?, ?, ?);
 
 getSkillEntity:
 SELECT * FROM skillEntity ORDER BY id DESC;
 
+insertSkillEntity:
+INSERT OR REPLACE INTO skillEntity (
+    id, name, attribute, isBasic, isGrouped,
+    description, specialization, source, page
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+
 getSpeciesEntity:
 SELECT * FROM speciesEntity ORDER BY id DESC;
 
+insertSpeciesEntity:
+INSERT OR REPLACE INTO speciesEntity (
+    id, name, description, opinions, source,
+    weaponSkill, ballisticSkill, strength, toughness,
+    agility, dexterity, intelligence, willpower, fellowship,
+    wounds, fatePoints, resilience, extraPoints, movement,
+    skills, talents, forenames, surnames, clans, epithets,
+    age, eyeColour, hairColour, height, initiative, page, names
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
 getTalentEntity:
 SELECT * FROM talentEntity ORDER BY id DESC;
+
+insertTalentEntity:
+INSERT OR REPLACE INTO talentEntity (
+    id, name, max, tests, description, source, page
+) VALUES (?, ?, ?, ?, ?, ?, ?);

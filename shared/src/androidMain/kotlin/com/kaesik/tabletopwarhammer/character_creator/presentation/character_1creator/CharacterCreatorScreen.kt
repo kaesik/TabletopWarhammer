@@ -25,6 +25,7 @@ fun CharacterCreatorScreenRoot(
     onRandomCharacterSelect: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+
     CharacterCreatorScreen(
         state = state,
         onEvent = { event ->

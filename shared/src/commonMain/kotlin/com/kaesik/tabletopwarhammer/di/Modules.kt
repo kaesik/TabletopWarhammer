@@ -21,10 +21,14 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.character_7de
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_1sheet_list.CharacterSheetListViewModel
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.CharacterSheetViewModel
 import com.kaesik.tabletopwarhammer.core.data.character.SqlDelightCharacterDataSource
+import com.kaesik.tabletopwarhammer.core.data.library.SqlDelightLibraryDataSource
 import com.kaesik.tabletopwarhammer.core.data.local.DatabaseDriverFactory
 import com.kaesik.tabletopwarhammer.core.data.remote.HttpClientFactory
+import com.kaesik.tabletopwarhammer.core.data.remote.SupabaseLibrarySyncManagerImpl
 import com.kaesik.tabletopwarhammer.core.domain.character.CharacterDataSource
+import com.kaesik.tabletopwarhammer.core.domain.library.LibraryDataSource
 import com.kaesik.tabletopwarhammer.core.domain.library.items.AttributeItem
+import com.kaesik.tabletopwarhammer.core.domain.remote.SupabaseLibrarySyncManager
 import com.kaesik.tabletopwarhammer.database.TabletopWarhammerDatabase
 import com.kaesik.tabletopwarhammer.library.data.LibraryClientImpl
 import com.kaesik.tabletopwarhammer.library.domain.library.LibraryClient
@@ -58,6 +62,14 @@ val sharedModule = module {
     single { get<DatabaseDriverFactory>().create() }
     single { TabletopWarhammerDatabase(get()) }
     single<CharacterDataSource> { SqlDelightCharacterDataSource(get()) }
+    single<LibraryDataSource> { SqlDelightLibraryDataSource(get()) }
+    single<SupabaseLibrarySyncManager> {
+        SupabaseLibrarySyncManagerImpl(
+            libraryClient = get(),
+            library = get()
+        )
+    }
+
 
     // Auth
     single<AuthClient> { AuthClientImpl() }
