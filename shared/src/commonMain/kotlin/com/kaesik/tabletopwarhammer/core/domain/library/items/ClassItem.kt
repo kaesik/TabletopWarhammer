@@ -9,4 +9,17 @@ data class ClassItem(
     val trappings: String? = null,
     val careers: String? = null,
     val page: Int? = null,
-) : LibraryItem
+) : LibraryItem {
+    companion object {
+        fun default(): ClassItem {
+            return ClassItem(
+                id = "",
+                name = "",
+                description = null,
+                trappings = null,
+                careers = null,
+                page = null
+            )
+        }
+    }
+}

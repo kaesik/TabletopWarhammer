@@ -31,9 +31,7 @@ class SqlDelightCharacterDataSource(
             .getCharacterEntity()
             .asFlow()
             .mapToList(context)
-            .map { character ->
-                character.map { it.toCharacterItem() }
-            }
+            .map { it.map { it.toCharacterItem() } }
             .toCommonFlow()
     }
 

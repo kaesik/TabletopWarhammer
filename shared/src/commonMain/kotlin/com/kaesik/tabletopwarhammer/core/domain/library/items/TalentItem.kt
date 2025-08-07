@@ -10,4 +10,16 @@ data class TalentItem(
     val description: String? = null,
     val source: String? = null,
     val page: Int? = null,
-) : LibraryItem
+) : LibraryItem {
+    companion object {
+        fun default(): TalentItem = TalentItem(
+            id = "",
+            name = "",
+            max = null,
+            tests = null,
+            description = null,
+            source = null,
+            page = null
+        )
+    }
+}

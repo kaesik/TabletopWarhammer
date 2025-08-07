@@ -14,4 +14,20 @@ data class CareerItem(
     val careerPath: String? = null,
     val className: String? = null,
     val page: Int? = null,
-) : LibraryItem
+) : LibraryItem {
+    companion object {
+        fun default(): CareerItem = CareerItem(
+            id = "",
+            name = "",
+            limitations = null,
+            description = null,
+            advanceScheme = null,
+            quotations = null,
+            adventuring = null,
+            source = null,
+            careerPath = null,
+            className = null,
+            page = null
+        )
+    }
+}

@@ -8,4 +8,16 @@ data class AttributeItem(
     val description: String? = null,
     val shortName: String? = null,
     val page: Int? = null,
-) : LibraryItem
+) : LibraryItem {
+    companion object {
+        fun default(): AttributeItem {
+            return AttributeItem(
+                id = "",
+                name = "",
+                description = null,
+                shortName = null,
+                page = null
+            )
+        }
+    }
+}

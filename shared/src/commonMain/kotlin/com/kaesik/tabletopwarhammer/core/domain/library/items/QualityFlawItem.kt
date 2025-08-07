@@ -10,4 +10,16 @@ data class QualityFlawItem(
     val isQuality: Boolean? = null,
     val source: String? = null,
     val page: Int? = null,
-) : LibraryItem
+) : LibraryItem {
+    companion object {
+        fun default(): QualityFlawItem = QualityFlawItem(
+            id = "",
+            name = "",
+            group = null,
+            description = null,
+            isQuality = null,
+            source = null,
+            page = null
+        )
+    }
+}

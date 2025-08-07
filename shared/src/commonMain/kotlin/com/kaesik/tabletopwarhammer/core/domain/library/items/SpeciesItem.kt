@@ -35,4 +35,43 @@ data class SpeciesItem(
     val initiative: String? = null,
     val page: Int? = null,
     val names: String? = null,
-) : LibraryItem
+) : LibraryItem {
+    companion object {
+        fun default(): SpeciesItem {
+            return SpeciesItem(
+                id = "",
+                name = "",
+                description = null,
+                opinions = null,
+                source = null,
+                weaponSkill = null,
+                ballisticSkill = null,
+                strength = null,
+                toughness = null,
+                agility = null,
+                dexterity = null,
+                intelligence = null,
+                willpower = null,
+                fellowship = null,
+                wounds = null,
+                fatePoints = null,
+                resilience = null,
+                extraPoints = null,
+                movement = null,
+                skills = null,
+                talents = null,
+                forenames = null,
+                surnames = null,
+                clans = null,
+                epithets = null,
+                age = null,
+                eyeColour = null,
+                hairColour = null,
+                height = null,
+                initiative = null,
+                page = null,
+                names = null
+            )
+        }
+    }
+}

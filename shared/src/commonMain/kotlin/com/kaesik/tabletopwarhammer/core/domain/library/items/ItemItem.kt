@@ -23,4 +23,31 @@ data class ItemItem(
     val meeleRanged: String? = null,
     val type: String? = null,
     val page: Int? = null,
-) : LibraryItem
+) : LibraryItem {
+    companion object {
+        fun default(): ItemItem {
+            return ItemItem(
+                id = "",
+                name = "",
+                group = null,
+                source = null,
+                ap = null,
+                availability = null,
+                carries = null,
+                damage = null,
+                description = null,
+                encumbrance = null,
+                isTwoHanded = null,
+                locations = null,
+                penalty = null,
+                price = null,
+                qualitiesAndFlaws = null,
+                quantity = null,
+                range = null,
+                meeleRanged = null,
+                type = null,
+                page = null
+            )
+        }
+    }
+}

@@ -9,4 +9,15 @@ data class CareerPathItem(
     val skills: String? = null,
     val trappings: String? = null,
     val talents: String? = null,
-) : LibraryItem
+) : LibraryItem {
+    companion object {
+        fun default(): CareerPathItem = CareerPathItem(
+            id = "",
+            name = "",
+            status = null,
+            skills = null,
+            trappings = null,
+            talents = null
+        )
+    }
+}

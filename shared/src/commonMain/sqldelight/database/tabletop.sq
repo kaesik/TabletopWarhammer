@@ -77,7 +77,129 @@ CREATE TABLE characterEntity (
     -- SIN
     sin INTEGER NOT NULL
 );
+CREATE TABLE attributeEntity (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    description TEXT,
+    shortName TEXT,
+    page INTEGER
+);
+CREATE TABLE careerEntity (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    limitations TEXT,
+    description TEXT,
+    advanceScheme TEXT,
+    quotations TEXT,
+    adventuring TEXT,
+    source TEXT,
+    careerPath TEXT,
+    className TEXT,
+    page INTEGER
+);
+CREATE TABLE careerPathEntity (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    status TEXT,
+    skills TEXT,
+    trappings TEXT,
+    talents TEXT
+);
+CREATE TABLE classEntity (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    description TEXT,
+    trappings TEXT,
+    careers TEXT,
+    page INTEGER
+);
+CREATE TABLE itemEntity (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    `group` TEXT,
+    source TEXT,
+    ap TEXT,
+    availability TEXT,
+    carries TEXT,
+    damage TEXT,
+    description TEXT,
+    encumbrance TEXT,
+    isTwoHanded INTEGER,
+    locations TEXT,
+    penalty TEXT,
+    price TEXT,
+    qualitiesAndFlaws TEXT,
+    quantity TEXT,
+    range TEXT,
+    meeleRanged TEXT,
+    type TEXT,
+    page INTEGER
+);
+CREATE TABLE qualityFlawEntity (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    `group` TEXT,
+    description TEXT,
+    isQuality INTEGER,
+    source TEXT,
+    page INTEGER
+);
+CREATE TABLE skillEntity (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    attribute TEXT,
+    isBasic INTEGER,
+    isGrouped INTEGER,
+    description TEXT,
+    specialization TEXT,
+    source TEXT,
+    page INTEGER
+);
+CREATE TABLE speciesEntity (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    description TEXT,
+    opinions TEXT,
+    source TEXT,
+    weaponSkill TEXT,
+    ballisticSkill TEXT,
+    strength TEXT,
+    toughness TEXT,
+    agility TEXT,
+    dexterity TEXT,
+    intelligence TEXT,
+    willpower TEXT,
+    fellowship TEXT,
+    wounds TEXT,
+    fatePoints TEXT,
+    resilience TEXT,
+    extraPoints TEXT,
+    movement TEXT,
+    skills TEXT,
+    talents TEXT,
+    forenames TEXT,
+    surnames TEXT,
+    clans TEXT,
+    epithets TEXT,
+    age TEXT,
+    eyeColour TEXT,
+    hairColour TEXT,
+    height TEXT,
+    initiative TEXT,
+    page INTEGER,
+    names TEXT
+);
+CREATE TABLE talentEntity (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    max TEXT,
+    tests TEXT,
+    description TEXT,
+    source TEXT,
+    page INTEGER
+);
 
+-- CHARACTER
 getCharacterEntity:
 SELECT * FROM characterEntity ORDER BY id DESC;
 
@@ -146,3 +268,31 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,
     ?, ?, ?, ?, ?, ?, ?,
     ?, ?, ?, ?, ?
     );
+
+-- ATTRIBUTE, CAREER, CAREER PATH, CLASS, ITEM, QUALITY FLAW, SKILL, SPECIES, TALENT
+getAttributeEntity:
+SELECT * FROM attributeEntity ORDER BY id DESC;
+
+getCareerEntity:
+SELECT * FROM careerEntity ORDER BY id DESC;
+
+getCareerPathEntity:
+SELECT * FROM careerPathEntity ORDER BY id DESC;
+
+getClassEntity:
+SELECT * FROM classEntity ORDER BY id DESC;
+
+getItemEntity:
+SELECT * FROM itemEntity ORDER BY id DESC;
+
+getQualityFlawEntity:
+SELECT * FROM qualityFlawEntity ORDER BY id DESC;
+
+getSkillEntity:
+SELECT * FROM skillEntity ORDER BY id DESC;
+
+getSpeciesEntity:
+SELECT * FROM speciesEntity ORDER BY id DESC;
+
+getTalentEntity:
+SELECT * FROM talentEntity ORDER BY id DESC;

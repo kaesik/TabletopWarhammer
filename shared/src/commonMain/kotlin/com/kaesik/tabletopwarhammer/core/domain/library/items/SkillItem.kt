@@ -12,4 +12,18 @@ data class SkillItem(
     val specialization: String? = null,
     val source: String? = null,
     val page: Int? = null,
-) : LibraryItem
+) : LibraryItem {
+    companion object {
+        fun default(): SkillItem = SkillItem(
+            id = "",
+            name = "",
+            attribute = null,
+            isBasic = null,
+            isGrouped = null,
+            description = null,
+            specialization = null,
+            source = null,
+            page = null
+        )
+    }
+}

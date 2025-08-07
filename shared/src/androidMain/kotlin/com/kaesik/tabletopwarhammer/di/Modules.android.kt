@@ -15,8 +15,10 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.character_7de
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_1sheet_list.AndroidCharacterSheetListViewModel
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.AndroidCharacterSheetViewModel
 import com.kaesik.tabletopwarhammer.core.data.character.SqlDelightCharacterDataSource
+import com.kaesik.tabletopwarhammer.core.data.library.SqlDelightLibraryDataSource
 import com.kaesik.tabletopwarhammer.core.data.local.DatabaseDriverFactory
 import com.kaesik.tabletopwarhammer.core.domain.character.CharacterDataSource
+import com.kaesik.tabletopwarhammer.core.domain.library.LibraryDataSource
 import com.kaesik.tabletopwarhammer.database.TabletopWarhammerDatabase
 import com.kaesik.tabletopwarhammer.library.presentation.library_1.AndroidLibraryViewModel
 import com.kaesik.tabletopwarhammer.library.presentation.library_2list.AndroidLibraryListViewModel
@@ -39,6 +41,7 @@ actual val platformModule: Module
         single { DatabaseDriverFactory(androidApplication()) }
         single { TabletopWarhammerDatabase(get()) }
         single<CharacterDataSource> { SqlDelightCharacterDataSource(get()) }
+        single<LibraryDataSource> { SqlDelightLibraryDataSource(get()) }
 
         // Auth
         single { AuthManager(androidContext()) }
