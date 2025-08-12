@@ -3,6 +3,7 @@ package com.kaesik.tabletopwarhammer.character_creator.presentation.character_3c
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kaesik.tabletopwarhammer.character_creator.domain.CharacterCreatorClient
+import com.kaesik.tabletopwarhammer.core.domain.library.LibraryDataSource
 import com.kaesik.tabletopwarhammer.core.domain.util.DataError
 import com.kaesik.tabletopwarhammer.core.domain.util.DataException
 import kotlinx.coroutines.CancellationException
@@ -13,7 +14,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class CharacterClassAndCareerViewModel(
-    private val characterCreatorClient: CharacterCreatorClient
+    private val characterCreatorClient: CharacterCreatorClient,
+    private val libraryDataSource: LibraryDataSource,
 ) : ViewModel() {
     private val _state = MutableStateFlow(CharacterClassAndCareerState())
     val state = _state.asStateFlow()
@@ -98,7 +100,11 @@ class CharacterClassAndCareerViewModel(
             _state.update { it.copy(isLoading = true, error = null) }
 
             try {
-                val classList = characterCreatorClient.getClasses()
+                val classList = if (true) {
+                    libraryDataSource.getAllClasses()
+                } else {
+                    characterCreatorClient.getClasses()
+                }
 
                 _state.update {
                     it.copy(
@@ -135,10 +141,18 @@ class CharacterClassAndCareerViewModel(
             _state.update { it.copy(isLoading = true, error = null) }
 
             try {
-                val careerList = characterCreatorClient.getCareers(
-                    speciesName = speciesName,
-                    className = className,
-                )
+
+                val careerList = if (true) {
+                    libraryDataSource.getFilteredCareers(
+                        speciesName = speciesName,
+                        className = className,
+                    )
+                } else {
+                    characterCreatorClient.getCareers(
+                        speciesName = speciesName,
+                        className = className,
+                    )
+                }
 
                 _state.update {
                     it.copy(

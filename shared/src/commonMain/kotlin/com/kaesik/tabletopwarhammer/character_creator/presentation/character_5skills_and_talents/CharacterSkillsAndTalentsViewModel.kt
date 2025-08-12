@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.kaesik.tabletopwarhammer.character_creator.domain.CharacterCreatorClient
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.SpeciesOrCareer
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.mapSpecializedSkills
+import com.kaesik.tabletopwarhammer.core.domain.library.LibraryDataSource
 import com.kaesik.tabletopwarhammer.core.domain.library.items.SkillItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.TalentItem
 import kotlinx.coroutines.Job
@@ -14,7 +15,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class CharacterSkillsAndTalentsViewModel(
-    private val characterCreatorClient: CharacterCreatorClient
+    private val characterCreatorClient: CharacterCreatorClient,
+    private val libraryDataSource: LibraryDataSource,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(CharacterSkillsAndTalentsState())
@@ -127,16 +129,24 @@ class CharacterSkillsAndTalentsViewModel(
     ) {
         skillsJob?.cancel()
         skillsJob = viewModelScope.launch {
-            val result = characterCreatorClient.getSkills(
-                speciesName = speciesName,
-                careerPathName = careerPathName
-            )
-            val mapped = mapSpecializedSkills(result)
+            val skillsList = if (true) {
+                libraryDataSource.getFilteredSkills(
+                    speciesName = speciesName,
+                    careerPathName = careerPathName
+                )
+            } else {
+                characterCreatorClient.getSkills(
+                    speciesName = speciesName,
+                    careerPathName = careerPathName
+                )
+            }
+            val specializedSkillsList = mapSpecializedSkills(skillsList)
+
             _state.update {
                 when (from) {
-                    SpeciesOrCareer.SPECIES -> it.copy(speciesSkillsList = mapped)
-                    SpeciesOrCareer.CAREER -> it.copy(careerSkillsList = mapped)
-                }.copy(skillList = mapped)
+                    SpeciesOrCareer.SPECIES -> it.copy(speciesSkillsList = specializedSkillsList)
+                    SpeciesOrCareer.CAREER -> it.copy(careerSkillsList = specializedSkillsList)
+                }.copy(skillList = specializedSkillsList)
             }
         }
     }
@@ -148,11 +158,15 @@ class CharacterSkillsAndTalentsViewModel(
     ) {
         talentsJob?.cancel()
         talentsJob = viewModelScope.launch {
-            val result = characterCreatorClient.getTalents(speciesName, careerPathName)
-            println("Fetched talents: $result")
 
-            val speciesTalentGroups = result.getOrNull(0) ?: emptyList()
-            val careerTalentGroups = result.getOrNull(1) ?: emptyList()
+            val talentList = if (true) {
+                libraryDataSource.getFilteredTalents(speciesName, careerPathName)
+            } else {
+                characterCreatorClient.getTalents(speciesName, careerPathName)
+            }
+
+            val speciesTalentGroups = talentList.getOrNull(0) ?: emptyList()
+            val careerTalentGroups = talentList.getOrNull(1) ?: emptyList()
 
             fun processTalentGroups(talentGroups: List<List<TalentItem>>): List<List<TalentItem>> {
                 return talentGroups.map { group ->

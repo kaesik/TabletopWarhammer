@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kaesik.tabletopwarhammer.character_creator.domain.CharacterCreatorClient
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_4attributes.components.parseAttributeFormula
+import com.kaesik.tabletopwarhammer.core.domain.library.LibraryDataSource
 import com.kaesik.tabletopwarhammer.core.domain.util.DataError
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,7 +12,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class CharacterAttributesViewModel(
-    private val characterCreatorClient: CharacterCreatorClient
+    private val characterCreatorClient: CharacterCreatorClient,
+    private val libraryDataSource: LibraryDataSource,
 ) : ViewModel() {
     private val _state = MutableStateFlow(CharacterAttributesState())
     val state = _state.asStateFlow()
@@ -123,8 +125,17 @@ class CharacterAttributesViewModel(
             try {
                 _state.value = state.value.copy(isLoading = true, error = null)
 
-                val attributeList = characterCreatorClient.getAttributes()
-                val species = characterCreatorClient.getSpeciesDetails(speciesName)
+                val attributeList = if (true) {
+                    libraryDataSource.getAllAttributes()
+                } else {
+                    characterCreatorClient.getAttributes()
+                }
+
+                val species = if (true) {
+                    libraryDataSource.getSpecies(speciesName)
+                } else {
+                    characterCreatorClient.getSpeciesDetails(speciesName)
+                }
 
                 val parsedAttributes = listOf(
                     parseAttributeFormula(species.weaponSkill),

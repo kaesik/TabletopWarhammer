@@ -3,6 +3,7 @@ package com.kaesik.tabletopwarhammer.character_creator.presentation.character_2s
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kaesik.tabletopwarhammer.character_creator.domain.CharacterCreatorClient
+import com.kaesik.tabletopwarhammer.core.domain.library.LibraryDataSource
 import com.kaesik.tabletopwarhammer.core.domain.util.DataError
 import com.kaesik.tabletopwarhammer.core.domain.util.DataException
 import kotlinx.coroutines.CancellationException
@@ -13,7 +14,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class CharacterSpeciesViewModel(
-    private val characterCreatorClient: CharacterCreatorClient
+    private val characterCreatorClient: CharacterCreatorClient,
+    private val libraryDataSource: LibraryDataSource,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(CharacterSpeciesState())
@@ -68,7 +70,12 @@ class CharacterSpeciesViewModel(
             _state.update { it.copy(isLoading = true, error = null) }
 
             try {
-                val speciesList = characterCreatorClient.getSpecies()
+                // placeholder for the actual data source logic
+                val speciesList = if (true) {
+                    libraryDataSource.getAllSpecies()
+                } else {
+                    characterCreatorClient.getSpecies()
+                }
 
                 _state.update {
                     it.copy(

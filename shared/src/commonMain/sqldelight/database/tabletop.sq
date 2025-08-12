@@ -269,17 +269,34 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,
     ?, ?, ?, ?, ?
     );
 
--- ATTRIBUTE, CAREER, CAREER PATH, CLASS, ITEM, QUALITY FLAW, SKILL, SPECIES, TALENT
+-- ATTRIBUTE
 getAttributeEntity:
 SELECT * FROM attributeEntity ORDER BY id DESC;
+
+getAttributeEntityByName:
+SELECT * FROM attributeEntity
+WHERE name = :attributeName
+LIMIT 1;
 
 insertAttributeEntity:
 INSERT OR REPLACE INTO attributeEntity (
     id, name, description, shortName, page
 ) VALUES (?, ?, ?, ?, ?);
 
+-- CAREER
 getCareerEntity:
 SELECT * FROM careerEntity ORDER BY id DESC;
+
+getCareerEntityByName:
+SELECT * FROM careerEntity
+WHERE name = :careerName
+LIMIT 1;
+
+getCareerEntityFiltered:
+SELECT * FROM careerEntity
+WHERE className LIKE '%' || :className || '%'
+  AND limitations LIKE '%' || :speciesName || '%'
+ORDER BY id DESC;
 
 insertCareerEntity:
 INSERT OR REPLACE INTO careerEntity (
@@ -287,24 +304,42 @@ INSERT OR REPLACE INTO careerEntity (
     quotations, adventuring, source, careerPath, className, page
 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
+-- CAREER PATH
 getCareerPathEntity:
 SELECT * FROM careerPathEntity ORDER BY id DESC;
+
+getCareerPathEntityByName:
+SELECT * FROM careerPathEntity
+WHERE name = :pathName
+LIMIT 1;
 
 insertCareerPathEntity:
 INSERT OR REPLACE INTO careerPathEntity (
     id, name, status, skills, trappings, talents
 ) VALUES (?, ?, ?, ?, ?, ?);
 
+-- CLASS
 getClassEntity:
 SELECT * FROM classEntity ORDER BY id DESC;
+
+getClassEntityByName:
+SELECT * FROM classEntity
+WHERE name = :className
+LIMIT 1;
 
 insertClassEntity:
 INSERT OR REPLACE INTO classEntity (
     id, name, description, trappings, careers, page
 ) VALUES (?, ?, ?, ?, ?, ?);
 
+-- ITEM
 getItemEntity:
 SELECT * FROM itemEntity ORDER BY id DESC;
+
+getItemEntityByName:
+SELECT * FROM itemEntity
+WHERE name = :itemName
+LIMIT 1;
 
 insertItemEntity:
 INSERT OR REPLACE INTO itemEntity (
@@ -314,16 +349,28 @@ INSERT OR REPLACE INTO itemEntity (
     range, meeleRanged, type, page
 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
+-- QUALITY FLAW
 getQualityFlawEntity:
 SELECT * FROM qualityFlawEntity ORDER BY id DESC;
+
+getQualityFlawEntityByName:
+SELECT * FROM qualityFlawEntity
+WHERE name = :name
+LIMIT 1;
 
 insertQualityFlawEntity:
 INSERT OR REPLACE INTO qualityFlawEntity (
     id, name, `group`, description, isQuality, source, page
 ) VALUES (?, ?, ?, ?, ?, ?, ?);
 
+-- SKILL
 getSkillEntity:
 SELECT * FROM skillEntity ORDER BY id DESC;
+
+getSkillEntityByName:
+SELECT * FROM skillEntity
+WHERE name = :skillName
+LIMIT 1;
 
 insertSkillEntity:
 INSERT OR REPLACE INTO skillEntity (
@@ -331,8 +378,14 @@ INSERT OR REPLACE INTO skillEntity (
     description, specialization, source, page
 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
 
+-- SPECIES
 getSpeciesEntity:
 SELECT * FROM speciesEntity ORDER BY id DESC;
+
+getSpeciesEntityByName:
+SELECT * FROM speciesEntity
+WHERE name LIKE '%' || :speciesName || '%'
+LIMIT 1;
 
 insertSpeciesEntity:
 INSERT OR REPLACE INTO speciesEntity (
@@ -344,8 +397,14 @@ INSERT OR REPLACE INTO speciesEntity (
     age, eyeColour, hairColour, height, initiative, page, names
 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
+-- TALENT
 getTalentEntity:
 SELECT * FROM talentEntity ORDER BY id DESC;
+
+getTalentEntityByName:
+SELECT * FROM talentEntity
+WHERE name = :talentName
+LIMIT 1;
 
 insertTalentEntity:
 INSERT OR REPLACE INTO talentEntity (

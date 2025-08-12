@@ -9,43 +9,63 @@ import com.kaesik.tabletopwarhammer.core.domain.library.items.QualityFlawItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.SkillItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.SpeciesItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.TalentItem
-import com.kaesik.tabletopwarhammer.core.domain.util.CommonFlow
-import kotlin.coroutines.CoroutineContext
 
 interface LibraryDataSource {
     fun getAllAttributes(): List<AttributeItem>
-    fun getAttribute(context: CoroutineContext): CommonFlow<List<AttributeItem>>
+    fun getAttribute(attributeName: String): AttributeItem
     suspend fun insertAttribute(item: AttributeItem)
 
     fun getAllCareers(): List<CareerItem>
-    fun getCareer(context: CoroutineContext): CommonFlow<List<CareerItem>>
+    fun getFilteredCareers(
+        speciesName: String,
+        className: String
+    ): List<CareerItem>
+
+    fun getCareer(careerName: String): CareerItem
     suspend fun insertCareer(item: CareerItem)
 
     fun getAllCareerPaths(): List<CareerPathItem>
-    fun getCareerPath(context: CoroutineContext): CommonFlow<List<CareerPathItem>>
+    fun getCareerPath(pathName: String): CareerPathItem
     suspend fun insertCareerPath(item: CareerPathItem)
 
     fun getAllClasses(): List<ClassItem>
-    fun getClass(context: CoroutineContext): CommonFlow<List<ClassItem>>
+    fun getClass(className: String): ClassItem
     suspend fun insertClass(item: ClassItem)
 
     fun getAllItems(): List<ItemItem>
-    fun getItem(context: CoroutineContext): CommonFlow<List<ItemItem>>
+    fun getItem(itemName: String): ItemItem
+    fun getTrappings(
+        className: String,
+        careerPathName: String
+    ): List<List<ItemItem>>
+
     suspend fun insertItem(item: ItemItem)
 
     fun getAllQualityFlaws(): List<QualityFlawItem>
-    fun getQualityFlaw(context: CoroutineContext): CommonFlow<List<QualityFlawItem>>
+    fun getQualityFlaw(name: String): QualityFlawItem
     suspend fun insertQualityFlaw(item: QualityFlawItem)
 
     fun getAllSkills(): List<SkillItem>
-    fun getSkill(context: CoroutineContext): CommonFlow<List<SkillItem>>
+    fun getFilteredSkills(
+        speciesName: String,
+        careerPathName: String
+    ): List<List<SkillItem>>
+
+    fun getSkill(skillName: String): SkillItem
     suspend fun insertSkill(item: SkillItem)
 
     fun getAllSpecies(): List<SpeciesItem>
-    fun getSpecies(context: CoroutineContext): CommonFlow<List<SpeciesItem>>
+    fun getSpecies(speciesName: String): SpeciesItem
     suspend fun insertSpecies(item: SpeciesItem)
 
     fun getAllTalents(): List<TalentItem>
-    fun getTalent(context: CoroutineContext): CommonFlow<List<TalentItem>>
+    fun getFilteredTalents(
+        speciesName: String,
+        careerPathName: String
+    ): List<List<List<TalentItem>>>
+
+    fun getTalent(talentName: String): TalentItem
     suspend fun insertTalent(item: TalentItem)
+
+    fun getWealth(careerPathName: String): List<Int>
 }

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kaesik.tabletopwarhammer.character_creator.domain.CharacterCreatorClient
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_6trappings.components.ClassOrCareer
+import com.kaesik.tabletopwarhammer.core.domain.library.LibraryDataSource
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -11,7 +12,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class CharacterTrappingsViewModel(
-    private val characterCreatorClient: CharacterCreatorClient
+    private val characterCreatorClient: CharacterCreatorClient,
+    private val libraryDataSource: LibraryDataSource,
 ) : ViewModel() {
     private val _state = MutableStateFlow(CharacterTrappingsState())
     val state = _state.asStateFlow()
@@ -40,15 +42,23 @@ class CharacterTrappingsViewModel(
     ) {
         trappingsJob?.cancel()
         trappingsJob = viewModelScope.launch {
-            val result = characterCreatorClient.getTrappings(
-                className = className,
-                careerPathName = careerPathName
-            )
+            val trappingList = if (true) {
+                libraryDataSource.getTrappings(
+                    className = className,
+                    careerPathName = careerPathName
+                )
+            } else {
+                characterCreatorClient.getTrappings(
+                    className = className,
+                    careerPathName = careerPathName
+                )
+            }
+
             _state.update {
                 when (from) {
-                    ClassOrCareer.CLASS -> it.copy(classTrappingList = result)
-                    ClassOrCareer.CAREER -> it.copy(careerTrappingList = result)
-                }.copy(trappingList = result)
+                    ClassOrCareer.CLASS -> it.copy(classTrappingList = trappingList)
+                    ClassOrCareer.CAREER -> it.copy(careerTrappingList = trappingList)
+                }.copy(trappingList = trappingList)
             }
         }
     }
@@ -58,10 +68,18 @@ class CharacterTrappingsViewModel(
     ) {
         wealthJob?.cancel()
         wealthJob = viewModelScope.launch {
-            val result = characterCreatorClient.getWealth(
-                careerPathName = careerPathName
-            )
-            _state.update { it.copy(wealth = result) }
+            val wealthList = if (true) {
+                libraryDataSource.getWealth(
+                    careerPathName = careerPathName
+                )
+            } else {
+                characterCreatorClient.getWealth(
+                    careerPathName = careerPathName
+                )
+            }
+
+            val result =
+                _state.update { it.copy(wealth = wealthList) }
         }
     }
 }
