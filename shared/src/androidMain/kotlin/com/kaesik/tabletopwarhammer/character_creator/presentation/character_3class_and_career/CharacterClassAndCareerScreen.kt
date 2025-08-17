@@ -15,7 +15,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,11 +30,6 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.components.sh
 import com.kaesik.tabletopwarhammer.core.domain.library.items.CareerItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.ClassItem
 import com.kaesik.tabletopwarhammer.core.presentation.MainScaffold
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.dropWhile
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.getKoin
 
@@ -51,7 +45,6 @@ fun CharacterClassAndCareerScreenRoot(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val creatorState by creatorViewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
-    val coroutineScope = rememberCoroutineScope() // ?
 
     // Handle messages from the creatorViewModel
     LaunchedEffect(creatorState.message, creatorState.isError) {
@@ -87,6 +80,36 @@ fun CharacterClassAndCareerScreenRoot(
         }
     }
 
+    // Get the career selection from the view model
+    LaunchedEffect(state.pendingCareerSelection) {
+        val resolved = state.pendingCareerSelection ?: return@LaunchedEffect
+        creatorViewModel.onEvent(
+            CharacterCreatorEvent.SetCareer(
+                careerItem = resolved.careerItem,
+                careerPathItem = resolved.careerPathItem
+            )
+        )
+        onCareerSelect(resolved.careerItem)
+        viewModel.onEvent(CharacterClassAndCareerEvent.OnCareerSelectionConsumed)
+    }
+
+    // Get the random selection from the view model
+    LaunchedEffect(state.pendingRandomSelection) {
+        val selection = state.pendingRandomSelection ?: return@LaunchedEffect
+        creatorViewModel.onEvent(CharacterCreatorEvent.SetClass(selection.classItem!!))
+        creatorViewModel.onEvent(
+            CharacterCreatorEvent.SetCareer(
+                selection.careerItem,
+                selection.careerPathItem
+            )
+        )
+        creatorViewModel.onEvent(CharacterCreatorEvent.AddExperience(selection.exp!!))
+        creatorViewModel.onEvent(CharacterCreatorEvent.ShowMessage(selection.message!!))
+        onClassSelect(selection.classItem)
+        onCareerSelect(selection.careerItem)
+        viewModel.onEvent(CharacterClassAndCareerEvent.OnRandomSelectionConsumed)
+    }
+
     CharacterClassAndCareerScreen(
         state = state,
         onEvent = { event ->
@@ -116,102 +139,30 @@ fun CharacterClassAndCareerScreenRoot(
                 }
 
                 is CharacterClassAndCareerEvent.OnCareerSelect -> {
-                    viewModel.onEvent(event)
-
-                    val selectedCareer = state.careerList.find { it.id == event.id }
-                    val currentCareerId = creatorState.selectedCareer?.id
-
-                    // Check if the selected career is different from the current career
-                    if (selectedCareer != null && selectedCareer.id != currentCareerId) {
-                        val firstCareerPathName = selectedCareer.careerPath
-                            ?.split(",")?.firstOrNull()?.trim()
-
-                        // If the career has a path, fetch it
-                        coroutineScope.launch {
-                            if (!firstCareerPathName.isNullOrEmpty()) {
-                                val careerPathItem = viewModel
-                                    .characterCreatorClient
-                                    .getCareerPath(pathName = firstCareerPathName)
-
-                                creatorViewModel.onEvent(
-                                    CharacterCreatorEvent.SetCareer(
-                                        careerItem = selectedCareer,
-                                        careerPathItem = careerPathItem
-                                    )
-                                )
-                            }
-
-                            onCareerSelect(selectedCareer)
-                        }
-                    }
+                    viewModel.onEvent(
+                        CharacterClassAndCareerEvent.OnCareerSelect(
+                            id = event.id,
+                            currentCareerId = creatorState.selectedCareer?.id
+                        )
+                    )
                 }
 
                 // Roll a random class and career and get 35 XP
                 is CharacterClassAndCareerEvent.OnClassAndCareerRoll -> {
-                    viewModel.onEvent(
-                        CharacterClassAndCareerEvent.SetSelectingClassAndCareer(
-                            canSelectClass = false,
-                            canSelectCareer = false
-                        )
-                    )
-
+                    viewModel.onEvent(CharacterClassAndCareerEvent.SetSelectingClass(false))
+                    viewModel.onEvent(CharacterClassAndCareerEvent.SetSelectingCareer(false))
                     viewModel.onEvent(
                         CharacterClassAndCareerEvent.OnClassAndCareerRoll(
-                            speciesName = speciesName
+                            speciesName = speciesName,
+                            currentClassId = creatorState.selectedClass?.id,
+                            currentCareerId = creatorState.selectedCareer?.id
                         )
                     )
-
-                    coroutineScope.launch {
-                        viewModel.state
-                            .map { it.isLoading }
-                            .distinctUntilChanged()
-                            .dropWhile { it }
-                            .first { !it }
-
-                        val randomClass = viewModel.state.value.selectedClass
-                        val randomCareer = viewModel.state.value.careerList.randomOrNull()
-                        val currentClassId = creatorState.selectedClass?.id
-                        val currentCareerId = creatorState.selectedCareer?.id
-
-                        if (randomClass != null && randomClass.id != currentClassId &&
-                            randomCareer != null && randomCareer.id != currentCareerId
-                        ) {
-                            val firstCareerPath = randomCareer.careerPath
-                                ?.split(",")
-                                ?.firstOrNull()
-                                ?.trim()
-
-                            val careerPathItem = if (!firstCareerPath.isNullOrEmpty()) {
-                                try {
-                                    viewModel.characterCreatorClient.getCareerPath(firstCareerPath)
-                                } catch (e: Exception) {
-                                    null
-                                }
-                            } else null
-
-                            creatorViewModel.onEvent(CharacterCreatorEvent.SetClass(randomClass))
-                            creatorViewModel.onEvent(
-                                CharacterCreatorEvent.SetCareer(
-                                    randomCareer,
-                                    careerPathItem
-                                )
-                            )
-                            creatorViewModel.onEvent(CharacterCreatorEvent.AddExperience(35))
-                            creatorViewModel.onEvent(
-                                CharacterCreatorEvent.ShowMessage(
-                                    "Randomly selected class & career: ${randomClass.name} / ${randomCareer.name} (+35 XP)"
-                                )
-                            )
-
-                            onClassSelect(randomClass)
-                            onCareerSelect(randomCareer)
-                        }
-                    }
                 }
 
                 is CharacterClassAndCareerEvent.OnNextClick -> if (state.selectedCareer != null) onNextClick()
 
-                else -> Unit
+                else -> viewModel.onEvent(event)
             }
         },
         classes = state.classList,
@@ -260,14 +211,7 @@ fun CharacterClassAndCareerScreen(
                         )
                         CharacterCreatorButton(
                             text = if (state.hasRolledClassAndCareer) "Choose -35XP" else "Choose +0XP",
-                            onClick = {
-                                onEvent(
-                                    CharacterClassAndCareerEvent.SetSelectingClassAndCareer(
-                                        canSelectClass = true,
-                                        canSelectCareer = false
-                                    )
-                                )
-                            },
+                            onClick = { onEvent(CharacterClassAndCareerEvent.SetSelectingClass(true)) },
                             enabled = !state.canSelectClass
                         )
                     }
@@ -292,12 +236,6 @@ fun CharacterClassAndCareerScreen(
                                         onEvent(
                                             CharacterClassAndCareerEvent.OnClassSelect(
                                                 classItem.id
-                                            )
-                                        )
-                                        onEvent(
-                                            CharacterClassAndCareerEvent.SetSelectingClassAndCareer(
-                                                canSelectClass = true,
-                                                canSelectCareer = true,
                                             )
                                         )
                                     }
@@ -339,21 +277,10 @@ fun CharacterClassAndCareerScreen(
                 item {
                     CharacterCreatorButton(
                         text = "Next",
-                        onClick = {
-                            onEvent(CharacterClassAndCareerEvent.OnNextClick)
-                        },
+                        onClick = { onEvent(CharacterClassAndCareerEvent.OnNextClick) },
                         enabled = !state.isLoading && state.selectedCareer != null
                     )
                 }
-                item {
-                    Text("DEBUG → hasRolledClassAndCareer: ${state.hasRolledClassAndCareer}")
-                    Text("DEBUG → canSelectClass: ${state.canSelectClass}")
-                    Text("DEBUG → canSelectCareer: ${state.canSelectCareer}")
-                    Text("DEBUG → isLoading: ${state.isLoading}")
-                    Text("DEBUG → selectedClass: ${state.selectedClass?.name ?: "null"}")
-                    Text("DEBUG → selectedCareer: ${state.selectedCareer?.name ?: "null"}")
-                }
-
             }
         }
     )

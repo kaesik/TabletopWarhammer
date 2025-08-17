@@ -5,7 +5,7 @@ import com.kaesik.tabletopwarhammer.character_creator.domain.CharacterCreatorCli
 import com.kaesik.tabletopwarhammer.core.domain.library.LibraryDataSource
 
 class AndroidCharacterClassAndCareerViewModel(
-    val characterCreatorClient: CharacterCreatorClient,
+    private val characterCreatorClient: CharacterCreatorClient,
     private val libraryDataSource: LibraryDataSource,
 ) : ViewModel() {
 

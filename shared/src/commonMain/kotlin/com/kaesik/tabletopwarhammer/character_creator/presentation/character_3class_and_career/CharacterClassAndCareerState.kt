@@ -1,6 +1,7 @@
 package com.kaesik.tabletopwarhammer.character_creator.presentation.character_3class_and_career
 
 import com.kaesik.tabletopwarhammer.core.domain.library.items.CareerItem
+import com.kaesik.tabletopwarhammer.core.domain.library.items.CareerPathItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.ClassItem
 import com.kaesik.tabletopwarhammer.core.domain.util.DataError
 
@@ -13,10 +14,21 @@ data class CharacterClassAndCareerState(
     val selectedClass: ClassItem? = null,
     val selectedCareer: CareerItem? = null,
 
-    var canSelectClass: Boolean = false,
-    var canSelectCareer: Boolean = false,
+    val canSelectClass: Boolean = false,
+    val canSelectCareer: Boolean = false,
     val hasRolledClassAndCareer: Boolean = false,
 
     val classList: List<ClassItem> = emptyList(),
-    val careerList: List<CareerItem> = emptyList()
+    val careerList: List<CareerItem> = emptyList(),
+
+    val pendingCareerSelection: CareerSelection? = null,
+    val pendingRandomSelection: CareerSelection? = null
+)
+
+data class CareerSelection(
+    val careerItem: CareerItem,
+    val classItem: ClassItem? = null,
+    val careerPathItem: CareerPathItem? = null,
+    val exp: Int? = null,
+    val message: String? = null
 )

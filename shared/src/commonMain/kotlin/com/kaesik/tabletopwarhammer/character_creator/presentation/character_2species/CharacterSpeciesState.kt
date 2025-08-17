@@ -11,8 +11,17 @@ data class CharacterSpeciesState(
 
     val selectedSpecies: SpeciesItem? = null,
 
-    var canSelectSpecies: Boolean = false,
+    val canSelectSpecies: Boolean = false,
     val hasRolledSpecies: Boolean = false,
 
     val speciesList: List<SpeciesItem> = emptyList(),
+
+    val pendingRandomSpecies: SpeciesSelection? = null,
+    val pendingSpeciesSelection: SpeciesSelection? = null
+)
+
+data class SpeciesSelection(
+    val speciesItem: SpeciesItem,
+    val exp: Int? = null,
+    val message: String? = null
 )

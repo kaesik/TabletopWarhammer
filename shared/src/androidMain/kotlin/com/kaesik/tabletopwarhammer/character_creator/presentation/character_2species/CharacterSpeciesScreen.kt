@@ -59,6 +59,29 @@ fun CharacterSpeciesScreenRoot(
         }
     }
 
+    LaunchedEffect(state.pendingRandomSpecies) {
+        val selection = state.pendingRandomSpecies ?: return@LaunchedEffect
+        creatorViewModel.onEvent(CharacterCreatorEvent.SetSpecies(selection.speciesItem))
+        if (selection.exp!! > 0) {
+            creatorViewModel.onEvent(CharacterCreatorEvent.AddExperience(selection.exp))
+        }
+        creatorViewModel.onEvent(CharacterCreatorEvent.ShowMessage(selection.message!!))
+        onSpeciesSelect(selection.speciesItem)
+        viewModel.onEvent(CharacterSpeciesEvent.OnRandomSpeciesConsumed)
+    }
+
+    LaunchedEffect(state.pendingSpeciesSelection) {
+        val sel = state.pendingSpeciesSelection ?: return@LaunchedEffect
+        creatorViewModel.onEvent(CharacterCreatorEvent.SetSpecies(sel.speciesItem))
+        when {
+            sel.exp!! > 0 -> creatorViewModel.onEvent(CharacterCreatorEvent.AddExperience(sel.exp))
+            sel.exp < 0 -> creatorViewModel.onEvent(CharacterCreatorEvent.RemoveExperience(-sel.exp))
+        }
+        creatorViewModel.onEvent(CharacterCreatorEvent.ShowMessage(sel.message!!))
+        onSpeciesSelect(sel.speciesItem)
+        viewModel.onEvent(CharacterSpeciesEvent.OnSpeciesSelectionConsumed)
+    }
+
     CharacterSpeciesScreen(
         state = state,
         onEvent = { event ->
@@ -93,24 +116,6 @@ fun CharacterSpeciesScreenRoot(
                         creatorViewModel.onEvent(CharacterCreatorEvent.ShowMessage("Randomly selected species: ${randomSpecies.name} (+25 XP)"))
 
                         onSpeciesSelect(randomSpecies)
-                    }
-                }
-
-                // Choose a species after rolling one and remove 25 XP
-                is CharacterSpeciesEvent.OnSpeciesChange -> {
-                    viewModel.onEvent(event)
-
-                    val selectedSpecies = state.speciesList.find { it.id == event.id }
-                    val currentSpeciesId = creatorState.selectedSpecies?.id
-
-                    viewModel.onEvent(CharacterSpeciesEvent.SetSelectingSpecies(true))
-
-                    if (selectedSpecies != null && selectedSpecies.id != currentSpeciesId) {
-                        creatorViewModel.onEvent(CharacterCreatorEvent.SetSpecies(selectedSpecies))
-                        creatorViewModel.onEvent(CharacterCreatorEvent.RemoveExperience(25))
-                        creatorViewModel.onEvent(CharacterCreatorEvent.ShowMessage("Changed species to: ${selectedSpecies.name} (-25 XP)"))
-
-                        onSpeciesSelect(selectedSpecies)
                     }
                 }
 

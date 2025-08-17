@@ -12,17 +12,27 @@ sealed class CharacterClassAndCareerEvent {
 
     data class SetSelectedClass(val classItem: ClassItem) : CharacterClassAndCareerEvent()
     data class SetSelectedCareer(val careerItem: CareerItem) : CharacterClassAndCareerEvent()
-    data class SetSelectingClassAndCareer(
-        val canSelectClass: Boolean,
-        val canSelectCareer: Boolean
+    data class SetSelectingClass(val canSelectClass: Boolean) : CharacterClassAndCareerEvent()
+    data class SetSelectingCareer(val canSelectCareer: Boolean) : CharacterClassAndCareerEvent()
+
+    data class OnClassSelect(
+        val id: String,
+        val currentClassId: String? = null
     ) : CharacterClassAndCareerEvent()
 
-    data class OnClassSelect(val id: String) : CharacterClassAndCareerEvent()
-    data class OnCareerSelect(val id: String) : CharacterClassAndCareerEvent()
+    data class OnCareerSelect(
+        val id: String,
+        val currentCareerId: String? = null
+    ) : CharacterClassAndCareerEvent()
+
     data class OnClassAndCareerRoll(
         val speciesName: String,
-        val className: String? = null
+        val currentClassId: String? = null,
+        val currentCareerId: String? = null
     ) : CharacterClassAndCareerEvent()
+
+    data object OnCareerSelectionConsumed : CharacterClassAndCareerEvent()
+    data object OnRandomSelectionConsumed : CharacterClassAndCareerEvent()
 
     data object OnNextClick : CharacterClassAndCareerEvent()
 }
