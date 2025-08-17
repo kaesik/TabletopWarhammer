@@ -31,6 +31,7 @@ sealed class CharacterClassAndCareerEvent {
         val currentCareerId: String? = null
     ) : CharacterClassAndCareerEvent()
 
+    data object OnClassSelectionConsumed : CharacterClassAndCareerEvent()
     data object OnCareerSelectionConsumed : CharacterClassAndCareerEvent()
     data object OnRandomSelectionConsumed : CharacterClassAndCareerEvent()
 

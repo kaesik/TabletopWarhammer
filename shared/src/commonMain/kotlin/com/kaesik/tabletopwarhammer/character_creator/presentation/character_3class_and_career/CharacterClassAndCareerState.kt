@@ -5,6 +5,14 @@ import com.kaesik.tabletopwarhammer.core.domain.library.items.CareerPathItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.ClassItem
 import com.kaesik.tabletopwarhammer.core.domain.util.DataError
 
+data class ClassCareerSelection(
+    val classItem: ClassItem,
+    val careerItem: CareerItem? = null,
+    val careerPathItem: CareerPathItem? = null,
+    val exp: Int = 0,
+    val message: String = ""
+)
+
 data class CharacterClassAndCareerState(
     val error: DataError? = null,
     val message: String? = null,
@@ -21,14 +29,7 @@ data class CharacterClassAndCareerState(
     val classList: List<ClassItem> = emptyList(),
     val careerList: List<CareerItem> = emptyList(),
 
-    val pendingCareerSelection: CareerSelection? = null,
-    val pendingRandomSelection: CareerSelection? = null
-)
-
-data class CareerSelection(
-    val careerItem: CareerItem,
-    val classItem: ClassItem? = null,
-    val careerPathItem: CareerPathItem? = null,
-    val exp: Int? = null,
-    val message: String? = null
+    val pendingClassSelection: ClassCareerSelection? = null,
+    val pendingCareerSelection: ClassCareerSelection? = null,
+    val pendingRandomSelection: ClassCareerSelection? = null
 )

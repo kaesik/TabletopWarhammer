@@ -19,5 +19,6 @@ sealed class CharacterSpeciesEvent {
 
     data object OnSpeciesSelectionConsumed : CharacterSpeciesEvent()
     data object OnRandomSpeciesConsumed : CharacterSpeciesEvent()
+
     data object OnNextClick : CharacterSpeciesEvent()
 }

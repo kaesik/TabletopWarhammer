@@ -51,7 +51,7 @@ fun CharacterClassAndCareerScreenRoot(
         creatorState.message?.let { message ->
             snackbarHostState.showCharacterCreatorSnackbar(
                 message = message,
-                type = if (creatorState.isError == true) SnackbarType.Error else SnackbarType.Success
+                type = if (creatorState.isError) SnackbarType.Error else SnackbarType.Success
             )
             creatorViewModel.onEvent(CharacterCreatorEvent.ClearMessage)
         }
@@ -80,33 +80,85 @@ fun CharacterClassAndCareerScreenRoot(
         }
     }
 
-    // Get the career selection from the view model
-    LaunchedEffect(state.pendingCareerSelection) {
-        val resolved = state.pendingCareerSelection ?: return@LaunchedEffect
-        creatorViewModel.onEvent(
-            CharacterCreatorEvent.SetCareer(
-                careerItem = resolved.careerItem,
-                careerPathItem = resolved.careerPathItem
+    // Get the class selection from the view model
+    LaunchedEffect(state.pendingClassSelection) {
+        val selection = state.pendingClassSelection ?: return@LaunchedEffect
+
+        // Set the selected class in the creator view model
+        creatorViewModel.onEvent(CharacterCreatorEvent.SetClass(selection.classItem))
+        creatorViewModel.onEvent(CharacterCreatorEvent.SetCareer(null, null))
+        when {
+            selection.exp > 0 -> creatorViewModel.onEvent(
+                CharacterCreatorEvent.AddExperience(
+                    selection.exp
+                )
+            )
+
+            selection.exp < 0 -> creatorViewModel.onEvent(
+                CharacterCreatorEvent.RemoveExperience(
+                    -selection.exp
+                )
+            )
+        }
+        if (selection.message.isNotBlank()) {
+            creatorViewModel.onEvent(CharacterCreatorEvent.ShowMessage(selection.message))
+        }
+        onClassSelect(selection.classItem)
+
+        // Get the career list based on the selected class
+        viewModel.onEvent(
+            CharacterClassAndCareerEvent.InitCareerList(
+                speciesName = creatorViewModel.state.value.character.species,
+                className = selection.classItem.name
             )
         )
-        onCareerSelect(resolved.careerItem)
+
+        // Consume the class selection
+        viewModel.onEvent(CharacterClassAndCareerEvent.OnClassSelectionConsumed)
+    }
+
+    // Get the career selection from the view model
+    LaunchedEffect(state.pendingCareerSelection) {
+        val selection = state.pendingCareerSelection ?: return@LaunchedEffect
+
+        // Set the selected career in the creator view model
+        creatorViewModel.onEvent(
+            CharacterCreatorEvent.SetCareer(
+                careerItem = selection.careerItem,
+                careerPathItem = selection.careerPathItem
+            )
+        )
+        if (selection.message.isNotBlank()) {
+            creatorViewModel.onEvent(CharacterCreatorEvent.ShowMessage(selection.message))
+        }
+        onCareerSelect(selection.careerItem ?: return@LaunchedEffect)
+
+        // Consume the career selection
         viewModel.onEvent(CharacterClassAndCareerEvent.OnCareerSelectionConsumed)
     }
 
     // Get the random selection from the view model
     LaunchedEffect(state.pendingRandomSelection) {
         val selection = state.pendingRandomSelection ?: return@LaunchedEffect
-        creatorViewModel.onEvent(CharacterCreatorEvent.SetClass(selection.classItem!!))
+
+        // Set the selected class and career in the creator view model
+        creatorViewModel.onEvent(CharacterCreatorEvent.SetClass(selection.classItem))
         creatorViewModel.onEvent(
             CharacterCreatorEvent.SetCareer(
                 selection.careerItem,
                 selection.careerPathItem
             )
         )
-        creatorViewModel.onEvent(CharacterCreatorEvent.AddExperience(selection.exp!!))
-        creatorViewModel.onEvent(CharacterCreatorEvent.ShowMessage(selection.message!!))
+        if (selection.exp > 0) {
+            creatorViewModel.onEvent(CharacterCreatorEvent.AddExperience(selection.exp))
+        }
+        if (selection.message.isNotBlank()) {
+            creatorViewModel.onEvent(CharacterCreatorEvent.ShowMessage(selection.message))
+        }
         onClassSelect(selection.classItem)
-        onCareerSelect(selection.careerItem)
+        onCareerSelect(selection.careerItem ?: return@LaunchedEffect)
+
+        // Consume the random selection
         viewModel.onEvent(CharacterClassAndCareerEvent.OnRandomSelectionConsumed)
     }
 
@@ -115,27 +167,14 @@ fun CharacterClassAndCareerScreenRoot(
         onEvent = { event ->
             when (event) {
 
-                // Select a class and career from the list and get nothing
+                // Select a class and career from the list
                 is CharacterClassAndCareerEvent.OnClassSelect -> {
-                    viewModel.onEvent(event)
-
-                    val selectedClass = state.classList.find { it.id == event.id }
-                    val currentClassId = creatorState.selectedClass?.id
-
-                    // Check if the selected class is different from the current class
-                    if (selectedClass != null && selectedClass.id != currentClassId) {
-                        creatorViewModel.onEvent(CharacterCreatorEvent.SetClass(selectedClass))
-                        creatorViewModel.onEvent(CharacterCreatorEvent.SetCareer(null, null))
-
-                        viewModel.onEvent(
-                            CharacterClassAndCareerEvent.InitCareerList(
-                                speciesName = creatorViewModel.state.value.character.species,
-                                className = selectedClass.name
-                            )
+                    viewModel.onEvent(
+                        CharacterClassAndCareerEvent.OnClassSelect(
+                            id = event.id,
+                            currentClassId = creatorState.selectedClass?.id
                         )
-
-                        onClassSelect(selectedClass)
-                    }
+                    )
                 }
 
                 is CharacterClassAndCareerEvent.OnCareerSelect -> {
@@ -147,7 +186,7 @@ fun CharacterClassAndCareerScreenRoot(
                     )
                 }
 
-                // Roll a random class and career and get 35 XP
+                // Roll a random class and career
                 is CharacterClassAndCareerEvent.OnClassAndCareerRoll -> {
                     viewModel.onEvent(CharacterClassAndCareerEvent.SetSelectingClass(false))
                     viewModel.onEvent(CharacterClassAndCareerEvent.SetSelectingCareer(false))
@@ -216,6 +255,8 @@ fun CharacterClassAndCareerScreen(
                         )
                     }
                 }
+
+                // Display possible classes based on species
                 item {
                     var expanded by remember { mutableStateOf(false) }
                     Box {
@@ -244,6 +285,8 @@ fun CharacterClassAndCareerScreen(
                         }
                     }
                 }
+
+                // Display possible careers based on selected class
                 item {
                     var expanded by remember { mutableStateOf(false) }
                     Box {
@@ -274,6 +317,8 @@ fun CharacterClassAndCareerScreen(
                         }
                     }
                 }
+
+                // If a class and career is selected, show a next button
                 item {
                     CharacterCreatorButton(
                         text = "Next",

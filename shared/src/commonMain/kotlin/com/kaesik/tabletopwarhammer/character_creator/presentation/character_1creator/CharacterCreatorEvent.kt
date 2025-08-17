@@ -28,9 +28,10 @@ sealed class CharacterCreatorEvent {
     ) : CharacterCreatorEvent()
 
     data class SetAttributes(
-        val totalAttributes: List<Int>,
-        val fatePoints: Int,
-        val resiliencePoints: Int,
+        val rolledAttributes: List<Int> = emptyList(),
+        val totalAttributes: List<Int> = emptyList(),
+        val fatePoints: Int = 0,
+        val resiliencePoints: Int = 0,
     ) : CharacterCreatorEvent()
 
     data class SetSkillsAndTalents(

@@ -135,7 +135,7 @@ class CharacterSkillsAndTalentsViewModel(
                     careerPathName = careerPathName
                 )
             } else {
-                characterCreatorClient.getSkills(
+                characterCreatorClient.getFilteredSkills(
                     speciesName = speciesName,
                     careerPathName = careerPathName
                 )
@@ -162,7 +162,7 @@ class CharacterSkillsAndTalentsViewModel(
             val talentList = if (true) {
                 libraryDataSource.getFilteredTalents(speciesName, careerPathName)
             } else {
-                characterCreatorClient.getTalents(speciesName, careerPathName)
+                characterCreatorClient.getFilteredTalents(speciesName, careerPathName)
             }
 
             val speciesTalentGroups = talentList.getOrNull(0) ?: emptyList()

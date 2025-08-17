@@ -3,6 +3,12 @@ package com.kaesik.tabletopwarhammer.character_creator.presentation.character_2s
 import com.kaesik.tabletopwarhammer.core.domain.library.items.SpeciesItem
 import com.kaesik.tabletopwarhammer.core.domain.util.DataError
 
+data class SpeciesSelection(
+    val speciesItem: SpeciesItem,
+    val exp: Int = 0,
+    val message: String = ""
+)
+
 data class CharacterSpeciesState(
     val error: DataError? = null,
     val message: String? = null,
@@ -18,10 +24,4 @@ data class CharacterSpeciesState(
 
     val pendingRandomSpecies: SpeciesSelection? = null,
     val pendingSpeciesSelection: SpeciesSelection? = null
-)
-
-data class SpeciesSelection(
-    val speciesItem: SpeciesItem,
-    val exp: Int? = null,
-    val message: String? = null
 )

@@ -30,12 +30,9 @@ class CharacterSpeciesViewModel(
             is CharacterSpeciesEvent.InitSpeciesList -> viewModelScope.launch {
                 _state.update { it.copy(isLoading = true, error = null) }
 
-                val list = fetchSpeciesList()
-                _state.update { it.copy(speciesList = list, isLoading = false) }
+                val speciesList = fetchSpeciesList()
+                _state.update { it.copy(speciesList = speciesList, isLoading = false) }
             }
-
-            // When the species is selected, update the state with the selected species
-            is CharacterSpeciesEvent.OnSpeciesSelect -> onSpeciesSelect(event)
 
             // Set the selected species directly from the event
             is CharacterSpeciesEvent.SetSelectedSpecies -> _state.update {
@@ -44,13 +41,24 @@ class CharacterSpeciesViewModel(
                 )
             }
 
-
-            // Roll a random species from the list and update the state with the rolled species
-            is CharacterSpeciesEvent.OnSpeciesRoll -> onRoll(event)
-
             // Set the state to indicate whether species selection is allowed
             is CharacterSpeciesEvent.SetSelectingSpecies -> {
                 _state.update { it.copy(canSelectSpecies = event.canSelectSpecies) }
+            }
+
+            // When the species is selected, update the state with the selected species
+            is CharacterSpeciesEvent.OnSpeciesSelect -> onSpeciesSelect(event)
+
+            // Roll a random species from the list and update the state with the rolled species
+            is CharacterSpeciesEvent.OnSpeciesRoll -> onSpeciesRoll(event)
+
+            // Consume the pending species selection and update the state
+            CharacterSpeciesEvent.OnSpeciesSelectionConsumed -> _state.update {
+                it.copy(pendingSpeciesSelection = null)
+            }
+
+            CharacterSpeciesEvent.OnRandomSpeciesConsumed -> _state.update {
+                it.copy(pendingRandomSpecies = null)
             }
 
             else -> Unit
@@ -59,8 +67,9 @@ class CharacterSpeciesViewModel(
 
     private suspend fun fetchSpeciesList(): List<SpeciesItem> {
         return try {
+            // PLACEHOLDER: Replace with actual condition to determine data source
             if (true) libraryDataSource.getAllSpecies()
-            else characterCreatorClient.getSpecies()
+            else characterCreatorClient.getAllSpecies()
 
         } catch (e: DataException) {
             _state.update { it.copy(error = e.error) }
@@ -79,10 +88,8 @@ class CharacterSpeciesViewModel(
 
         val afterRoll = state.value.hasRolledSpecies
         val exp = if (afterRoll) -25 else 0
-        val msg = if (afterRoll)
-            "Changed species to: ${selected.name} (-25 XP)"
-        else
-            "Selected species: ${selected.name}"
+        val msg = if (afterRoll) "Changed species to: ${selected.name} (-25 XP)"
+        else "Selected species: ${selected.name}"
 
         speciesJob?.cancel()
         speciesJob = viewModelScope.launch {
@@ -99,12 +106,13 @@ class CharacterSpeciesViewModel(
         }
     }
 
-    private fun onRoll(event: CharacterSpeciesEvent.OnSpeciesRoll) {
+    private fun onSpeciesRoll(event: CharacterSpeciesEvent.OnSpeciesRoll) {
         val species = _state.value.speciesList
         if (species.isEmpty()) return
 
-        val random = species.firstDifferentOrSelf { it.id != event.currentSpeciesId }
-        val exp = 35
+        // PLACEHOLDER: Replace with actual condition to randomly select a species
+        val random = species.random()
+        val exp = 25
         val msg = "Randomly selected species: ${random.name} (+$exp XP)"
 
         _state.update {
@@ -120,8 +128,4 @@ class CharacterSpeciesViewModel(
             )
         }
     }
-
-    private fun <T> List<T>.firstDifferentOrSelf(predicate: (T) -> Boolean): T =
-        this.firstOrNull(predicate) ?: this.first()
-
 }

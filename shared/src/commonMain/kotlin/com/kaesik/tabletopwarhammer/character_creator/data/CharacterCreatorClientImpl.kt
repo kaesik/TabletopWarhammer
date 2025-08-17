@@ -35,7 +35,7 @@ import kotlin.coroutines.cancellation.CancellationException
 class CharacterCreatorClientImpl : CharacterCreatorClient {
     private val supabaseClient = SupabaseClient.supabaseClient
 
-    override suspend fun getSpecies(): List<SpeciesItem> {
+    override suspend fun getAllSpecies(): List<SpeciesItem> {
         return try {
             val speciesList = supabaseClient
                 .from(LibraryEnum.SPECIES.tableName)
@@ -64,7 +64,7 @@ class CharacterCreatorClientImpl : CharacterCreatorClient {
         }
     }
 
-    override suspend fun getClasses(): List<ClassItem> {
+    override suspend fun getAllClasses(): List<ClassItem> {
         return try {
             val classList = supabaseClient
                 .from(LibraryEnum.CLASS.tableName)
@@ -95,7 +95,10 @@ class CharacterCreatorClientImpl : CharacterCreatorClient {
         }
     }
 
-    override suspend fun getCareers(speciesName: String, className: String): List<CareerItem> {
+    override suspend fun getFilteredCareers(
+        speciesName: String,
+        className: String
+    ): List<CareerItem> {
         return try {
             val careerList = supabaseClient
                 .from(LibraryEnum.CAREER.tableName)
@@ -152,7 +155,7 @@ class CharacterCreatorClientImpl : CharacterCreatorClient {
         }
     }
 
-    override suspend fun getAttributes(): List<AttributeItem> {
+    override suspend fun getAllAttributes(): List<AttributeItem> {
         return try {
             val attributeList = supabaseClient
                 .from(LibraryEnum.ATTRIBUTE.tableName)
@@ -184,7 +187,7 @@ class CharacterCreatorClientImpl : CharacterCreatorClient {
         }
     }
 
-    override suspend fun getSkills(
+    override suspend fun getFilteredSkills(
         speciesName: String,
         careerPathName: String
     ): List<List<SkillItem>> {
@@ -267,7 +270,7 @@ class CharacterCreatorClientImpl : CharacterCreatorClient {
         }
     }
 
-    override suspend fun getTalents(
+    override suspend fun getFilteredTalents(
         speciesName: String,
         careerPathName: String
     ): List<List<List<TalentItem>>> {

@@ -20,8 +20,11 @@ sealed class CharacterAttributesEvent {
     data object RollAllDice : CharacterAttributesEvent()
 
     data object ToggleReorderMode : CharacterAttributesEvent()
-    data class SwapAttributes(val fromIndex: Int, val toIndex: Int) : CharacterAttributesEvent()
+    data class ReorderAttributes(val fromIndex: Int, val toIndex: Int) : CharacterAttributesEvent()
     data class UpdateDiceThrowOrder(val reordered: List<Int>) : CharacterAttributesEvent()
+
+    data object OnRandomSelectionConsumed : CharacterAttributesEvent()
+    data object OnAttributesSelectionConsumed : CharacterAttributesEvent()
 
     data object OnNextClick : CharacterAttributesEvent()
 }

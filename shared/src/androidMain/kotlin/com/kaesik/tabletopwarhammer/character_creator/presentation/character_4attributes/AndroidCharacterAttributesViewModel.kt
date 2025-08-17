@@ -21,8 +21,4 @@ class AndroidCharacterAttributesViewModel(
     fun onEvent(event: CharacterAttributesEvent) {
         viewModel.onEvent(event)
     }
-
-    fun restoreRolledAttributes(rolled: List<Int>, total: List<Int>) {
-        viewModel.restoreRolledAttributes(rolled, total)
-    }
 }

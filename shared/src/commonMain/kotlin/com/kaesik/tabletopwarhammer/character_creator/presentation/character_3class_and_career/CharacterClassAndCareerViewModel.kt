@@ -32,26 +32,20 @@ class CharacterClassAndCareerViewModel(
             is CharacterClassAndCareerEvent.InitClassList -> viewModelScope.launch {
                 _state.update { it.copy(isLoading = true, error = null) }
 
-                val list = fetchClassList()
-                _state.update { it.copy(classList = list, isLoading = false) }
+                val classList = fetchClassList()
+                _state.update { it.copy(classList = classList, isLoading = false) }
             }
 
             is CharacterClassAndCareerEvent.InitCareerList -> viewModelScope.launch {
                 _state.update { it.copy(isLoading = true, error = null) }
 
-                val list = fetchCareerList(event.speciesName, event.className)
-                _state.update { it.copy(careerList = list, isLoading = false) }
+                val careerList = fetchCareerList(event.speciesName, event.className)
+                _state.update { it.copy(careerList = careerList, isLoading = false) }
             }
 
             // Select a class and career from the class list
             is CharacterClassAndCareerEvent.OnClassSelect -> onClassSelect(event)
-
             is CharacterClassAndCareerEvent.OnCareerSelect -> onCareerSelect(event)
-            is CharacterClassAndCareerEvent.OnCareerSelectionConsumed -> _state.update {
-                it.copy(
-                    pendingCareerSelection = null
-                )
-            }
 
             // Set the selected class and career
             is CharacterClassAndCareerEvent.SetSelectedClass -> _state.update {
@@ -80,7 +74,22 @@ class CharacterClassAndCareerViewModel(
             }
 
             // Roll a random class and career from the list and update the state with the rolled class and career
-            is CharacterClassAndCareerEvent.OnClassAndCareerRoll -> onRoll(event)
+            is CharacterClassAndCareerEvent.OnClassAndCareerRoll -> onClassAndCareerRoll(event)
+
+
+            // Consume the pending class and career selections and update the state
+            CharacterClassAndCareerEvent.OnClassSelectionConsumed -> _state.update {
+                it.copy(pendingClassSelection = null)
+            }
+
+            CharacterClassAndCareerEvent.OnCareerSelectionConsumed -> _state.update {
+                it.copy(pendingCareerSelection = null)
+            }
+
+            CharacterClassAndCareerEvent.OnRandomSelectionConsumed -> _state.update {
+                it.copy(pendingRandomSelection = null)
+            }
+
 
             else -> Unit
         }
@@ -88,8 +97,9 @@ class CharacterClassAndCareerViewModel(
 
     private suspend fun fetchClassList(): List<ClassItem> {
         return try {
+            // PLACEHOLDER: Replace with actual condition to determine data source
             if (true) libraryDataSource.getAllClasses()
-            else characterCreatorClient.getClasses()
+            else characterCreatorClient.getAllClasses()
 
         } catch (e: DataException) {
             _state.update { it.copy(error = e.error) }
@@ -104,10 +114,11 @@ class CharacterClassAndCareerViewModel(
 
     private suspend fun fetchCareerList(speciesName: String, className: String): List<CareerItem> {
         return try {
+            // PLACEHOLDER: Replace with actual condition to determine data source
             if (true) libraryDataSource
                 .getFilteredCareers(speciesName = speciesName, className = className)
             else characterCreatorClient
-                .getCareers(speciesName = speciesName, className = className)
+                .getFilteredCareers(speciesName = speciesName, className = className)
 
         } catch (e: DataException) {
             _state.update { it.copy(error = e.error) }
@@ -125,6 +136,7 @@ class CharacterClassAndCareerViewModel(
         if (firstCareerPathName.isEmpty()) return null
 
         return try {
+            // PLACEHOLDER: Replace with actual condition to determine data source
             if (true) libraryDataSource.getCareerPath(firstCareerPathName)
             else characterCreatorClient.getCareerPath(firstCareerPathName)
         } catch (e: Exception) {
@@ -136,12 +148,24 @@ class CharacterClassAndCareerViewModel(
         val selected = state.value.classList.find { it.id == event.id } ?: return
         if (selected.id == event.currentClassId) return
 
+        val afterRoll = state.value.hasRolledClassAndCareer
+        val exp = if (afterRoll) -35 else 0
+        val msg = if (afterRoll) "Changed class to: ${selected.name} (-35 XP)"
+        else "Selected class: ${selected.name}"
+
         classJob?.cancel()
         classJob = viewModelScope.launch {
             _state.update {
                 it.copy(
                     selectedClass = selected,
                     selectedCareer = null,
+                    pendingClassSelection = ClassCareerSelection(
+                        classItem = selected,
+                        careerItem = null,
+                        careerPathItem = null,
+                        exp = exp,
+                        message = msg
+                    ),
                     pendingCareerSelection = null,
                     careerList = emptyList(),
                     canSelectCareer = true,
@@ -157,24 +181,29 @@ class CharacterClassAndCareerViewModel(
         careerJob?.cancel()
         careerJob = viewModelScope.launch {
             val careerPathItem = fetchCareerPath(selected)
+            val currentClass = state.value.selectedClass ?: return@launch
             _state.update {
                 it.copy(
                     selectedCareer = selected,
-                    pendingCareerSelection = CareerSelection(
+                    pendingCareerSelection = ClassCareerSelection(
+                        classItem = currentClass,
                         careerItem = selected,
-                        careerPathItem = careerPathItem
+                        careerPathItem = careerPathItem,
+                        exp = 0,
+                        message = "Selected career: ${selected.name}"
                     )
                 )
             }
         }
     }
 
-    private fun onRoll(event: CharacterClassAndCareerEvent.OnClassAndCareerRoll) {
+    private fun onClassAndCareerRoll(event: CharacterClassAndCareerEvent.OnClassAndCareerRoll) {
         val classes = _state.value.classList
         if (classes.isEmpty()) return
 
         viewModelScope.launch {
-            val randomClass = classes.firstDifferentOrSelf { it.id != event.currentClassId }
+            // PLACEHOLDER: Replace with actual condition to randomly select a class
+            val randomClass = classes.random()
 
             _state.update {
                 it.copy(
@@ -188,12 +217,12 @@ class CharacterClassAndCareerViewModel(
                 )
             }
 
-            val careers =
-                fetchCareerList(speciesName = event.speciesName, className = randomClass.name)
+            val careers = fetchCareerList(event.speciesName, randomClass.name)
             _state.update { it.copy(careerList = careers, isLoading = false) }
             if (careers.isEmpty()) return@launch
 
-            val randomCareer = careers.firstDifferentOrSelf { it.id != event.currentCareerId }
+            // PLACEHOLDER: Replace with actual condition to randomly select a career
+            val randomCareer = careers.random()
             val careerPathItem = fetchCareerPath(randomCareer)
 
             val exp = 35
@@ -203,7 +232,7 @@ class CharacterClassAndCareerViewModel(
             _state.update {
                 it.copy(
                     selectedCareer = randomCareer,
-                    pendingRandomSelection = CareerSelection(
+                    pendingRandomSelection = ClassCareerSelection(
                         classItem = randomClass,
                         careerItem = randomCareer,
                         careerPathItem = careerPathItem,
@@ -216,6 +245,6 @@ class CharacterClassAndCareerViewModel(
     }
 
     private fun <T> List<T>.firstDifferentOrSelf(predicate: (T) -> Boolean): T =
-        this.firstOrNull(predicate) ?: this.first()
+        (this.firstOrNull(predicate) ?: this.first())
 
 }

@@ -1,7 +1,6 @@
 package com.kaesik.tabletopwarhammer.character_creator.presentation.character_4attributes.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.draganddrop.dragAndDropTarget
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,10 +15,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.DragHandle
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,7 +32,7 @@ fun AttributesTable(
     baseAttributeValues: List<String>,
     totalAttributeValues: List<String>,
     onOrderChange: (List<String>) -> Unit,
-    isReordering: Boolean,
+    canReorderAttributes: Boolean,
     modifier: Modifier = Modifier
 ) {
     Column {
@@ -57,7 +52,7 @@ fun AttributesTable(
                         diceThrow = diceThrows.getOrElse(index) { "" },
                         baseValue = baseAttributeValues.getOrElse(index) { "0" },
                         totalValue = totalAttributeValues.getOrElse(index) { "0" },
-                        isDragged = isReordering
+                        isDragged = canReorderAttributes
                     )
                 }
             }
@@ -96,7 +91,7 @@ fun AttributesTable(
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                if (isReordering) {
+                                if (canReorderAttributes) {
                                     Text(
                                         text = diceThrow,
                                         modifier = Modifier.draggableHandle()

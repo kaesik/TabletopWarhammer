@@ -11,19 +11,19 @@ import com.kaesik.tabletopwarhammer.core.domain.library.items.TalentItem
 
 interface CharacterCreatorClient {
 
-    suspend fun getSpecies(): List<SpeciesItem>
+    suspend fun getAllSpecies(): List<SpeciesItem>
 
     suspend fun getSpeciesDetails(
         speciesName: String
     ): SpeciesItem
 
-    suspend fun getClasses(): List<ClassItem>
+    suspend fun getAllClasses(): List<ClassItem>
 
     suspend fun getClassesDetails(
         className: String
     ): ClassItem
 
-    suspend fun getCareers(
+    suspend fun getFilteredCareers(
         speciesName: String,
         className: String
     ): List<CareerItem>
@@ -36,13 +36,13 @@ interface CharacterCreatorClient {
         pathName: String
     ): CareerPathItem
 
-    suspend fun getAttributes(): List<AttributeItem>
+    suspend fun getAllAttributes(): List<AttributeItem>
 
     suspend fun getAttributesDetails(
         attributeName: String
     ): AttributeItem
 
-    suspend fun getSkills(
+    suspend fun getFilteredSkills(
         speciesName: String,
         careerPathName: String
     ): List<List<SkillItem>>
@@ -51,7 +51,7 @@ interface CharacterCreatorClient {
         skillName: String
     ): SkillItem
 
-    suspend fun getTalents(
+    suspend fun getFilteredTalents(
         speciesName: String,
         careerPathName: String
     ): List<List<List<TalentItem>>>
