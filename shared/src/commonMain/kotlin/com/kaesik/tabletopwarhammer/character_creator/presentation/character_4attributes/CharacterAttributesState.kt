@@ -24,13 +24,6 @@ data class CharacterAttributesState(
 
     val attributeList: List<AttributeItem> = emptyList(),
 
-    val diceThrow: String = "",
-    val diceThrows: List<String> = emptyList(),
-    val hasRolledAllDice: Boolean = false,
-
-    val rolledDiceResults: List<Int> = emptyList(),
-    val reorderedDiceResults: List<Int> = emptyList(),
-
     val baseAttributeValues: List<Int> = emptyList(),
     val totalAttributeValues: List<Int> = emptyList(),
 
@@ -40,16 +33,32 @@ data class CharacterAttributesState(
     val resiliencePoints: Int = 0,
     val extraPoints: Int = 0,
 
-    val hasReceivedXpForRolling: Boolean = false,
+    //DICE THROWS
+    val diceThrow: String = "",
+    val diceThrows: List<String> = emptyList(),
+    val rolledDiceResults: List<Int> = emptyList(),
+    val hasRolledAllDice: Boolean = false,
 
+    // ROLL
     val canRollAttributes: Boolean = false,
-    val canReorderAttributes: Boolean = false,
-    val canSelectAttributes: Boolean = false,
-
     val hasRolledAttributes: Boolean = false,
+    val rollingXpApplied: Boolean = false,
+
+    // REORDER
     val hasReorderedAttributes: Boolean = false,
-    val hasSelectedAttributes: Boolean = false,
+    val canReorderAttributes: Boolean = false,
+    val reorderedDiceResults: List<Int> = emptyList(),
+    val reorderXpApplied: Boolean = false,
+
+    //ALLOCATE
+    val canAllocateAttributes: Boolean = false,
+    val hasAllocateAttributes: Boolean = false,
+    val allocatedDiceResults: List<Int> = emptyList(),
+//    val allocatePointsLeft: Int = 100,
+    val allocatePointsLeft: Int = 1,
+    val allocationXpApplied: Boolean = false,
 
     val pendingRandomSelection: AttributesSelection? = null,
-    val pendingAttributesSelection: AttributesSelection? = null
+    val pendingAttributesSelection: AttributesSelection? = null,
+    val pendingFateResilienceSelection: AttributesSelection? = null
 )

@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator.AndroidCharacterCreatorViewModel
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator.CharacterCreatorEvent
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_4attributes.components.AllocationCard
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_4attributes.components.AttributesTable
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_4attributes.components.FateResilienceCard
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorButton
@@ -46,24 +47,34 @@ fun CharacterAttributesScreenRoot(
         creatorState.message?.let { message ->
             snackbarHostState.showCharacterCreatorSnackbar(
                 message = message,
-                type = if (creatorState.isError == true) SnackbarType.Error else SnackbarType.Success
+                type = if (creatorState.isError) SnackbarType.Error else SnackbarType.Success
             )
             creatorViewModel.onEvent(CharacterCreatorEvent.ClearMessage)
         }
     }
 
     // Initialize attributes and fate/resilience points
-    val rolled = creatorState.rolledAttributes.takeIf { it.isNotEmpty() }
-    val total = creatorState.totalAttributes.takeIf { it.isNotEmpty() }
-    LaunchedEffect(true) {
+    LaunchedEffect(Unit) {
+        val savedRolled = creatorState.rolledAttributes.takeIf { it.isNotEmpty() }
+        val savedTotal = creatorState.totalAttributes.takeIf { it.isNotEmpty() }
+
         viewModel.onEvent(
             CharacterAttributesEvent.InitAttributesList(
                 speciesName = characterSpecies,
-                rolled = rolled,
-                total = total
+                rolled = savedRolled,
+                total = savedTotal
             )
         )
-        viewModel.onEvent(CharacterAttributesEvent.InitFateAndResilience(characterSpecies))
+
+        val savedFate = creatorState.character.fate.takeIf { it > 0 }
+        val savedRes = creatorState.character.resilience.takeIf { it > 0 }
+        viewModel.onEvent(
+            CharacterAttributesEvent.InitFateAndResilience(
+                speciesName = characterSpecies,
+                fate = savedFate,
+                resilience = savedRes
+            )
+        )
     }
 
     // Save rolled attributes and total values when they change
@@ -93,10 +104,29 @@ fun CharacterAttributesScreenRoot(
         viewModel.onEvent(CharacterAttributesEvent.OnAttributesSelectionConsumed)
     }
 
+    // Get the fate and resilience selection from the view model
+    LaunchedEffect(state.pendingFateResilienceSelection) {
+        val selection = state.pendingFateResilienceSelection ?: return@LaunchedEffect
+
+        // Set fate and resilience points in the creatorViewModel
+        val totals = if (creatorState.totalAttributes.isNotEmpty()) creatorState.totalAttributes
+        else state.totalAttributeValues
+        creatorViewModel.onEvent(
+            CharacterCreatorEvent.SetAttributes(
+                totalAttributes = totals,
+                fatePoints = selection.fatePoints ?: 0,
+                resiliencePoints = selection.resiliencePoints ?: 0
+            )
+        )
+
+        // Consume the fate and resilience selection
+        viewModel.onEvent(CharacterAttributesEvent.OnFateResilienceSelectionConsumed)
+    }
+
     // Get the random selection from the view model
     LaunchedEffect(state.pendingRandomSelection) {
         val selection = state.pendingRandomSelection ?: return@LaunchedEffect
-        if (selection.exp > 0) {
+        if (selection.exp != 0) {
             creatorViewModel.onEvent(CharacterCreatorEvent.AddExperience(selection.exp))
         }
         if (selection.message.isNotBlank()) {
@@ -105,33 +135,18 @@ fun CharacterAttributesScreenRoot(
         viewModel.onEvent(CharacterAttributesEvent.OnRandomSelectionConsumed)
     }
 
-    val attributes = state.attributeList
-    val baseAttributeValues = state.baseAttributeValues.map { it.toString() }
-    val diceThrows = state.diceThrows
-
     CharacterAttributesScreen(
         state = state,
         onEvent = { event ->
             when (event) {
-                is CharacterAttributesEvent.OnNextClick -> {
-                    if (state.extraPoints == 0) {
-                        creatorViewModel.onEvent(
-                            CharacterCreatorEvent.SetAttributes(
-                                totalAttributes = state.totalAttributeValues,
-                                fatePoints = state.fatePoints,
-                                resiliencePoints = state.resiliencePoints
-                            )
-                        )
-                        onNextClick()
-                    }
-                }
+                is CharacterAttributesEvent.OnNextClick -> onNextClick()
 
                 else -> viewModel.onEvent(event)
             }
         },
-        attributes = attributes,
-        diceThrows = diceThrows,
-        baseAttributeValues = baseAttributeValues,
+        attributes = state.attributeList,
+        diceThrows = state.diceThrows,
+        baseAttributeValues = state.baseAttributeValues.map { it.toString() },
         snackbarHostState = snackbarHostState
     )
 }
@@ -177,22 +192,40 @@ fun CharacterAttributesScreen(
                             CharacterCreatorButton(
                                 text = "Reorder -25XP",
                                 onClick = { onEvent(CharacterAttributesEvent.ToggleReorderMode) },
-                                enabled = !state.isLoading && !state.hasReorderedAttributes
-                                        && (state.rolledDiceResults == state.reorderedDiceResults)
+                                enabled = !state.isLoading && !state.reorderXpApplied
                             )
                         }
                     }
+                    val allocateLabel = when {
+                        !state.hasRolledAttributes -> "Allocate 100 points +0XP"
+                        state.hasRolledAttributes && !state.hasReorderedAttributes -> "Allocate 100 points −50XP"
+                        else -> "Allocate 100 points −25XP"
+                    }
+
                     CharacterCreatorButton(
-                        text = if (!state.hasRolledAttributes) "Allocate 100 points +0XP"
-                        else if (!state.hasReorderedAttributes) "Allocate 100 points -50XP"
-                        else "Allocate 100 points -25XP",
-                        onClick = { },
-                        enabled = !state.isLoading && state.rolledDiceResults.any { it == 0 }
+                        text = allocateLabel,
+                        onClick = { onEvent(CharacterAttributesEvent.ToggleAllocationMode) },
+                        enabled = !state.isLoading
                     )
                 }
 
-
-                if (state.showFateResilienceCard) {
+                if (state.canAllocateAttributes) {
+                    AllocationCard(
+                        attributes = attributes,
+                        values = state.allocatedDiceResults,
+                        pointsLeft = state.allocatePointsLeft,
+                        onPlus = { index -> onEvent(CharacterAttributesEvent.IncrementAllocate(index)) },
+                        onMinus = { index ->
+                            onEvent(
+                                CharacterAttributesEvent.DecrementAllocate(
+                                    index
+                                )
+                            )
+                        },
+                        onConfirm = { onEvent(CharacterAttributesEvent.ConfirmAllocation) },
+                        onCancel = { onEvent(CharacterAttributesEvent.CancelAllocation) }
+                    )
+                } else if (state.showFateResilienceCard) {
                     FateResilienceCard(
                         baseFatePoints = state.baseFatePoints,
                         fatePoints = state.fatePoints,
@@ -233,13 +266,7 @@ fun CharacterAttributesScreen(
                                 baseAttributeValues = baseAttributeValues,
                                 totalAttributeValues = state.totalAttributeValues.map { it.toString() },
                                 onOrderChange = { reordered ->
-                                    println(state.rolledDiceResults)
                                     val rolled = reordered.map { it.toIntOrNull() ?: 0 }
-                                    state.copy(
-                                        rolledDiceResults = rolled,
-                                        hasReorderedAttributes = true
-                                    )
-                                    println(state.reorderedDiceResults)
                                     onEvent(CharacterAttributesEvent.UpdateDiceThrowOrder(rolled))
                                 },
                                 canReorderAttributes = state.canReorderAttributes

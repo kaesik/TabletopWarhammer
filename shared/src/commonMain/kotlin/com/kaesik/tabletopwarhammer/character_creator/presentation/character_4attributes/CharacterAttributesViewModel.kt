@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.coroutines.cancellation.CancellationException
-import kotlin.Int as Int1
 
 class CharacterAttributesViewModel(
     private val characterCreatorClient: CharacterCreatorClient,
@@ -28,12 +27,14 @@ class CharacterAttributesViewModel(
 
     fun onEvent(event: CharacterAttributesEvent) {
         when (event) {
+            // INITIALIZING
             // Initialize the attributes list depending on the species name
             is CharacterAttributesEvent.InitAttributesList -> loadAttributesList(event)
 
             // Initialize fate and resilience points based on the species name
             is CharacterAttributesEvent.InitFateAndResilience -> loadFateAndResilience(event)
 
+            // FATE AND RESILIENCE POINTS
             // Show or hide the fate resilience card
             is CharacterAttributesEvent.OnDistributeFatePointsClick -> onToggleFateResilienceCard()
 
@@ -77,18 +78,32 @@ class CharacterAttributesViewModel(
                 }
             }
 
+            //ROLL
             // Handle various events related to rolling attributes
             CharacterAttributesEvent.RollOneDice -> onRollOneDice()
             CharacterAttributesEvent.RollAllDice -> onRollAllDice()
 
+            //REORDER
+            // Toggle the reorder mode for attributes
             CharacterAttributesEvent.ToggleReorderMode -> onToggleReorderMode()
 
+            // Reorder attributes based on the event indices
             is CharacterAttributesEvent.ReorderAttributes -> onReorderAttributes(event)
 
+            // Update the order of dice throws based on the event
             is CharacterAttributesEvent.UpdateDiceThrowOrder -> onUpdateDiceThrowOrder(event)
 
+            // ALLOCATE
+            CharacterAttributesEvent.ToggleAllocationMode -> onToggleAllocationMode()
+            is CharacterAttributesEvent.IncrementAllocate -> incrementAllocate(event.index)
+            is CharacterAttributesEvent.DecrementAllocate -> decrementAllocate(event.index)
+            CharacterAttributesEvent.ConfirmAllocation -> confirmAllocation()
+            CharacterAttributesEvent.CancelAllocation -> cancelAllocation()
+
+            // NEXT
             CharacterAttributesEvent.OnNextClick -> onAttributesNext()
 
+            // CONSUME
             CharacterAttributesEvent.OnRandomSelectionConsumed -> _state.update {
                 it.copy(pendingRandomSelection = null)
             }
@@ -97,11 +112,15 @@ class CharacterAttributesViewModel(
                 it.copy(pendingAttributesSelection = null)
             }
 
+            CharacterAttributesEvent.OnFateResilienceSelectionConsumed -> _state.update {
+                it.copy(pendingFateResilienceSelection = null)
+            }
+
             else -> {}
         }
     }
 
-    private fun <T> MutableList<T>.swap(i: Int1, j: Int1) {
+    private fun <T> MutableList<T>.swap(i: Int, j: Int) {
         val tmp = this[i]
         this[i] = this[j]
         this[j] = tmp
@@ -121,12 +140,12 @@ class CharacterAttributesViewModel(
                     parseAttributeFormula(species.ballisticSkill),
                     parseAttributeFormula(species.strength),
                     parseAttributeFormula(species.toughness),
+                    parseAttributeFormula(species.initiative),
                     parseAttributeFormula(species.agility),
                     parseAttributeFormula(species.dexterity),
                     parseAttributeFormula(species.intelligence),
                     parseAttributeFormula(species.willpower),
                     parseAttributeFormula(species.fellowship),
-                    parseAttributeFormula(species.initiative),
                 )
 
                 val baseAttributes = parsedAttributes.map { it.baseValue }
@@ -147,6 +166,7 @@ class CharacterAttributesViewModel(
                         totalAttributeValues = totalValues,
                         hasRolledAttributes = rolledValues.any { v -> v > 0 },
                         hasRolledAllDice = rolledValues.all { v -> v > 0 },
+                        allocatedDiceResults = List(baseAttributes.size) { 0 },
                         isLoading = false
                     )
                 }
@@ -160,16 +180,23 @@ class CharacterAttributesViewModel(
         viewModelScope.launch {
             try {
                 val species = fetchSpecies(event.speciesName)
+
                 val baseFate = species.fatePoints?.toIntOrNull() ?: 0
                 val baseRes = species.resilience?.toIntOrNull() ?: 0
-                val extra = species.extraPoints?.toIntOrNull() ?: 0
+                val baseExtra = species.extraPoints?.toIntOrNull() ?: 0
+
+                val fate = event.fate ?: baseFate
+                val resilience = event.resilience ?: baseRes
+                val spent =
+                    (fate - baseFate).coerceAtLeast(0) + (resilience - baseRes).coerceAtLeast(0)
+                val extra = (baseExtra - spent).coerceAtLeast(0)
 
                 _state.update {
                     it.copy(
                         baseFatePoints = baseFate,
                         baseResiliencePoints = baseRes,
-                        fatePoints = baseFate,
-                        resiliencePoints = baseRes,
+                        fatePoints = fate,
+                        resiliencePoints = resilience,
                         extraPoints = extra
                     )
                 }
@@ -234,18 +261,18 @@ class CharacterAttributesViewModel(
         applyRolledResults(rolled)
     }
 
-    private fun rollDiceSum(diceNotation: String): Int1 {
+    private fun rollDiceSum(diceNotation: String): Int {
         val regex = Regex("(\\d+)d(\\d+)")
         val m = regex.find(diceNotation) ?: return 0
         val (count, sides) = m.destructured
         return (1..count.toInt()).sumOf { (1..sides.toInt()).random() }
     }
 
-    private fun applyRolledResults(rolled: List<Int1>) {
+    private fun applyRolledResults(rolled: List<Int>) {
         val prev = state.value
         val total = prev.baseAttributeValues.zip(rolled) { b, r -> b + r }
         val allRolled = rolled.all { it > 0 }
-        val shouldGrantXp = allRolled && !prev.hasReceivedXpForRolling
+        val shouldGrantXp = allRolled && !prev.rollingXpApplied
 
         _state.update {
             it.copy(
@@ -253,7 +280,7 @@ class CharacterAttributesViewModel(
                 totalAttributeValues = total,
                 hasRolledAttributes = rolled.any { v -> v > 0 },
                 hasRolledAllDice = allRolled,
-                hasReceivedXpForRolling = it.hasReceivedXpForRolling || allRolled,
+                rollingXpApplied = it.rollingXpApplied || allRolled,
                 pendingRandomSelection = if (shouldGrantXp)
                     AttributesSelection(
                         exp = 50,
@@ -266,7 +293,13 @@ class CharacterAttributesViewModel(
 
     // FUNCTIONS FOR REORDERING
     private fun onToggleReorderMode() {
-        _state.update { it.copy(canReorderAttributes = !it.canReorderAttributes) }
+        if (!state.value.hasRolledAttributes) return
+        _state.update {
+            it.copy(
+                canReorderAttributes = !it.canReorderAttributes,
+                canAllocateAttributes = false
+            )
+        }
     }
 
     private fun onReorderAttributes(event: CharacterAttributesEvent.ReorderAttributes) {
@@ -274,40 +307,161 @@ class CharacterAttributesViewModel(
         val total = state.value.totalAttributeValues.toMutableList()
         rolled.swap(event.fromIndex, event.toIndex)
         total.swap(event.fromIndex, event.toIndex)
-        _state.update { it.copy(rolledDiceResults = rolled, totalAttributeValues = total) }
+        val applyPenalty = !state.value.reorderXpApplied
+
+        _state.update {
+            it.copy(
+                rolledDiceResults = rolled,
+                totalAttributeValues = total,
+                hasReorderedAttributes = true,
+                reorderXpApplied = it.reorderXpApplied || applyPenalty,
+                pendingRandomSelection = if (applyPenalty)
+                    AttributesSelection(exp = -25, message = "Reordered stats: −25 XP.")
+                else it.pendingRandomSelection
+            )
+        }
     }
 
     private fun onUpdateDiceThrowOrder(event: CharacterAttributesEvent.UpdateDiceThrowOrder) {
         val newRolled = event.reordered
         val newTotal = state.value.baseAttributeValues.zip(newRolled) { base, roll -> base + roll }
-        _state.update { it.copy(rolledDiceResults = newRolled, totalAttributeValues = newTotal) }
+        val applyPenalty = !state.value.reorderXpApplied
+
+        _state.update {
+            it.copy(
+                rolledDiceResults = newRolled,
+                totalAttributeValues = newTotal,
+                hasReorderedAttributes = true,
+                reorderXpApplied = it.reorderXpApplied || applyPenalty,
+                pendingRandomSelection = if (applyPenalty)
+                    AttributesSelection(exp = -25, message = "Reordered stats: −25 XP.")
+                else it.pendingRandomSelection
+            )
+        }
     }
 
+    // FUNCTIONS FOR ALLOCATING
+    private fun onToggleAllocationMode() {
+        val n =
+            state.value.attributeList.size.takeIf { it > 0 } ?: state.value.baseAttributeValues.size
+        if (n == 0) return
+
+        _state.update { cur ->
+            val entering = !cur.canAllocateAttributes
+            cur.copy(
+                canAllocateAttributes = entering,
+                allocatedDiceResults = if (entering) List(n) { 0 } else cur.allocatedDiceResults,
+//                allocatePointsLeft = if (entering) 100 else cur.allocatePointsLeft,
+                allocatePointsLeft = if (entering) 1 else cur.allocatePointsLeft,
+                canReorderAttributes = false
+            )
+        }
+    }
+
+    private fun incrementAllocate(index: Int) {
+        val s = state.value
+        if (!s.canAllocateAttributes) return
+        if (index !in s.allocatedDiceResults.indices) return
+        if (s.allocatePointsLeft <= 0) return
+
+        val list = s.allocatedDiceResults.toMutableList()
+        list[index] = list[index] + 1
+        _state.update {
+            it.copy(
+                allocatedDiceResults = list,
+                allocatePointsLeft = it.allocatePointsLeft - 1
+            )
+        }
+    }
+
+    private fun decrementAllocate(index: Int) {
+        val s = state.value
+        if (!s.canAllocateAttributes) return
+        if (index !in s.allocatedDiceResults.indices) return
+        if (s.allocatedDiceResults[index] <= 0) return
+
+        val list = s.allocatedDiceResults.toMutableList()
+        list[index] = list[index] - 1
+        _state.update {
+            it.copy(
+                allocatedDiceResults = list,
+                allocatePointsLeft = it.allocatePointsLeft + 1
+            )
+        }
+    }
+
+    private fun confirmAllocation() {
+        val s = state.value
+        if (!s.canAllocateAttributes) return
+        if (s.allocatePointsLeft != 0) return
+
+        val penalty = when {
+            !s.hasRolledAttributes -> 0
+            s.hasRolledAttributes && s.hasReorderedAttributes -> -25
+            else -> -50
+        }
+
+        val newRolled = s.allocatedDiceResults
+        val newTotal = s.baseAttributeValues.zip(newRolled) { b, r -> b + r }
+
+        val applyOnce = !s.allocationXpApplied
+
+        _state.update {
+            it.copy(
+                rolledDiceResults = newRolled,
+                totalAttributeValues = newTotal,
+
+                hasRolledAttributes = true,
+                hasRolledAllDice = true,
+
+                hasAllocateAttributes = true,
+                canAllocateAttributes = false,
+                allocationXpApplied = it.allocationXpApplied || applyOnce,
+
+                pendingRandomSelection =
+                if (applyOnce)
+                    AttributesSelection(
+                        exp = penalty,
+                        message = when (penalty) {
+                            -50 -> "Allocated 100 points after rolling: −50 XP."
+                            -25 -> "Allocated 100 points after reorder: −25 XP."
+                            else -> "Allocated 100 points: +0 XP."
+                        }
+                    )
+                else it.pendingRandomSelection
+            )
+        }
+    }
+
+    private fun cancelAllocation() {
+        _state.update { it.copy(canAllocateAttributes = false) }
+    }
+
+    // FUNCTIONS FOR NEXT
     private fun onAttributesNext() {
         if (!state.value.isLoading
             && state.value.extraPoints == 0
+        ) {
+            _state.update {
+                it.copy(
+                    pendingFateResilienceSelection = AttributesSelection(
+                        fatePoints = state.value.fatePoints,
+                        resiliencePoints = state.value.resiliencePoints
+                    )
+                )
+            }
+        }
+
+        if (!state.value.isLoading
             && state.value.totalAttributeValues.isNotEmpty()
         ) {
             _state.update {
                 it.copy(
                     pendingAttributesSelection = AttributesSelection(
                         totalAttributes = state.value.totalAttributeValues,
-                        fatePoints = state.value.fatePoints,
-                        resiliencePoints = state.value.resiliencePoints,
                     )
                 )
             }
         }
-    }
-
-    private fun restoreRolledAttributes(rolled: List<Int1>, total: List<Int1>) {
-        val allRolled = rolled.all { it > 0 }
-        _state.value = _state.value.copy(
-            rolledDiceResults = rolled,
-            totalAttributeValues = total,
-            hasRolledAttributes = rolled.any { it > 0 },
-            hasRolledAllDice = allRolled,
-            hasReceivedXpForRolling = _state.value.hasReceivedXpForRolling || allRolled
-        )
     }
 }
