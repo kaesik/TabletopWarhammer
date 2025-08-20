@@ -79,67 +79,109 @@ fun CharacterAttributesScreenRoot(
 
     // Save rolled attributes and total values when they change
     LaunchedEffect(state.rolledDiceResults, state.totalAttributeValues) {
-        creatorViewModel.onEvent(
-            CharacterCreatorEvent.SaveRolledAttributes(
-                rolled = state.rolledDiceResults,
-                total = state.totalAttributeValues
+        if (state.rolledDiceResults.isNotEmpty()) {
+            creatorViewModel.onEvent(
+                CharacterCreatorEvent.SetAttributes(
+                    rolledAttributes = state.rolledDiceResults,
+                    totalAttributes = state.totalAttributeValues
+                )
             )
-        )
+        }
     }
 
-    // Get the attributes selection from the view model
-    LaunchedEffect(state.pendingAttributesSelection) {
-        val selection = state.pendingAttributesSelection ?: return@LaunchedEffect
-
-        // Set attributes in the creatorViewModel
+    // Save fate and resilience when they change
+    LaunchedEffect(state.fatePoints, state.resiliencePoints) {
         creatorViewModel.onEvent(
             CharacterCreatorEvent.SetAttributes(
-                totalAttributes = selection.totalAttributes ?: return@LaunchedEffect,
-                fatePoints = selection.fatePoints ?: return@LaunchedEffect,
-                resiliencePoints = selection.resiliencePoints ?: return@LaunchedEffect
+                fatePoints = state.fatePoints,
+                resiliencePoints = state.resiliencePoints
             )
         )
-
-        // Consume the attributes selection
-        viewModel.onEvent(CharacterAttributesEvent.OnAttributesSelectionConsumed)
-    }
-
-    // Get the fate and resilience selection from the view model
-    LaunchedEffect(state.pendingFateResilienceSelection) {
-        val selection = state.pendingFateResilienceSelection ?: return@LaunchedEffect
-
-        // Set fate and resilience points in the creatorViewModel
-        val totals = if (creatorState.totalAttributes.isNotEmpty()) creatorState.totalAttributes
-        else state.totalAttributeValues
-        creatorViewModel.onEvent(
-            CharacterCreatorEvent.SetAttributes(
-                totalAttributes = totals,
-                fatePoints = selection.fatePoints ?: 0,
-                resiliencePoints = selection.resiliencePoints ?: 0
-            )
-        )
-
-        // Consume the fate and resilience selection
-        viewModel.onEvent(CharacterAttributesEvent.OnFateResilienceSelectionConsumed)
-    }
-
-    // Get the random selection from the view model
-    LaunchedEffect(state.pendingRandomSelection) {
-        val selection = state.pendingRandomSelection ?: return@LaunchedEffect
-        if (selection.exp != 0) {
-            creatorViewModel.onEvent(CharacterCreatorEvent.AddExperience(selection.exp))
-        }
-        if (selection.message.isNotBlank()) {
-            creatorViewModel.onEvent(CharacterCreatorEvent.ShowMessage(selection.message))
-        }
-        viewModel.onEvent(CharacterAttributesEvent.OnRandomSelectionConsumed)
     }
 
     CharacterAttributesScreen(
         state = state,
+        hasRolledAttributes = creatorState.hasRolledAttributes,
+        hasReorderedAttributes = creatorState.hasReorderedAttributes,
+        hasAllocatedAttributes = creatorState.hasAllocatedAttributes,
         onEvent = { event ->
             when (event) {
-                is CharacterAttributesEvent.OnNextClick -> onNextClick()
+
+                // Add XP after rolling all dices
+                CharacterAttributesEvent.RollAllDice -> {
+                    if (!creatorState.hasRolledAttributes) {
+                        creatorViewModel.onEvent(CharacterCreatorEvent.AddExperience(50))
+                        creatorViewModel.onEvent(CharacterCreatorEvent.SetHasRolledAttributes(true))
+                        creatorViewModel.onEvent(CharacterCreatorEvent.ShowMessage("Rolled attributes (+50 XP)"))
+                    }
+                    viewModel.onEvent(event)
+                }
+
+                // Add XP after rolling a single dice
+                CharacterAttributesEvent.RollOneDice -> {
+                    val zeros = state.rolledDiceResults.count { it == 0 }
+                    if (zeros == 1 && !creatorState.hasRolledAttributes) {
+                        creatorViewModel.onEvent(CharacterCreatorEvent.AddExperience(50))
+                        creatorViewModel.onEvent(CharacterCreatorEvent.SetHasRolledAttributes(true))
+                        creatorViewModel.onEvent(CharacterCreatorEvent.ShowMessage("Rolled attributes (+50 XP)"))
+                    }
+                    viewModel.onEvent(event)
+                }
+
+                // Toggle allocation mode and remove XP
+                CharacterAttributesEvent.ToggleReorderMode -> {
+                    val entering = !state.canReorderAttributes
+                    if (entering && creatorState.hasRolledAttributes && !creatorState.hasReorderedAttributes) {
+                        creatorViewModel.onEvent(CharacterCreatorEvent.RemoveExperience(25))
+                        creatorViewModel.onEvent(CharacterCreatorEvent.SetHasReorderAttributes(true))
+                        creatorViewModel.onEvent(CharacterCreatorEvent.ShowMessage("Reordered stats (−25 XP)"))
+                    }
+                    viewModel.onEvent(event)
+                }
+
+                // Toggle allocation mode and remove XP based on previous actions
+                CharacterAttributesEvent.ConfirmAllocation -> {
+                    if (!creatorState.hasAllocatedAttributes &&
+                        state.canAllocateAttributes && state.allocatePointsLeft == 0
+                    ) {
+                        // Determine the penalty based on previous actions
+                        val penalty = when {
+                            // If attributes were not rolled, no penalty
+                            !creatorState.hasRolledAttributes -> 0
+                            // If attributes were rolled and reordered, apply a penalty
+                            creatorState.hasReorderedAttributes -> 25
+                            // If attributes were rolled but not reordered, apply a penalty
+                            else -> 50
+                        }
+
+                        // Apply the penalty to the creatorViewModel
+                        if (penalty > 0) creatorViewModel.onEvent(
+                            CharacterCreatorEvent.RemoveExperience(
+                                penalty
+                            )
+                        )
+                        creatorViewModel.onEvent(CharacterCreatorEvent.SetHasAllocateAttributes(true))
+                        val msg = when (penalty) {
+                            50 -> "Allocated 100 points after roll (−50 XP)"
+                            25 -> "Allocated 100 points after reorder (−25 XP)"
+                            else -> "Allocated 100 points (+0 XP)"
+                        }
+                        creatorViewModel.onEvent(CharacterCreatorEvent.ShowMessage(msg))
+                    }
+                    viewModel.onEvent(event)
+                }
+
+                // Save the attributes and fate/resilience points
+                CharacterAttributesEvent.OnNextClick -> {
+                    creatorViewModel.onEvent(
+                        CharacterCreatorEvent.SetAttributes(
+                            totalAttributes = state.totalAttributeValues,
+                            fatePoints = state.fatePoints,
+                            resiliencePoints = state.resiliencePoints
+                        )
+                    )
+                    onNextClick()
+                }
 
                 else -> viewModel.onEvent(event)
             }
@@ -154,6 +196,9 @@ fun CharacterAttributesScreenRoot(
 @Composable
 fun CharacterAttributesScreen(
     state: CharacterAttributesState,
+    hasRolledAttributes: Boolean,
+    hasReorderedAttributes: Boolean,
+    hasAllocatedAttributes: Boolean,
     onEvent: (CharacterAttributesEvent) -> Unit,
     attributes: List<AttributeItem>,
     diceThrows: List<String>,
@@ -177,7 +222,7 @@ fun CharacterAttributesScreen(
                 // Button to roll a single dice or all dice
                 Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                     Column {
-                        if (!state.hasRolledAttributes) {
+                        if (!hasRolledAttributes) {
                             CharacterCreatorButton(
                                 text = "Roll a Dice +50XP",
                                 onClick = { onEvent(CharacterAttributesEvent.RollOneDice) },
@@ -189,17 +234,23 @@ fun CharacterAttributesScreen(
                                 enabled = !state.isLoading && state.rolledDiceResults.any { it == 0 }
                             )
                         } else {
+                            val entering = !state.canReorderAttributes
+
                             CharacterCreatorButton(
-                                text = "Reorder -25XP",
+                                text = if (entering) "Reorder -25XP" else "Finish reordering",
                                 onClick = { onEvent(CharacterAttributesEvent.ToggleReorderMode) },
-                                enabled = !state.isLoading && !state.reorderXpApplied
+                                enabled = if (entering) {
+                                    !state.isLoading && !hasReorderedAttributes
+                                } else {
+                                    !state.isLoading
+                                }
                             )
                         }
                     }
                     val allocateLabel = when {
-                        !state.hasRolledAttributes -> "Allocate 100 points +0XP"
-                        state.hasRolledAttributes && !state.hasReorderedAttributes -> "Allocate 100 points −50XP"
-                        else -> "Allocate 100 points −25XP"
+                        !hasRolledAttributes -> "Allocate 100 points +0XP"
+                        hasReorderedAttributes -> "Allocate 100 points −25XP"
+                        else -> "Allocate 100 points −50XP"
                     }
 
                     CharacterCreatorButton(
@@ -293,6 +344,9 @@ fun CharacterAttributesScreen(
 fun CharacterAttributesScreenPreview() {
     CharacterAttributesScreen(
         state = CharacterAttributesState(),
+        hasRolledAttributes = false,
+        hasReorderedAttributes = false,
+        hasAllocatedAttributes = false,
         onEvent = {},
         attributes = listOf(),
         diceThrows = listOf(),

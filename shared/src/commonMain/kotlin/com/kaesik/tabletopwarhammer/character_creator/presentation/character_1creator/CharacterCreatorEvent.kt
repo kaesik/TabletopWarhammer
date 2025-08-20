@@ -15,7 +15,12 @@ sealed class CharacterCreatorEvent {
     data class AddExperience(val experience: Int) : CharacterCreatorEvent()
     data class RemoveExperience(val experience: Int) : CharacterCreatorEvent()
 
+    data class SetHasRolledSpecies(val value: Boolean) : CharacterCreatorEvent()
+    data class SetHasChosenSpecies(val value: Boolean) : CharacterCreatorEvent()
     data class SetSpecies(val speciesItem: SpeciesItem) : CharacterCreatorEvent()
+
+    data class SetHasRolledClassAndCareer(val value: Boolean) : CharacterCreatorEvent()
+    data class SetHasChosenClassAndCareer(val value: Boolean) : CharacterCreatorEvent()
     data class SetClass(val classItem: ClassItem) : CharacterCreatorEvent()
     data class SetCareer(
         val careerItem: CareerItem?,
@@ -28,11 +33,15 @@ sealed class CharacterCreatorEvent {
     ) : CharacterCreatorEvent()
 
     data class SetAttributes(
-        val rolledAttributes: List<Int> = emptyList(),
-        val totalAttributes: List<Int> = emptyList(),
-        val fatePoints: Int = 0,
-        val resiliencePoints: Int = 0,
+        val rolledAttributes: List<Int>? = null,
+        val totalAttributes: List<Int>? = null,
+        val fatePoints: Int? = null,
+        val resiliencePoints: Int? = null
     ) : CharacterCreatorEvent()
+
+    data class SetHasRolledAttributes(val value: Boolean) : CharacterCreatorEvent()
+    data class SetHasReorderAttributes(val value: Boolean) : CharacterCreatorEvent()
+    data class SetHasAllocateAttributes(val value: Boolean) : CharacterCreatorEvent()
 
     data class SetSkillsAndTalents(
         val speciesBasicSkills: List<List<String>>,

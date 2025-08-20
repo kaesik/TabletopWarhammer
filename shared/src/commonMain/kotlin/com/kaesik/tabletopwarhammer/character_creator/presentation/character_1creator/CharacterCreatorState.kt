@@ -15,8 +15,17 @@ data class CharacterCreatorState(
     val character: CharacterItem = CharacterItem.default(),
 
     val selectedSpecies: SpeciesItem? = null,
+    val hasRolledSpecies: Boolean = false,
+    val hasChosenSpecies: Boolean = false,
+
     val selectedClass: ClassItem? = null,
     val selectedCareer: CareerItem? = null,
+    val hasRolledClassAndCareer: Boolean = false,
+    val hasChosenClassAndCareer: Boolean = false,
+
     val rolledAttributes: List<Int> = emptyList(),
     val totalAttributes: List<Int> = emptyList(),
+    val hasRolledAttributes: Boolean = false,
+    val hasReorderedAttributes: Boolean = false,
+    val hasAllocatedAttributes: Boolean = false,
 )

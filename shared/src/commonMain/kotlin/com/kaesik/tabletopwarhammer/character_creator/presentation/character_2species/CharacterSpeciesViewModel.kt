@@ -42,24 +42,15 @@ class CharacterSpeciesViewModel(
             }
 
             // Set the state to indicate whether species selection is allowed
-            is CharacterSpeciesEvent.SetSelectingSpecies -> {
-                _state.update { it.copy(canSelectSpecies = event.canSelectSpecies) }
+            is CharacterSpeciesEvent.SetSelectingSpecies -> _state.update {
+                it.copy(canSelectSpecies = event.canSelectSpecies)
             }
-
+            
             // When the species is selected, update the state with the selected species
-            is CharacterSpeciesEvent.OnSpeciesSelect -> onSpeciesSelect(event)
+            is CharacterSpeciesEvent.OnSpeciesSelect -> onSpeciesSelect(event.id)
 
             // Roll a random species from the list and update the state with the rolled species
-            is CharacterSpeciesEvent.OnSpeciesRoll -> onSpeciesRoll(event)
-
-            // Consume the pending species selection and update the state
-            CharacterSpeciesEvent.OnSpeciesSelectionConsumed -> _state.update {
-                it.copy(pendingSpeciesSelection = null)
-            }
-
-            CharacterSpeciesEvent.OnRandomSpeciesConsumed -> _state.update {
-                it.copy(pendingRandomSpecies = null)
-            }
+            is CharacterSpeciesEvent.OnSpeciesRoll -> onSpeciesRoll()
 
             else -> Unit
         }
@@ -82,49 +73,27 @@ class CharacterSpeciesViewModel(
         }
     }
 
-    private fun onSpeciesSelect(event: CharacterSpeciesEvent.OnSpeciesSelect) {
-        val selected = state.value.speciesList.find { it.id == event.id } ?: return
-        if (selected.id == event.currentSpeciesId) return
-
-        val afterRoll = state.value.hasRolledSpecies
-        val exp = if (afterRoll) -25 else 0
-        val msg = if (afterRoll) "Changed species to: ${selected.name} (-25 XP)"
-        else "Selected species: ${selected.name}"
+    private fun onSpeciesSelect(id: String) {
+        val selected = state.value.speciesList.find { it.id == id } ?: return
+        if (selected.id == state.value.selectedSpecies?.id) return
 
         speciesJob?.cancel()
         speciesJob = viewModelScope.launch {
-            _state.update {
-                it.copy(
-                    selectedSpecies = selected,
-                    pendingSpeciesSelection = SpeciesSelection(
-                        speciesItem = selected,
-                        exp = exp,
-                        message = msg
-                    )
-                )
-            }
+            _state.update { it.copy(selectedSpecies = selected) }
         }
     }
 
-    private fun onSpeciesRoll(event: CharacterSpeciesEvent.OnSpeciesRoll) {
-        val species = _state.value.speciesList
+    private fun onSpeciesRoll() {
+        val species = state.value.speciesList
         if (species.isEmpty()) return
 
         // PLACEHOLDER: Replace with actual condition to randomly select a species
         val random = species.random()
-        val exp = 25
-        val msg = "Randomly selected species: ${random.name} (+$exp XP)"
 
         _state.update {
             it.copy(
                 selectedSpecies = random,
-                hasRolledSpecies = true,
-                canSelectSpecies = false,
-                pendingRandomSpecies = SpeciesSelection(
-                    speciesItem = random,
-                    exp = exp,
-                    message = msg
-                )
+                canSelectSpecies = false
             )
         }
     }

@@ -21,10 +21,17 @@ class CharacterCreatorViewModel : ViewModel() {
                     val updated = current.copy(
                         character = CharacterItem.default(),
                         selectedSpecies = null,
+                        hasRolledSpecies = false,
+                        hasChosenSpecies = false,
                         selectedClass = null,
                         selectedCareer = null,
+                        hasRolledClassAndCareer = false,
+                        hasChosenClassAndCareer = false,
                         rolledAttributes = emptyList(),
                         totalAttributes = emptyList(),
+                        hasRolledAttributes = false,
+                        hasReorderedAttributes = false,
+                        hasAllocatedAttributes = false,
                     )
                     updated
                 }
@@ -110,6 +117,14 @@ class CharacterCreatorViewModel : ViewModel() {
                 }
             }
 
+            is CharacterCreatorEvent.SetHasRolledSpecies -> {
+                _state.update { it.copy(hasRolledSpecies = event.value) }
+            }
+
+            is CharacterCreatorEvent.SetHasChosenSpecies -> {
+                _state.update { it.copy(hasChosenSpecies = event.value) }
+            }
+
             is CharacterCreatorEvent.SetClass -> {
                 _state.update { current ->
                     val updatedCharacter = current.character.copy(
@@ -147,6 +162,14 @@ class CharacterCreatorViewModel : ViewModel() {
                 }
             }
 
+            is CharacterCreatorEvent.SetHasRolledClassAndCareer -> {
+                _state.update { it.copy(hasRolledClassAndCareer = event.value) }
+            }
+
+            is CharacterCreatorEvent.SetHasChosenClassAndCareer -> {
+                _state.update { it.copy(hasChosenClassAndCareer = event.value) }
+            }
+
             is CharacterCreatorEvent.SaveRolledAttributes -> {
                 _state.value = state.value.copy(
                     rolledAttributes = event.rolled,
@@ -155,72 +178,53 @@ class CharacterCreatorViewModel : ViewModel() {
             }
 
             is CharacterCreatorEvent.SetAttributes -> {
-                _state.update { current ->
-                    val character = current.character
+                _state.update { currentState ->
+                    val character = currentState.character
+                    val totals = event.totalAttributes
+
+                    fun tripleOrOld(index: Int, old: List<Int>): List<Int> {
+                        val value = totals?.getOrNull(index)
+                        return if (value != null) listOf(value, 0, value) else old
+                    }
 
                     val updatedCharacter = character.copy(
-                        weaponSkill = listOf(
-                            event.totalAttributes.getOrNull(0) ?: character.weaponSkill[0],
-                            0,
-                            event.totalAttributes.getOrNull(0) ?: character.weaponSkill[0]
-                        ),
-                        ballisticSkill = listOf(
-                            event.totalAttributes.getOrNull(1) ?: character.ballisticSkill[0],
-                            0,
-                            event.totalAttributes.getOrNull(1) ?: character.ballisticSkill[0]
-                        ),
-                        strength = listOf(
-                            event.totalAttributes.getOrNull(2) ?: character.strength[0],
-                            0,
-                            event.totalAttributes.getOrNull(2) ?: character.strength[0]
-                        ),
-                        toughness = listOf(
-                            event.totalAttributes.getOrNull(3) ?: character.toughness[0],
-                            0,
-                            event.totalAttributes.getOrNull(3) ?: character.toughness[0]
-                        ),
-                        initiative = listOf(
-                            event.totalAttributes.getOrNull(4) ?: character.initiative[0],
-                            0,
-                            event.totalAttributes.getOrNull(4) ?: character.initiative[0]
-                        ),
-                        agility = listOf(
-                            event.totalAttributes.getOrNull(5) ?: character.agility[0],
-                            0,
-                            event.totalAttributes.getOrNull(5) ?: character.agility[0]
-                        ),
-                        dexterity = listOf(
-                            event.totalAttributes.getOrNull(6) ?: character.dexterity[0],
-                            0,
-                            event.totalAttributes.getOrNull(6) ?: character.dexterity[0]
-                        ),
-                        intelligence = listOf(
-                            event.totalAttributes.getOrNull(7) ?: character.intelligence[0],
-                            0,
-                            event.totalAttributes.getOrNull(7) ?: character.intelligence[0]
-                        ),
-                        willPower = listOf(
-                            event.totalAttributes.getOrNull(8) ?: character.willPower[0],
-                            0,
-                            event.totalAttributes.getOrNull(8) ?: character.willPower[0]
-                        ),
-                        fellowship = listOf(
-                            event.totalAttributes.getOrNull(9) ?: character.fellowship[0],
-                            0,
-                            event.totalAttributes.getOrNull(9) ?: character.fellowship[0]
-                        ),
-                        fate = event.fatePoints,
-                        fortune = event.fatePoints,
-                        resilience = event.resiliencePoints,
-                        resolve = 0
+                        weaponSkill = tripleOrOld(0, character.weaponSkill),
+                        ballisticSkill = tripleOrOld(1, character.ballisticSkill),
+                        strength = tripleOrOld(2, character.strength),
+                        toughness = tripleOrOld(3, character.toughness),
+                        initiative = tripleOrOld(4, character.initiative),
+                        agility = tripleOrOld(5, character.agility),
+                        dexterity = tripleOrOld(6, character.dexterity),
+                        intelligence = tripleOrOld(7, character.intelligence),
+                        willPower = tripleOrOld(8, character.willPower),
+                        fellowship = tripleOrOld(9, character.fellowship),
+
+                        fate = event.fatePoints ?: character.fate,
+                        fortune = event.fatePoints ?: character.fortune,
+                        resilience = event.resiliencePoints ?: character.resilience,
+                        resolve = character.resolve
                     )
-                    val updated = current.copy(
-                        character = updatedCharacter,
-                        message = "Attributes and fate points set!"
-                    )
+
                     println("Updated CharacterItem: $updatedCharacter")
-                    updated
+                    currentState.copy(
+                        character = updatedCharacter,
+                        rolledAttributes = event.rolledAttributes ?: currentState.rolledAttributes,
+                        totalAttributes = event.totalAttributes ?: currentState.totalAttributes,
+                        message = "Attributes updated"
+                    )
                 }
+            }
+
+            is CharacterCreatorEvent.SetHasRolledAttributes -> {
+                _state.update { it.copy(hasRolledAttributes = event.value) }
+            }
+
+            is CharacterCreatorEvent.SetHasReorderAttributes -> {
+                _state.update { it.copy(hasReorderedAttributes = event.value) }
+            }
+
+            is CharacterCreatorEvent.SetHasAllocateAttributes -> {
+                _state.update { it.copy(hasAllocatedAttributes = event.value) }
             }
 
             is CharacterCreatorEvent.SetSkillsAndTalents -> {

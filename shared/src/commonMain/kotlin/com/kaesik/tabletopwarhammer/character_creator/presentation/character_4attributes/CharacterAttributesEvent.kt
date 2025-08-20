@@ -37,9 +37,5 @@ sealed class CharacterAttributesEvent {
     data object ConfirmAllocation : CharacterAttributesEvent()
     data object CancelAllocation : CharacterAttributesEvent()
 
-    data object OnRandomSelectionConsumed : CharacterAttributesEvent()
-    data object OnAttributesSelectionConsumed : CharacterAttributesEvent()
-    data object OnFateResilienceSelectionConsumed : CharacterAttributesEvent()
-
     data object OnNextClick : CharacterAttributesEvent()
 }

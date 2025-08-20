@@ -43,22 +43,22 @@ class CharacterClassAndCareerViewModel(
                 _state.update { it.copy(careerList = careerList, isLoading = false) }
             }
 
-            // Select a class and career from the class list
-            is CharacterClassAndCareerEvent.OnClassSelect -> onClassSelect(event)
-            is CharacterClassAndCareerEvent.OnCareerSelect -> onCareerSelect(event)
-
             // Set the selected class and career
             is CharacterClassAndCareerEvent.SetSelectedClass -> _state.update {
-                it.copy(
-                    selectedClass = event.classItem
-                )
+                it.copy(selectedClass = event.classItem)
             }
 
             is CharacterClassAndCareerEvent.SetSelectedCareer -> _state.update {
-                it.copy(
-                    selectedCareer = event.careerItem
-                )
+                it.copy(selectedCareer = event.careerItem)
             }
+
+            is CharacterClassAndCareerEvent.SetSelectedPath -> _state.update {
+                it.copy(selectedPath = event.pathItem)
+            }
+
+            // Select a class and career from the class list
+            is CharacterClassAndCareerEvent.OnClassSelect -> onClassSelect(event.id)
+            is CharacterClassAndCareerEvent.OnCareerSelect -> onCareerSelect(event.id)
 
             // Set the state to indicate whether class or career selection is allowed
             is CharacterClassAndCareerEvent.SetSelectingClass -> _state.update {
@@ -74,23 +74,8 @@ class CharacterClassAndCareerViewModel(
             }
 
             // Roll a random class and career from the list and update the state with the rolled class and career
-            is CharacterClassAndCareerEvent.OnClassAndCareerRoll -> onClassAndCareerRoll(event)
-
-
-            // Consume the pending class and career selections and update the state
-            CharacterClassAndCareerEvent.OnClassSelectionConsumed -> _state.update {
-                it.copy(pendingClassSelection = null)
-            }
-
-            CharacterClassAndCareerEvent.OnCareerSelectionConsumed -> _state.update {
-                it.copy(pendingCareerSelection = null)
-            }
-
-            CharacterClassAndCareerEvent.OnRandomSelectionConsumed -> _state.update {
-                it.copy(pendingRandomSelection = null)
-            }
-
-
+            is CharacterClassAndCareerEvent.OnClassAndCareerRoll -> onClassAndCareerRoll(event.speciesName)
+            
             else -> Unit
         }
     }
@@ -144,14 +129,9 @@ class CharacterClassAndCareerViewModel(
         }
     }
 
-    private fun onClassSelect(event: CharacterClassAndCareerEvent.OnClassSelect) {
-        val selected = state.value.classList.find { it.id == event.id } ?: return
-        if (selected.id == event.currentClassId) return
-
-        val afterRoll = state.value.hasRolledClassAndCareer
-        val exp = if (afterRoll) -35 else 0
-        val msg = if (afterRoll) "Changed class to: ${selected.name} (-35 XP)"
-        else "Selected class: ${selected.name}"
+    private fun onClassSelect(id: String) {
+        val selected = state.value.classList.find { it.id == id } ?: return
+        if (selected.id == state.value.selectedClass?.id) return
 
         classJob?.cancel()
         classJob = viewModelScope.launch {
@@ -159,45 +139,31 @@ class CharacterClassAndCareerViewModel(
                 it.copy(
                     selectedClass = selected,
                     selectedCareer = null,
-                    pendingClassSelection = ClassCareerSelection(
-                        classItem = selected,
-                        careerItem = null,
-                        careerPathItem = null,
-                        exp = exp,
-                        message = msg
-                    ),
-                    pendingCareerSelection = null,
+                    selectedPath = null,
                     careerList = emptyList(),
-                    canSelectCareer = true,
+                    canSelectCareer = true
                 )
             }
         }
     }
 
-    private fun onCareerSelect(event: CharacterClassAndCareerEvent.OnCareerSelect) {
-        val selected = state.value.careerList.find { it.id == event.id } ?: return
-        if (selected.id == event.currentCareerId) return
+    private fun onCareerSelect(id: String) {
+        val selected = state.value.careerList.find { it.id == id } ?: return
+        if (selected.id == state.value.selectedCareer?.id) return
 
         careerJob?.cancel()
         careerJob = viewModelScope.launch {
             val careerPathItem = fetchCareerPath(selected)
-            val currentClass = state.value.selectedClass ?: return@launch
             _state.update {
                 it.copy(
                     selectedCareer = selected,
-                    pendingCareerSelection = ClassCareerSelection(
-                        classItem = currentClass,
-                        careerItem = selected,
-                        careerPathItem = careerPathItem,
-                        exp = 0,
-                        message = "Selected career: ${selected.name}"
-                    )
+                    selectedPath = careerPathItem,
                 )
             }
         }
     }
 
-    private fun onClassAndCareerRoll(event: CharacterClassAndCareerEvent.OnClassAndCareerRoll) {
+    private fun onClassAndCareerRoll(speciesName: String) {
         val classes = _state.value.classList
         if (classes.isEmpty()) return
 
@@ -208,43 +174,29 @@ class CharacterClassAndCareerViewModel(
             _state.update {
                 it.copy(
                     selectedClass = randomClass,
-                    hasRolledClassAndCareer = true,
-                    isLoading = true,
-                    message = null,
                     selectedCareer = null,
+                    selectedPath = null,
+                    careerList = emptyList(),
                     canSelectClass = false,
-                    canSelectCareer = false
+                    canSelectCareer = false,
+                    isLoading = true,
+                    message = null
                 )
             }
 
-            val careers = fetchCareerList(event.speciesName, randomClass.name)
+            val careers = fetchCareerList(speciesName, randomClass.name)
             _state.update { it.copy(careerList = careers, isLoading = false) }
             if (careers.isEmpty()) return@launch
 
             // PLACEHOLDER: Replace with actual condition to randomly select a career
             val randomCareer = careers.random()
             val careerPathItem = fetchCareerPath(randomCareer)
-
-            val exp = 35
-            val msg =
-                "Randomly selected class & career: ${randomClass.name} / ${randomCareer.name} (+$exp XP)"
-
             _state.update {
                 it.copy(
                     selectedCareer = randomCareer,
-                    pendingRandomSelection = ClassCareerSelection(
-                        classItem = randomClass,
-                        careerItem = randomCareer,
-                        careerPathItem = careerPathItem,
-                        exp = exp,
-                        message = msg
-                    )
+                    selectedPath = careerPathItem,
                 )
             }
         }
     }
-
-    private fun <T> List<T>.firstDifferentOrSelf(predicate: (T) -> Boolean): T =
-        (this.firstOrNull(predicate) ?: this.first())
-
 }

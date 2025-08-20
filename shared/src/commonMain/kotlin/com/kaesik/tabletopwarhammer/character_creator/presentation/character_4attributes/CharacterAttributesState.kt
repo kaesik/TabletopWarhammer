@@ -4,14 +4,6 @@ import com.kaesik.tabletopwarhammer.core.domain.library.items.AttributeItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.SpeciesItem
 import com.kaesik.tabletopwarhammer.core.domain.util.DataError
 
-data class AttributesSelection(
-    val totalAttributes: List<Int>? = null,
-    val fatePoints: Int? = null,
-    val resiliencePoints: Int? = null,
-    val exp: Int = 0,
-    val message: String = ""
-)
-
 data class CharacterAttributesState(
     val error: DataError? = null,
     val message: String? = null,
@@ -41,24 +33,13 @@ data class CharacterAttributesState(
 
     // ROLL
     val canRollAttributes: Boolean = false,
-    val hasRolledAttributes: Boolean = false,
-    val rollingXpApplied: Boolean = false,
 
     // REORDER
-    val hasReorderedAttributes: Boolean = false,
     val canReorderAttributes: Boolean = false,
-    val reorderedDiceResults: List<Int> = emptyList(),
-    val reorderXpApplied: Boolean = false,
 
     //ALLOCATE
     val canAllocateAttributes: Boolean = false,
-    val hasAllocateAttributes: Boolean = false,
     val allocatedDiceResults: List<Int> = emptyList(),
 //    val allocatePointsLeft: Int = 100,
     val allocatePointsLeft: Int = 1,
-    val allocationXpApplied: Boolean = false,
-
-    val pendingRandomSelection: AttributesSelection? = null,
-    val pendingAttributesSelection: AttributesSelection? = null,
-    val pendingFateResilienceSelection: AttributesSelection? = null
 )
