@@ -78,6 +78,9 @@ class CharacterAttributesViewModel(
                 }
             }
 
+            // Roll fate and resilience points
+            is CharacterAttributesEvent.RollFateAndResilience -> rollFateAndResilience()
+
             //ROLL
             // Handle various events related to rolling attributes
             CharacterAttributesEvent.RollOneDice -> onRollOneDice()
@@ -95,6 +98,7 @@ class CharacterAttributesViewModel(
 
             // ALLOCATE
             CharacterAttributesEvent.ToggleAllocationMode -> onToggleAllocationMode()
+            is CharacterAttributesEvent.AllocateMax -> allocateMax(event.index)
             is CharacterAttributesEvent.IncrementAllocate -> incrementAllocate(event.index)
             is CharacterAttributesEvent.DecrementAllocate -> decrementAllocate(event.index)
             CharacterAttributesEvent.ConfirmAllocation -> confirmAllocation()
@@ -150,6 +154,7 @@ class CharacterAttributesViewModel(
                         totalAttributeValues = totalValues,
                         hasRolledAllDice = rolledValues.all { v -> v > 0 },
                         allocatedDiceResults = List(baseAttributes.size) { 0 },
+                        allocatePointsLeft = 100,
                         isLoading = false
                     )
                 }
@@ -258,7 +263,33 @@ class CharacterAttributesViewModel(
             it.copy(
                 rolledDiceResults = rolled,
                 totalAttributeValues = total,
-                hasRolledAllDice = rolled.all { v -> v > 0 }
+                hasRolledAllDice = rolled.all { v -> v > 0 },
+            )
+        }
+    }
+
+    private fun rollFateAndResilience() {
+        val baseFate = state.value.baseFatePoints
+        val baseRes = state.value.baseResiliencePoints
+
+        // Calculate how many points are already allocated to fate and resilience
+        val alreadyAllocatedToFate = (state.value.fatePoints - baseFate).coerceAtLeast(0)
+        val alreadyAllocatedToRes = (state.value.resiliencePoints - baseRes).coerceAtLeast(0)
+        val baseExtra = alreadyAllocatedToFate + alreadyAllocatedToRes + state.value.extraPoints
+
+        // Calculate the extra points available for distribution
+        val extra = baseExtra.coerceAtLeast(0)
+
+        // Randomly distribute the extra points between fate and resilience
+        val fateBonus = (0..extra).random()
+        val resBonus = extra - fateBonus
+
+        // Update the state with the new fate and resilience points
+        _state.update {
+            it.copy(
+                fatePoints = baseFate + fateBonus,
+                resiliencePoints = baseRes + resBonus,
+                extraPoints = 0
             )
         }
     }
@@ -295,12 +326,34 @@ class CharacterAttributesViewModel(
 
         _state.update { current ->
             val entering = !current.canAllocateAttributes
+            val currentAllocate = when {
+                current.allocatedDiceResults.size == n -> current.allocatedDiceResults
+                else -> List(n) { 0 }
+            }
+            val left = (100 - currentAllocate.sum()).coerceAtLeast(0)
+
             current.copy(
                 canAllocateAttributes = entering,
-                allocatedDiceResults = if (entering) List(n) { 0 } else current.allocatedDiceResults,
-//                allocatePointsLeft = if (entering) 100 else cur.allocatePointsLeft,
-                allocatePointsLeft = if (entering) 1 else current.allocatePointsLeft,
-                canReorderAttributes = false
+                allocatedDiceResults = currentAllocate,
+                allocatePointsLeft = left,
+                canReorderAttributes = false,
+            )
+        }
+    }
+
+    private fun allocateMax(index: Int) {
+        if (!state.value.canAllocateAttributes) return
+        if (index !in state.value.allocatedDiceResults.indices) return
+        if (state.value.allocatePointsLeft <= 0) return
+
+        val add = state.value.allocatePointsLeft
+        val list = state.value.allocatedDiceResults.toMutableList()
+        list[index] = list[index] + add
+
+        _state.update {
+            it.copy(
+                allocatedDiceResults = list,
+                allocatePointsLeft = 0
             )
         }
     }
@@ -312,10 +365,11 @@ class CharacterAttributesViewModel(
 
         val list = state.value.allocatedDiceResults.toMutableList()
         list[index] = list[index] + 1
+        val left = (100 - list.sum()).coerceAtLeast(0)
         _state.update {
             it.copy(
                 allocatedDiceResults = list,
-                allocatePointsLeft = it.allocatePointsLeft - 1
+                allocatePointsLeft = left
             )
         }
     }
@@ -327,10 +381,12 @@ class CharacterAttributesViewModel(
 
         val list = state.value.allocatedDiceResults.toMutableList()
         list[index] = list[index] - 1
+        val left = (100 - list.sum()).coerceAtLeast(0)
+
         _state.update {
             it.copy(
                 allocatedDiceResults = list,
-                allocatePointsLeft = it.allocatePointsLeft + 1
+                allocatePointsLeft = left
             )
         }
     }

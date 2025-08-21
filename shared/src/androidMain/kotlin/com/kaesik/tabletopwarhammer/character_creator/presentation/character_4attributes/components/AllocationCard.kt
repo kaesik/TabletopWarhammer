@@ -1,6 +1,7 @@
 package com.kaesik.tabletopwarhammer.character_creator.presentation.character_4attributes.components
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -26,6 +27,7 @@ fun AllocationCard(
     pointsLeft: Int,
     onPlus: (Int) -> Unit,
     onMinus: (Int) -> Unit,
+    onMax: (Int) -> Unit,
     onConfirm: () -> Unit,
     onCancel: () -> Unit,
 ) {
@@ -52,15 +54,29 @@ fun AllocationCard(
                             CharacterCreatorButton(
                                 text = "−",
                                 onClick = { onMinus(index) },
-                                enabled = (values.getOrNull(index) ?: 0) > 0
+                                enabled = (values.getOrNull(index) ?: 0) > 0,
+                                modifier = Modifier.width(64.dp)
                             )
                             Spacer(Modifier.width(8.dp))
-                            Text(values.getOrNull(index)?.toString() ?: "0")
+                            Box(
+                                modifier = Modifier.width(32.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(values.getOrNull(index)?.toString() ?: "0")
+                            }
                             Spacer(Modifier.width(8.dp))
                             CharacterCreatorButton(
                                 text = "+",
                                 onClick = { onPlus(index) },
-                                enabled = pointsLeft > 0
+                                enabled = pointsLeft > 0,
+                                modifier = Modifier.width(64.dp)
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            CharacterCreatorButton(
+                                text = "Max",
+                                onClick = { onMax(index) },
+                                enabled = pointsLeft > 0,
+                                modifier = Modifier.width(64.dp)
                             )
                         }
                     }

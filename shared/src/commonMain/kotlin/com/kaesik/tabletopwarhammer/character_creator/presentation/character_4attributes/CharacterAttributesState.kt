@@ -40,6 +40,5 @@ data class CharacterAttributesState(
     //ALLOCATE
     val canAllocateAttributes: Boolean = false,
     val allocatedDiceResults: List<Int> = emptyList(),
-//    val allocatePointsLeft: Int = 100,
-    val allocatePointsLeft: Int = 1,
+    val allocatePointsLeft: Int = 100,
 )

@@ -109,7 +109,22 @@ fun CharacterAttributesScreenRoot(
 
                 // Add XP after rolling all dices
                 CharacterAttributesEvent.RollAllDice -> {
-                    if (!creatorState.hasRolledAttributes) {
+                    if (creatorState.hasRolledAttributes) {
+                        if (creatorState.hasReorderedAttributes) {
+                            creatorViewModel.onEvent(
+                                CharacterCreatorEvent.SetHasReorderAttributes(
+                                    false
+                                )
+                            )
+                        }
+                        if (creatorState.hasAllocatedAttributes) {
+                            creatorViewModel.onEvent(
+                                CharacterCreatorEvent.SetHasAllocateAttributes(
+                                    false
+                                )
+                            )
+                        }
+                    } else {
                         creatorViewModel.onEvent(CharacterCreatorEvent.AddExperience(50))
                         creatorViewModel.onEvent(CharacterCreatorEvent.SetHasRolledAttributes(true))
                         creatorViewModel.onEvent(CharacterCreatorEvent.ShowMessage("Rolled attributes (+50 XP)"))
@@ -119,11 +134,32 @@ fun CharacterAttributesScreenRoot(
 
                 // Add XP after rolling a single dice
                 CharacterAttributesEvent.RollOneDice -> {
-                    val zeros = state.rolledDiceResults.count { it == 0 }
-                    if (zeros == 1 && !creatorState.hasRolledAttributes) {
-                        creatorViewModel.onEvent(CharacterCreatorEvent.AddExperience(50))
-                        creatorViewModel.onEvent(CharacterCreatorEvent.SetHasRolledAttributes(true))
-                        creatorViewModel.onEvent(CharacterCreatorEvent.ShowMessage("Rolled attributes (+50 XP)"))
+                    if (creatorState.hasRolledAttributes) {
+                        if (creatorState.hasReorderedAttributes) {
+                            creatorViewModel.onEvent(
+                                CharacterCreatorEvent.SetHasReorderAttributes(
+                                    false
+                                )
+                            )
+                        }
+                        if (creatorState.hasAllocatedAttributes) {
+                            creatorViewModel.onEvent(
+                                CharacterCreatorEvent.SetHasAllocateAttributes(
+                                    false
+                                )
+                            )
+                        }
+                    } else {
+                        val zeros = state.rolledDiceResults.count { it == 0 }
+                        if (zeros == 1) {
+                            creatorViewModel.onEvent(CharacterCreatorEvent.AddExperience(50))
+                            creatorViewModel.onEvent(
+                                CharacterCreatorEvent.SetHasRolledAttributes(
+                                    true
+                                )
+                            )
+                            creatorViewModel.onEvent(CharacterCreatorEvent.ShowMessage("Rolled attributes (+50 XP)"))
+                        }
                     }
                     viewModel.onEvent(event)
                 }
@@ -219,46 +255,6 @@ fun CharacterAttributesScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                // Button to roll a single dice or all dice
-                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    Column {
-                        if (!hasRolledAttributes) {
-                            CharacterCreatorButton(
-                                text = "Roll a Dice +50XP",
-                                onClick = { onEvent(CharacterAttributesEvent.RollOneDice) },
-                                enabled = !state.isLoading && state.rolledDiceResults.any { it == 0 }
-                            )
-                            CharacterCreatorButton(
-                                text = "Roll All Dices +50XP",
-                                onClick = { onEvent(CharacterAttributesEvent.RollAllDice) },
-                                enabled = !state.isLoading && state.rolledDiceResults.any { it == 0 }
-                            )
-                        } else {
-                            val entering = !state.canReorderAttributes
-
-                            CharacterCreatorButton(
-                                text = if (entering) "Reorder -25XP" else "Finish reordering",
-                                onClick = { onEvent(CharacterAttributesEvent.ToggleReorderMode) },
-                                enabled = if (entering) {
-                                    !state.isLoading && !hasReorderedAttributes
-                                } else {
-                                    !state.isLoading
-                                }
-                            )
-                        }
-                    }
-                    val allocateLabel = when {
-                        !hasRolledAttributes -> "Allocate 100 points +0XP"
-                        hasReorderedAttributes -> "Allocate 100 points −25XP"
-                        else -> "Allocate 100 points −50XP"
-                    }
-
-                    CharacterCreatorButton(
-                        text = allocateLabel,
-                        onClick = { onEvent(CharacterAttributesEvent.ToggleAllocationMode) },
-                        enabled = !state.isLoading
-                    )
-                }
 
                 if (state.canAllocateAttributes) {
                     AllocationCard(
@@ -273,6 +269,7 @@ fun CharacterAttributesScreen(
                                 )
                             )
                         },
+                        onMax = { index -> onEvent(CharacterAttributesEvent.AllocateMax(index)) },
                         onConfirm = { onEvent(CharacterAttributesEvent.ConfirmAllocation) },
                         onCancel = { onEvent(CharacterAttributesEvent.CancelAllocation) }
                     )
@@ -289,6 +286,15 @@ fun CharacterAttributesScreen(
                         onResiliencePointsDecrease = { onEvent(CharacterAttributesEvent.DecreaseResiliencePoints) },
                     )
 
+                    // Button to roll fate and resilience points
+                    Row {
+                        CharacterCreatorButton(
+                            text = "Roll",
+                            onClick = { onEvent(CharacterAttributesEvent.RollFateAndResilience) }
+                        )
+                    }
+
+                    // Button to go back or next
                     Row {
                         CharacterCreatorButton(
                             text = "Back",
@@ -305,6 +311,51 @@ fun CharacterAttributesScreen(
                         )
                     }
                 } else {
+
+                    // Button to roll a single dice or all dice
+                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                        Column {
+                            if (!hasRolledAttributes) {
+                                CharacterCreatorButton(
+                                    text = "Roll a Dice +50XP",
+                                    onClick = { onEvent(CharacterAttributesEvent.RollOneDice) },
+                                    enabled = !state.isLoading && state.rolledDiceResults.any { it == 0 }
+                                )
+                                CharacterCreatorButton(
+                                    text = "Roll All Dices +50XP",
+                                    onClick = { onEvent(CharacterAttributesEvent.RollAllDice) },
+                                    enabled = !state.isLoading && state.rolledDiceResults.any { it == 0 }
+                                )
+                            } else {
+                                val entering = !state.canReorderAttributes
+
+                                CharacterCreatorButton(
+                                    text = if (entering) "Reorder -25XP" else "Finish reordering",
+                                    onClick = { onEvent(CharacterAttributesEvent.ToggleReorderMode) },
+                                    enabled = if (hasAllocatedAttributes) false else if (entering) {
+                                        !state.isLoading && !hasReorderedAttributes
+                                    } else {
+                                        !state.isLoading
+                                    }
+                                )
+                            }
+                        }
+
+                        val allocateLabel = when {
+                            hasAllocatedAttributes -> "Allocation"
+                            !hasRolledAttributes -> "Allocate 100 points +0XP"
+                            hasReorderedAttributes -> "Allocate 100 points −25XP"
+                            else -> "Allocate 100 points −50XP"
+                        }
+
+                        CharacterCreatorButton(
+                            text = allocateLabel,
+                            onClick = { onEvent(CharacterAttributesEvent.ToggleAllocationMode) },
+                            enabled = !state.isLoading
+                        )
+                    }
+
+                    // Show the attributes table if there are attributes, dice throws, and base values
                     if (attributes.isNotEmpty() && diceThrows.isNotEmpty() && baseAttributeValues.isNotEmpty()) {
                         Card(
                             modifier = Modifier

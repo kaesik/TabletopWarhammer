@@ -15,11 +15,13 @@ sealed class CharacterAttributesEvent {
     data object DecreaseFatePoints : CharacterAttributesEvent()
     data object IncreaseResiliencePoints : CharacterAttributesEvent()
     data object DecreaseResiliencePoints : CharacterAttributesEvent()
+    data object RollFateAndResilience : CharacterAttributesEvent()
     data class InitFateAndResilience(
         val speciesName: String,
         val fate: Int? = null,
         val resilience: Int? = null
     ) : CharacterAttributesEvent()
+
 
     // ROLL
     data object RollOneDice : CharacterAttributesEvent()
@@ -32,6 +34,7 @@ sealed class CharacterAttributesEvent {
 
     // ALLOCATE
     data object ToggleAllocationMode : CharacterAttributesEvent()
+    data class AllocateMax(val index: Int) : CharacterAttributesEvent()
     data class IncrementAllocate(val index: Int) : CharacterAttributesEvent()
     data class DecrementAllocate(val index: Int) : CharacterAttributesEvent()
     data object ConfirmAllocation : CharacterAttributesEvent()
