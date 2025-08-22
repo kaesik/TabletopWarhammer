@@ -158,7 +158,7 @@ fun CharacterSpeciesScreen(
                         )
 
                         val chooseLabel = if (hasRolledSpecies && !hasChosenSpecies) "Choose -25XP"
-                        else "Choose +0XP"
+                        else "Choose"
 
                         CharacterCreatorButton(
                             text = chooseLabel,

@@ -42,6 +42,8 @@ sealed class CharacterCreatorEvent {
     data class SetHasRolledAttributes(val value: Boolean) : CharacterCreatorEvent()
     data class SetHasReorderAttributes(val value: Boolean) : CharacterCreatorEvent()
     data class SetHasAllocateAttributes(val value: Boolean) : CharacterCreatorEvent()
+    data class SetRollLocked(val locked: Boolean) : CharacterCreatorEvent()
+    data class SetRolledFromAllocation(val value: Boolean) : CharacterCreatorEvent()
 
     data class SetSkillsAndTalents(
         val speciesBasicSkills: List<List<String>>,

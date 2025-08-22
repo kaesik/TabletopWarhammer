@@ -28,4 +28,6 @@ data class CharacterCreatorState(
     val hasRolledAttributes: Boolean = false,
     val hasReorderedAttributes: Boolean = false,
     val hasAllocatedAttributes: Boolean = false,
+    val rollLocked: Boolean = false,
+    val rolledFromAllocation: Boolean = false,
 )

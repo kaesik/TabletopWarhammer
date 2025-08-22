@@ -205,7 +205,7 @@ fun CharacterClassAndCareerScreen(
                             enabled = !hasRolledClassAndCareer
                         )
                         val chooseLabel = if (hasRolledClassAndCareer && !hasChosenClassAndCareer)
-                            "Choose -35XP" else "Choose +0XP"
+                            "Choose -35XP" else "Choose"
 
                         CharacterCreatorButton(
                             text = chooseLabel,

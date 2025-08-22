@@ -9,6 +9,8 @@ sealed class CharacterAttributesEvent {
         val total: List<Int>?
     ) : CharacterAttributesEvent()
 
+    data class InitFromCreatorFlags(val rolledFromAllocation: Boolean) : CharacterAttributesEvent()
+
     //FATE AND RESILIENCE
     data object OnDistributeFatePointsClick : CharacterAttributesEvent()
     data object IncreaseFatePoints : CharacterAttributesEvent()

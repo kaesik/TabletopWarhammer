@@ -33,6 +33,11 @@ class CharacterAttributesViewModel(
 
             // Initialize fate and resilience points based on the species name
             is CharacterAttributesEvent.InitFateAndResilience -> loadFateAndResilience(event)
+            
+            // Initialize the state from creator flags
+            is CharacterAttributesEvent.InitFromCreatorFlags -> {
+                _state.update { it.copy(rolledFromAllocation = event.rolledFromAllocation) }
+            }
 
             // FATE AND RESILIENCE POINTS
             // Show or hide the fate resilience card
@@ -232,7 +237,11 @@ class CharacterAttributesViewModel(
 
     // FUNCTIONS FOR ROLLING DICE
     private fun onRollOneDice() {
-        val rolled = state.value.rolledDiceResults.toMutableList()
+        val rolled =
+            // If the dice were rolled from allocation, start with zeroes
+            if (state.value.rolledFromAllocation) MutableList(state.value.baseAttributeValues.size) { 0 }
+            else state.value.rolledDiceResults.toMutableList()
+
         val idx = rolled.indexOfFirst { it == 0 }
         if (idx == -1) return
 
@@ -243,8 +252,14 @@ class CharacterAttributesViewModel(
     }
 
     private fun onRollAllDice() {
-        val rolled = state.value.rolledDiceResults.toMutableList()
+        val rolled =
+            // If the dice were rolled from allocation, start with zeroes
+            if (state.value.rolledFromAllocation) MutableList(state.value.baseAttributeValues.size) { 0 }
+            else state.value.rolledDiceResults.toMutableList()
+
         val notations = state.value.diceThrows
+
+        // If there are no dice to roll, return early
         for (i in rolled.indices) if (rolled[i] == 0) rolled[i] = rollDiceSum(notations[i])
         applyRolledResults(rolled)
     }
@@ -264,6 +279,13 @@ class CharacterAttributesViewModel(
                 rolledDiceResults = rolled,
                 totalAttributeValues = total,
                 hasRolledAllDice = rolled.all { v -> v > 0 },
+                // Reset allocation state when rolling new dice
+                canAllocateAttributes = false,
+                allocatedDiceResults = List(base.size) { 0 },
+                allocatePointsLeft = 100,
+                // Reset reordering state when rolling new dice
+                canReorderAttributes = false,
+                rolledFromAllocation = false
             )
         }
     }
@@ -319,6 +341,10 @@ class CharacterAttributesViewModel(
     }
 
     // FUNCTIONS FOR ALLOCATING
+    private val minAllocate = 4
+    private val maxAllocate = 18
+    private val totalAllocate = 100
+
     private fun onToggleAllocationMode() {
         val n =
             state.value.attributeList.size.takeIf { it > 0 } ?: state.value.baseAttributeValues.size
@@ -327,10 +353,13 @@ class CharacterAttributesViewModel(
         _state.update { current ->
             val entering = !current.canAllocateAttributes
             val currentAllocate = when {
-                current.allocatedDiceResults.size == n -> current.allocatedDiceResults
-                else -> List(n) { 0 }
+                current.allocatedDiceResults.size == n ->
+                    current.allocatedDiceResults.map { it.coerceIn(minAllocate, maxAllocate) }
+
+                else -> List(n) { minAllocate }
             }
-            val left = (100 - currentAllocate.sum()).coerceAtLeast(0)
+
+            val left = (totalAllocate - currentAllocate.sum()).coerceAtLeast(0)
 
             current.copy(
                 canAllocateAttributes = entering,
@@ -346,14 +375,17 @@ class CharacterAttributesViewModel(
         if (index !in state.value.allocatedDiceResults.indices) return
         if (state.value.allocatePointsLeft <= 0) return
 
-        val add = state.value.allocatePointsLeft
         val list = state.value.allocatedDiceResults.toMutableList()
+        val add = minOf(maxAllocate - list[index], state.value.allocatePointsLeft)
+        if (add <= 0) return
+
         list[index] = list[index] + add
+        val left = (totalAllocate - list.sum()).coerceAtLeast(0)
 
         _state.update {
             it.copy(
                 allocatedDiceResults = list,
-                allocatePointsLeft = 0
+                allocatePointsLeft = left
             )
         }
     }
@@ -364,8 +396,10 @@ class CharacterAttributesViewModel(
         if (state.value.allocatePointsLeft <= 0) return
 
         val list = state.value.allocatedDiceResults.toMutableList()
+        if (list[index] >= maxAllocate) return
+
         list[index] = list[index] + 1
-        val left = (100 - list.sum()).coerceAtLeast(0)
+        val left = (totalAllocate - list.sum()).coerceAtLeast(0)
         _state.update {
             it.copy(
                 allocatedDiceResults = list,
@@ -380,8 +414,10 @@ class CharacterAttributesViewModel(
         if (state.value.allocatedDiceResults[index] <= 0) return
 
         val list = state.value.allocatedDiceResults.toMutableList()
+        if (list[index] <= minAllocate) return
+
         list[index] = list[index] - 1
-        val left = (100 - list.sum()).coerceAtLeast(0)
+        val left = (totalAllocate - list.sum()).coerceAtLeast(0)
 
         _state.update {
             it.copy(
@@ -404,7 +440,8 @@ class CharacterAttributesViewModel(
                 rolledDiceResults = newRolled,
                 totalAttributeValues = newTotal,
                 hasRolledAllDice = true,
-                canAllocateAttributes = false
+                canAllocateAttributes = false,
+                rolledFromAllocation = true
             )
         }
     }

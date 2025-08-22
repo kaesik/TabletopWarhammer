@@ -170,6 +170,14 @@ class CharacterCreatorViewModel : ViewModel() {
                 _state.update { it.copy(hasChosenClassAndCareer = event.value) }
             }
 
+            is CharacterCreatorEvent.SetRollLocked -> {
+                _state.update { it.copy(rollLocked = event.locked) }
+            }
+
+            is CharacterCreatorEvent.SetRolledFromAllocation -> {
+                _state.update { it.copy(rolledFromAllocation = event.value) }
+            }
+
             is CharacterCreatorEvent.SaveRolledAttributes -> {
                 _state.value = state.value.copy(
                     rolledAttributes = event.rolled,

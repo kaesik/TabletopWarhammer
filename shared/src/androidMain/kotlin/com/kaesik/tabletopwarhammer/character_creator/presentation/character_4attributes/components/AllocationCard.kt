@@ -54,7 +54,7 @@ fun AllocationCard(
                             CharacterCreatorButton(
                                 text = "−",
                                 onClick = { onMinus(index) },
-                                enabled = (values.getOrNull(index) ?: 0) > 0,
+                                enabled = (values.getOrNull(index) ?: 0) > 4,
                                 modifier = Modifier.width(64.dp)
                             )
                             Spacer(Modifier.width(8.dp))
@@ -68,7 +68,7 @@ fun AllocationCard(
                             CharacterCreatorButton(
                                 text = "+",
                                 onClick = { onPlus(index) },
-                                enabled = pointsLeft > 0,
+                                enabled = pointsLeft > 0 && (values.getOrNull(index) ?: 0) < 18,
                                 modifier = Modifier.width(64.dp)
                             )
                             Spacer(Modifier.width(8.dp))
