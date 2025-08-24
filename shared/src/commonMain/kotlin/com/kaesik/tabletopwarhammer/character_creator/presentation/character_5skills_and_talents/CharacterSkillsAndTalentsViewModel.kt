@@ -170,12 +170,11 @@ class CharacterSkillsAndTalentsViewModel(
 
             fun processTalentGroups(talentGroups: List<List<TalentItem>>): List<List<TalentItem>> {
                 return talentGroups.map { group ->
-                    if (group.size == 1 && " or " in group[0].name) {
-                        // Rozbij tylko jeśli jest pojedynczy element z "or" w nazwie
-                        group[0].name.split(" or ").map { option ->
-                            group[0].copy(name = option.trim())
-                        }
-                    } else group // Jeśli więcej niż 1 talent lub nie ma "or", zostaw jak jest
+                    group.flatMap { t ->
+                        if (" or " in t.name)
+                            t.name.split(" or ").map { option -> t.copy(name = option.trim()) }
+                        else listOf(t)
+                    }
                 }
             }
 
