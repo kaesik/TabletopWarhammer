@@ -3,7 +3,10 @@ package com.kaesik.tabletopwarhammer.character_creator.presentation.character_5s
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.RadioButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Casino
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -11,14 +14,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.kaesik.tabletopwarhammer.core.domain.library.items.TalentItem
 
 @Composable
-fun TalentTableRadioItem(
-    talent: TalentItem,
-    isSelected: Boolean,
-    sourceLabel: String,
-    onTalentSelected: (TalentItem) -> Unit
+fun TalentTableRowRandom(
+    rolledTalentName: String?,
+    onRoll: () -> Unit
 ) {
     Surface(shadowElevation = 4.dp) {
         Row(
@@ -27,31 +27,29 @@ fun TalentTableRadioItem(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = talent.name,
+                text = rolledTalentName ?: "Random Talent",
                 modifier = Modifier.weight(2f)
             )
 
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                RadioButton(
-                    selected = isSelected,
-                    onClick = { onTalentSelected(talent) }
-                )
-                SourceLabelBadge(sourceLabel)
+            if (rolledTalentName == null) {
+                IconButton(onClick = onRoll) {
+                    Icon(
+                        imageVector = Icons.Default.Casino,
+                        contentDescription = "Roll Random Talent"
+                    )
+                }
+            } else {
+                SourceLabelBadge("Rolled")
             }
         }
     }
 }
 
-@Preview
 @Composable
-fun TalentRadioItemPreview() {
-    TalentTableRadioItem(
-        talent = TalentItem(name = "Suave", id = ""),
-        isSelected = true,
-        sourceLabel = "Species (Human)",
-        onTalentSelected = {}
+@Preview
+fun TalentTableRowRandomPreview() {
+    TalentTableRowRandom(
+        rolledTalentName = null,
+        onRoll = {}
     )
 }

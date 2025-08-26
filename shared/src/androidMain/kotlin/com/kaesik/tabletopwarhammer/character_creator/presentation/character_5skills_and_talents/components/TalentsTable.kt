@@ -5,9 +5,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.TalentTableItem
-import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.TalentTableRadioItem
-import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.TalentTableRandomItem
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.TalentTableRowChoice
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.TalentTableRowRandom
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.TalentTableRowSimple
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.rollRandomTalent
 import com.kaesik.tabletopwarhammer.core.domain.library.items.TalentItem
 
@@ -33,21 +33,13 @@ fun TalentsTable(
             val group = talentsGroups[groupIndex]
 
             when {
-                group.size == 1 && " or " !in group[0].name && group[0].name != "Random Talent" -> {
-                    TalentTableItem(
-                        talent = group[0],
-                        isSelected = selectedTalents.contains(group[0]),
-                        sourceLabel = sourceLabel,
-                        onTalentChecked = onTalentChecked
-                    )
-                }
-
+                // Random Talent group
                 group.all { it.name == "Random Talent" } -> {
                     group.forEachIndexed { talentIndex, _ ->
                         val key = groupIndex to talentIndex
                         val rolledTalentName = rolledTalents[key]
 
-                        TalentTableRandomItem(
+                        TalentTableRowRandom(
                             rolledTalentName = rolledTalentName,
                             onRoll = {
                                 val newTalent = rollRandomTalent(
@@ -59,17 +51,27 @@ fun TalentsTable(
                     }
                 }
 
-                else -> {
+                // Choice from two talents group
+                group.size > 1 && group.none { it.name.equals("Random Talent", true) } -> {
                     group.forEach { talent ->
-                        TalentTableRadioItem(
+                        TalentTableRowChoice(
                             talent = talent,
                             isSelected = selectedTalents.contains(talent),
+                            sourceLabel = sourceLabel,
                             onTalentSelected = { selected ->
                                 group.forEach { t -> onTalentChecked(t, t == selected) }
-                            },
-                            sourceLabel = sourceLabel
+                            }
                         )
                     }
+                }
+
+                // Simple single talent
+                else -> {
+                    val talent = group[0]
+                    TalentTableRowSimple(
+                        talent = talent,
+                        sourceLabel = sourceLabel
+                    )
                 }
             }
         }
