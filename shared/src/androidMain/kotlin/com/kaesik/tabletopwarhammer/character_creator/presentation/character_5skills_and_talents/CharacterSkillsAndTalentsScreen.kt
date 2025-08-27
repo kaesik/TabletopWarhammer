@@ -91,6 +91,76 @@ fun CharacterSkillsAndTalentsScreenRoot(
         }
     }
 
+    LaunchedEffect(
+        state.speciesOrCareer, state.selectedSkills3, state.selectedSkills5,
+        state.careerSkillPoints, state.selectedSpeciesTalents, state.selectedCareerTalents,
+        state.rolledTalents
+    ) {
+        val hasAnySelection =
+            state.selectedSkills3.isNotEmpty() ||
+                    state.selectedSkills5.isNotEmpty() ||
+                    state.careerSkillPoints.values.any { it > 0 } ||
+                    state.selectedSpeciesTalents.isNotEmpty() ||
+                    state.selectedCareerTalents.isNotEmpty() ||
+                    state.rolledTalents.isNotEmpty()
+
+        val modeReady = if (state.speciesOrCareer == SpeciesOrCareer.SPECIES) {
+            state.speciesSkillsList.isNotEmpty() && state.speciesTalentsList.isNotEmpty()
+        } else {
+            state.careerSkillsList.isNotEmpty() && state.careerTalentsList.isNotEmpty()
+        }
+
+        if (!modeReady || !hasAnySelection) return@LaunchedEffect
+        creatorViewModel.onEvent(
+            CharacterCreatorEvent.SetSkillsTalentsDraft(
+                isSpeciesMode = state.speciesOrCareer == SpeciesOrCareer.SPECIES,
+                selectedSkillNames3 = state.selectedSkills3.map { it.name },
+                selectedSkillNames5 = state.selectedSkills5.map { it.name },
+                careerSkillPoints = state.careerSkillPoints,
+                selectedSpeciesTalentNames = state.selectedSpeciesTalents.map { it.name },
+                selectedCareerTalentNames = state.selectedCareerTalents.map { it.name },
+                rolledTalents = state.rolledTalents
+            )
+        )
+    }
+
+    LaunchedEffect(
+        state.speciesSkillsList, state.careerSkillsList,
+        state.speciesTalentsList, state.careerTalentsList
+    ) {
+        val hasDraft =
+            creatorState.skillsTalentsDraftSelectedSkillNames3.isNotEmpty() ||
+                    creatorState.skillsTalentsDraftSelectedSkillNames5.isNotEmpty() ||
+                    creatorState.skillsTalentsDraftCareerSkillPoints.isNotEmpty() ||
+                    creatorState.skillsTalentsDraftSelectedSpeciesTalentNames.isNotEmpty() ||
+                    creatorState.skillsTalentsDraftSelectedCareerTalentNames.isNotEmpty() ||
+                    creatorState.skillsTalentsDraftRolledTalents.isNotEmpty() ||
+                    (creatorState.skillsTalentsDraftIsSpeciesMode != null)
+
+        val draftMode = creatorState.skillsTalentsDraftIsSpeciesMode
+        val ready = when (draftMode) {
+            true -> state.speciesSkillsList.isNotEmpty() && state.speciesTalentsList.isNotEmpty()
+            false -> state.careerSkillsList.isNotEmpty() && state.careerTalentsList.isNotEmpty()
+            null -> false
+        }
+
+        if (ready && hasDraft) {
+            val mode = if (draftMode == true) SpeciesOrCareer.SPECIES else SpeciesOrCareer.CAREER
+            viewModel.onEvent(
+                CharacterSkillsAndTalentsEvent.InitFromDraft(
+                    speciesOrCareer = mode,
+                    selectedSkillNames3 = creatorState.skillsTalentsDraftSelectedSkillNames3,
+                    selectedSkillNames5 = creatorState.skillsTalentsDraftSelectedSkillNames5,
+                    careerSkillPoints = creatorState.skillsTalentsDraftCareerSkillPoints,
+                    selectedSpeciesTalentNames = creatorState.skillsTalentsDraftSelectedSpeciesTalentNames,
+                    selectedCareerTalentNames = creatorState.skillsTalentsDraftSelectedCareerTalentNames,
+                    rolledTalents = creatorState.skillsTalentsDraftRolledTalents
+                )
+            )
+        }
+    }
+
+
     val currentSkills = when (state.speciesOrCareer) {
         SpeciesOrCareer.SPECIES -> state.skillList.getOrNull(0) ?: emptyList()
         SpeciesOrCareer.CAREER -> state.skillList.getOrNull(1) ?: emptyList()

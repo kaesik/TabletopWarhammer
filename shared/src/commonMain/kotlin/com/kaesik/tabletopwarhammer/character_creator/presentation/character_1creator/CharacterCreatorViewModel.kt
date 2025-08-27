@@ -16,6 +16,8 @@ class CharacterCreatorViewModel : ViewModel() {
 
     fun onEvent(event: CharacterCreatorEvent) {
         when (event) {
+
+            // MAIN FUNCTION
             is CharacterCreatorEvent.OnCreateCharacterSelect -> {
                 _state.update { current ->
                     val updated = current.copy(
@@ -32,6 +34,13 @@ class CharacterCreatorViewModel : ViewModel() {
                         hasRolledAttributes = false,
                         hasReorderedAttributes = false,
                         hasAllocatedAttributes = false,
+                        skillsTalentsDraftIsSpeciesMode = null,
+                        skillsTalentsDraftSelectedSkillNames3 = emptyList(),
+                        skillsTalentsDraftSelectedSkillNames5 = emptyList(),
+                        skillsTalentsDraftCareerSkillPoints = emptyMap(),
+                        skillsTalentsDraftSelectedSpeciesTalentNames = emptyList(),
+                        skillsTalentsDraftSelectedCareerTalentNames = emptyList(),
+                        skillsTalentsDraftRolledTalents = emptyMap(),
                     )
                     updated
                 }
@@ -91,6 +100,7 @@ class CharacterCreatorViewModel : ViewModel() {
                 }
             }
 
+            // SPECIES
             is CharacterCreatorEvent.SetSpecies -> {
                 _state.update { current ->
                     val newSpecies = event.speciesItem.name
@@ -125,6 +135,7 @@ class CharacterCreatorViewModel : ViewModel() {
                 _state.update { it.copy(hasChosenSpecies = event.value) }
             }
 
+            // CLASS & CAREER
             is CharacterCreatorEvent.SetClass -> {
                 _state.update { current ->
                     val updatedCharacter = current.character.copy(
@@ -185,6 +196,7 @@ class CharacterCreatorViewModel : ViewModel() {
                 )
             }
 
+            // ATTRIBUTES
             is CharacterCreatorEvent.SetAttributes -> {
                 _state.update { currentState ->
                     val character = currentState.character
@@ -235,6 +247,7 @@ class CharacterCreatorViewModel : ViewModel() {
                 _state.update { it.copy(hasAllocatedAttributes = event.value) }
             }
 
+            // SKILLS & TALENTS
             is CharacterCreatorEvent.SetSkillsAndTalents -> {
                 _state.update { current ->
                     val updatedCharacter = current.character.copy(
@@ -251,6 +264,21 @@ class CharacterCreatorViewModel : ViewModel() {
                 }
             }
 
+            is CharacterCreatorEvent.SetSkillsTalentsDraft -> {
+                _state.update { current ->
+                    current.copy(
+                        skillsTalentsDraftIsSpeciesMode = event.isSpeciesMode,
+                        skillsTalentsDraftSelectedSkillNames3 = event.selectedSkillNames3,
+                        skillsTalentsDraftSelectedSkillNames5 = event.selectedSkillNames5,
+                        skillsTalentsDraftCareerSkillPoints = event.careerSkillPoints,
+                        skillsTalentsDraftSelectedSpeciesTalentNames = event.selectedSpeciesTalentNames,
+                        skillsTalentsDraftSelectedCareerTalentNames = event.selectedCareerTalentNames,
+                        skillsTalentsDraftRolledTalents = event.rolledTalents
+                    )
+                }
+            }
+
+            // TRAPPINGS & WEALTH
             is CharacterCreatorEvent.SetTrappings -> {
                 _state.update { current ->
                     val updatedCharacter = current.character.copy(
@@ -279,6 +307,7 @@ class CharacterCreatorViewModel : ViewModel() {
                 }
             }
 
+            // CHARACTER DETAILS
             is CharacterCreatorEvent.SetCharacterDetails -> {
                 _state.update { current ->
                     val updatedCharacter = current.character.copy(

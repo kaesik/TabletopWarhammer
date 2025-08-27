@@ -14,15 +14,18 @@ data class CharacterCreatorState(
 
     val character: CharacterItem = CharacterItem.default(),
 
+    // SPECIES
     val selectedSpecies: SpeciesItem? = null,
     val hasRolledSpecies: Boolean = false,
     val hasChosenSpecies: Boolean = false,
 
+    // CLASS & CAREER
     val selectedClass: ClassItem? = null,
     val selectedCareer: CareerItem? = null,
     val hasRolledClassAndCareer: Boolean = false,
     val hasChosenClassAndCareer: Boolean = false,
 
+    // ATTRIBUTES
     val rolledAttributes: List<Int> = emptyList(),
     val totalAttributes: List<Int> = emptyList(),
     val hasRolledAttributes: Boolean = false,
@@ -30,4 +33,13 @@ data class CharacterCreatorState(
     val hasAllocatedAttributes: Boolean = false,
     val rollLocked: Boolean = false,
     val rolledFromAllocation: Boolean = false,
+
+    // SKILLS & TALENTS
+    val skillsTalentsDraftIsSpeciesMode: Boolean? = null,
+    val skillsTalentsDraftSelectedSkillNames3: List<String> = emptyList(),
+    val skillsTalentsDraftSelectedSkillNames5: List<String> = emptyList(),
+    val skillsTalentsDraftCareerSkillPoints: Map<String, Int> = emptyMap(),
+    val skillsTalentsDraftSelectedSpeciesTalentNames: List<String> = emptyList(),
+    val skillsTalentsDraftSelectedCareerTalentNames: List<String> = emptyList(),
+    val skillsTalentsDraftRolledTalents: Map<Pair<Int, Int>, String> = emptyMap(),
 )

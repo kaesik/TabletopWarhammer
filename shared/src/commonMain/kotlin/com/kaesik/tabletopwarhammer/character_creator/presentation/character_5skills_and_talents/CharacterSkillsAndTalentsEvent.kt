@@ -17,6 +17,16 @@ sealed class CharacterSkillsAndTalentsEvent {
         val careerPathName: String,
     ) : CharacterSkillsAndTalentsEvent()
 
+    data class InitFromDraft(
+        val speciesOrCareer: SpeciesOrCareer,
+        val selectedSkillNames3: List<String>,
+        val selectedSkillNames5: List<String>,
+        val careerSkillPoints: Map<String, Int>,
+        val selectedSpeciesTalentNames: List<String>,
+        val selectedCareerTalentNames: List<String>,
+        val rolledTalents: Map<Pair<Int, Int>, String>
+    ) : CharacterSkillsAndTalentsEvent()
+
     data class OnSkillChecked(
         val skill: SkillItem,
         val isChecked: Boolean

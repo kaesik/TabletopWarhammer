@@ -99,6 +99,7 @@ fun CharacterAttributesScreenRoot(
         )
     }
 
+    // Initialize from creator flags when rolledFromAllocation changes
     LaunchedEffect(creatorState.rolledFromAllocation) {
         viewModel.onEvent(
             CharacterAttributesEvent.InitFromCreatorFlags(

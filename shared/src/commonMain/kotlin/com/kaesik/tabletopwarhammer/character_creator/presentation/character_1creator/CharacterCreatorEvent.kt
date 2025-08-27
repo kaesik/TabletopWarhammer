@@ -53,6 +53,16 @@ sealed class CharacterCreatorEvent {
         val talents: List<List<String>>
     ) : CharacterCreatorEvent()
 
+    data class SetSkillsTalentsDraft(
+        val isSpeciesMode: Boolean,
+        val selectedSkillNames3: List<String>,
+        val selectedSkillNames5: List<String>,
+        val careerSkillPoints: Map<String, Int>,
+        val selectedSpeciesTalentNames: List<String>,
+        val selectedCareerTalentNames: List<String>,
+        val rolledTalents: Map<Pair<Int, Int>, String>
+    ) : CharacterCreatorEvent()
+
     data class SetTrappings(
         val trappings: List<String>,
     ) : CharacterCreatorEvent()
