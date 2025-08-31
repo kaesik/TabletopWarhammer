@@ -34,13 +34,12 @@ class CharacterCreatorViewModel : ViewModel() {
                         hasRolledAttributes = false,
                         hasReorderedAttributes = false,
                         hasAllocatedAttributes = false,
-                        skillsTalentsDraftIsSpeciesMode = null,
-                        skillsTalentsDraftSelectedSkillNames3 = emptyList(),
-                        skillsTalentsDraftSelectedSkillNames5 = emptyList(),
-                        skillsTalentsDraftCareerSkillPoints = emptyMap(),
-                        skillsTalentsDraftSelectedSpeciesTalentNames = emptyList(),
-                        skillsTalentsDraftSelectedCareerTalentNames = emptyList(),
-                        skillsTalentsDraftRolledTalents = emptyMap(),
+                        skillsTalentsSelectedSkillNames3 = emptyList(),
+                        skillsTalentsSelectedSkillNames5 = emptyList(),
+                        skillsTalentsCareerSkillPoints = emptyMap(),
+                        skillsTalentsSelectedSpeciesTalentNames = emptyList(),
+                        skillsTalentsSelectedCareerTalentNames = emptyList(),
+                        skillsTalentsRolledTalents = emptyMap(),
                     )
                     updated
                 }
@@ -264,16 +263,15 @@ class CharacterCreatorViewModel : ViewModel() {
                 }
             }
 
-            is CharacterCreatorEvent.SetSkillsTalentsDraft -> {
-                _state.update { current ->
-                    current.copy(
-                        skillsTalentsDraftIsSpeciesMode = event.isSpeciesMode,
-                        skillsTalentsDraftSelectedSkillNames3 = event.selectedSkillNames3,
-                        skillsTalentsDraftSelectedSkillNames5 = event.selectedSkillNames5,
-                        skillsTalentsDraftCareerSkillPoints = event.careerSkillPoints,
-                        skillsTalentsDraftSelectedSpeciesTalentNames = event.selectedSpeciesTalentNames,
-                        skillsTalentsDraftSelectedCareerTalentNames = event.selectedCareerTalentNames,
-                        skillsTalentsDraftRolledTalents = event.rolledTalents
+            is CharacterCreatorEvent.SetSkillsTalentsSelections -> {
+                _state.update { cur ->
+                    cur.copy(
+                        skillsTalentsSelectedSkillNames3 = event.selectedSkillNames3,
+                        skillsTalentsSelectedSkillNames5 = event.selectedSkillNames5,
+                        skillsTalentsCareerSkillPoints = event.careerSkillPoints,
+                        skillsTalentsSelectedSpeciesTalentNames = event.selectedSpeciesTalentNames,
+                        skillsTalentsSelectedCareerTalentNames = event.selectedCareerTalentNames,
+                        skillsTalentsRolledTalents = event.rolledTalents
                     )
                 }
             }

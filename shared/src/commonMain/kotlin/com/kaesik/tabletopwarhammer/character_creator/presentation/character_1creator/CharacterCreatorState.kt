@@ -35,11 +35,10 @@ data class CharacterCreatorState(
     val rolledFromAllocation: Boolean = false,
 
     // SKILLS & TALENTS
-    val skillsTalentsDraftIsSpeciesMode: Boolean? = null,
-    val skillsTalentsDraftSelectedSkillNames3: List<String> = emptyList(),
-    val skillsTalentsDraftSelectedSkillNames5: List<String> = emptyList(),
-    val skillsTalentsDraftCareerSkillPoints: Map<String, Int> = emptyMap(),
-    val skillsTalentsDraftSelectedSpeciesTalentNames: List<String> = emptyList(),
-    val skillsTalentsDraftSelectedCareerTalentNames: List<String> = emptyList(),
-    val skillsTalentsDraftRolledTalents: Map<Pair<Int, Int>, String> = emptyMap(),
+    val skillsTalentsSelectedSkillNames3: List<String> = emptyList(),
+    val skillsTalentsSelectedSkillNames5: List<String> = emptyList(),
+    val skillsTalentsCareerSkillPoints: Map<String, Int> = emptyMap(),
+    val skillsTalentsSelectedSpeciesTalentNames: List<String> = emptyList(),
+    val skillsTalentsSelectedCareerTalentNames: List<String> = emptyList(),
+    val skillsTalentsRolledTalents: Map<Pair<Int, Int>, String> = emptyMap(),
 )

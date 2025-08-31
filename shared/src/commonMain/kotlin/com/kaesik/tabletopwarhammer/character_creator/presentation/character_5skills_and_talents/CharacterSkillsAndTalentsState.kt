@@ -14,12 +14,14 @@ data class CharacterSkillsAndTalentsState(
     val speciesOrCareer: SpeciesOrCareer = SpeciesOrCareer.SPECIES,
 
     // SKILLS
-    val speciesSkillsList: List<List<SkillItem>> = emptyList(),
-    val careerSkillsList: List<List<SkillItem>> = emptyList(),
     val skillList: List<List<SkillItem>> = emptyList(),
+    val speciesSkills: List<SkillItem> = emptyList(),
+    val careerSkills: List<SkillItem> = emptyList(),
     val selectedSkills: List<SkillItem> = emptyList(),
     val selectedSkills3: List<SkillItem> = emptyList(),
     val selectedSkills5: List<SkillItem> = emptyList(),
+    val careerSkillPoints: Map<String, Int> = emptyMap(),
+    val totalAllocatedPoints: Int = 0,
 
     // TALENTS
     val speciesTalentsList: List<List<TalentItem>> = emptyList(),
@@ -29,7 +31,4 @@ data class CharacterSkillsAndTalentsState(
     val selectedSpeciesTalents: List<TalentItem> = emptyList(),
     val selectedCareerTalents: List<TalentItem> = emptyList(),
     val rolledTalents: Map<Pair<Int, Int>, String> = emptyMap(),
-
-    val careerSkillPoints: Map<String, Int> = emptyMap(),
-    val totalAllocatedPoints: Int = 0,
 )

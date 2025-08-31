@@ -41,7 +41,8 @@ class CharacterSkillsAndTalentsViewModel(
                 event.speciesName, event.careerPathName
             )
 
-            is CharacterSkillsAndTalentsEvent.InitFromDraft -> initFromDraft(event)
+            // Initialize selections from saved data
+            is CharacterSkillsAndTalentsEvent.InitFromSelections -> initFromSelections(event)
 
             // When a skill is checked or unchecked, update the selected skills list
             is CharacterSkillsAndTalentsEvent.OnSkillChecked -> updateSelectedSkills(
@@ -101,10 +102,14 @@ class CharacterSkillsAndTalentsViewModel(
                 // Map the fetched skills to specialized and basic skills
                 val specializedSkillsList = mapSpecializedSkills(skillsList)
 
+                // Separate species and career skills
+                val speciesSkillsList = specializedSkillsList.getOrNull(0) ?: emptyList()
+                val careerSkillsList = specializedSkillsList.getOrNull(1) ?: emptyList()
+
                 _state.update {
                     when (from) {
-                        SpeciesOrCareer.SPECIES -> it.copy(speciesSkillsList = specializedSkillsList)
-                        SpeciesOrCareer.CAREER -> it.copy(careerSkillsList = specializedSkillsList)
+                        SpeciesOrCareer.SPECIES -> it.copy(speciesSkills = speciesSkillsList)
+                        SpeciesOrCareer.CAREER -> it.copy(careerSkills = careerSkillsList)
                     }.copy(skillList = specializedSkillsList, isLoading = false)
                 }
             } catch (_: Exception) {
@@ -216,34 +221,35 @@ class CharacterSkillsAndTalentsViewModel(
         }
     }
 
-    private fun initFromDraft(event: CharacterSkillsAndTalentsEvent.InitFromDraft) {
-        val allSpeciesSkills = _state.value.speciesSkillsList.flatten()
-        val allCareerSkills = _state.value.careerSkillsList.flatten()
-        val allSkills = (allSpeciesSkills + allCareerSkills).associateBy { it.name }
+    private fun initFromSelections(e: CharacterSkillsAndTalentsEvent.InitFromSelections) {
+        // Create lookup maps for skills by name
+        val allSpeciesSkills = _state.value.speciesSkills.associateBy { it.name }
+        val allCareerSkills = _state.value.careerSkills.associateBy { it.name }
+        val allSkills = allSpeciesSkills + allCareerSkills
 
-        val spTalents = _state.value.speciesTalentsList.flatten().associateBy { it.name }
-        val crTalents = _state.value.careerTalentsList.flatten().associateBy { it.name }
+        // Flatten talent lists and create lookup maps
+        val speciesTalents = _state.value.speciesTalentsList.flatten().associateBy { it.name }
+        val careerTalents = _state.value.careerTalentsList.flatten().associateBy { it.name }
 
-        val sel3 = event.selectedSkillNames3.mapNotNull { allSkills[it] }
-        val sel5 = event.selectedSkillNames5.mapNotNull { allSkills[it] }
+        // Map selected names to actual SkillItem and TalentItem objects, ignoring any not found
+        val selectedSkills3 = e.selectedSkillNames3.mapNotNull(allSkills::get)
+        val selectedSkills5 = e.selectedSkillNames5.mapNotNull(allSkills::get)
+        val selectedSpeciesTalents = e.selectedSpeciesTalentNames.mapNotNull(speciesTalents::get)
+        val selectedCareerTalents = e.selectedCareerTalentNames.mapNotNull(careerTalents::get)
 
-        val selSpeciesTalents = event.selectedSpeciesTalentNames.mapNotNull { spTalents[it] }
-        val selCareerTalents = event.selectedCareerTalentNames.mapNotNull { crTalents[it] }
-
-        _state.update { current ->
-            val selectedTalentsForMode = if (event.speciesOrCareer == SpeciesOrCareer.SPECIES)
-                selSpeciesTalents else selCareerTalents
-
-            current.copy(
-                speciesOrCareer = event.speciesOrCareer,
-                selectedSkills3 = sel3,
-                selectedSkills5 = sel5,
-                careerSkillPoints = event.careerSkillPoints,
-                totalAllocatedPoints = event.careerSkillPoints.values.sum(),
-                selectedSpeciesTalents = selSpeciesTalents,
-                selectedCareerTalents = selCareerTalents,
-                selectedTalents = selectedTalentsForMode,
-                rolledTalents = event.rolledTalents
+        _state.update { cur ->
+            cur.copy(
+                selectedSkills3 = selectedSkills3,
+                selectedSkills5 = selectedSkills5,
+                careerSkillPoints = e.careerSkillPoints,
+                totalAllocatedPoints = e.careerSkillPoints.values.sum(),
+                selectedSpeciesTalents = selectedSpeciesTalents.ifEmpty { cur.selectedSpeciesTalents },
+                selectedCareerTalents = selectedCareerTalents.ifEmpty { cur.selectedCareerTalents },
+                // Update selected talents based on current view, defaulting to current if none found
+                selectedTalents = if (cur.speciesOrCareer == SpeciesOrCareer.SPECIES)
+                    (selectedSpeciesTalents.ifEmpty { cur.selectedTalents })
+                else (selectedCareerTalents.ifEmpty { cur.selectedTalents }),
+                rolledTalents = e.rolledTalents
             )
         }
     }

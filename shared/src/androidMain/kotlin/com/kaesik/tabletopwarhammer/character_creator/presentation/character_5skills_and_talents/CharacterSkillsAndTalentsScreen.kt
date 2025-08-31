@@ -9,7 +9,10 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -21,7 +24,6 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5sk
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.SpeciesOrCareer
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorButton
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorSnackbarHost
-import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorTitle
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.SnackbarType
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.showCharacterCreatorSnackbar
 import com.kaesik.tabletopwarhammer.core.domain.character.CharacterItem
@@ -39,8 +41,14 @@ fun CharacterSkillsAndTalentsScreenRoot(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val creatorState by creatorViewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    // To avoid multiple restorations
+    var restored by rememberSaveable { mutableStateOf(false) }
+
+    // Current character
     val character = creatorViewModel.state.value.character
 
+    // Handle messages from the creatorViewModel
     LaunchedEffect(creatorState.message, creatorState.isError) {
         creatorState.message?.let { message ->
             snackbarHostState.showCharacterCreatorSnackbar(
@@ -51,7 +59,9 @@ fun CharacterSkillsAndTalentsScreenRoot(
         }
     }
 
+    // Initial data load
     LaunchedEffect(true) {
+        // Load skills and talents for species
         viewModel.onEvent(
             CharacterSkillsAndTalentsEvent.InitSkillsList(
                 from = SpeciesOrCareer.SPECIES,
@@ -66,54 +76,63 @@ fun CharacterSkillsAndTalentsScreenRoot(
                 careerPathName = character.careerPath
             )
         )
+        // Load skills and talents for career
+        viewModel.onEvent(
+            CharacterSkillsAndTalentsEvent.InitSkillsList(
+                from = SpeciesOrCareer.CAREER,
+                speciesName = character.species,
+                careerPathName = character.careerPath
+            )
+        )
+        viewModel.onEvent(
+            CharacterSkillsAndTalentsEvent.InitTalentsList(
+                from = SpeciesOrCareer.CAREER,
+                speciesName = character.species,
+                careerPathName = character.careerPath
+            )
+        )
     }
 
-    LaunchedEffect(state.speciesOrCareer) {
-        if (state.speciesOrCareer == SpeciesOrCareer.CAREER) {
-            if (state.careerSkillsList.isEmpty()) {
-                viewModel.onEvent(
-                    CharacterSkillsAndTalentsEvent.InitSkillsList(
-                        from = SpeciesOrCareer.CAREER,
-                        speciesName = character.species,
-                        careerPathName = character.careerPath
-                    )
-                )
-            }
-            if (state.careerTalentsList.isEmpty()) {
-                viewModel.onEvent(
-                    CharacterSkillsAndTalentsEvent.InitTalentsList(
-                        from = SpeciesOrCareer.CAREER,
-                        speciesName = character.species,
-                        careerPathName = character.careerPath
-                    )
-                )
-            }
-        }
-    }
-
+    // Restore previous selections once skills and talents are loaded
     LaunchedEffect(
-        state.speciesOrCareer, state.selectedSkills3, state.selectedSkills5,
-        state.careerSkillPoints, state.selectedSpeciesTalents, state.selectedCareerTalents,
-        state.rolledTalents
+        state.speciesSkills, state.careerSkills,
+        state.speciesTalentsList, state.careerTalentsList
     ) {
-        val hasAnySelection =
-            state.selectedSkills3.isNotEmpty() ||
-                    state.selectedSkills5.isNotEmpty() ||
-                    state.careerSkillPoints.values.any { it > 0 } ||
-                    state.selectedSpeciesTalents.isNotEmpty() ||
-                    state.selectedCareerTalents.isNotEmpty() ||
-                    state.rolledTalents.isNotEmpty()
+        // If already restored, skip
+        if (restored) return@LaunchedEffect
 
-        val modeReady = if (state.speciesOrCareer == SpeciesOrCareer.SPECIES) {
-            state.speciesSkillsList.isNotEmpty() && state.speciesTalentsList.isNotEmpty()
-        } else {
-            state.careerSkillsList.isNotEmpty() && state.careerTalentsList.isNotEmpty()
-        }
+        // Check if species and career data are loaded
+        val speciesReady = state.speciesSkills.isNotEmpty() && state.speciesTalentsList.isNotEmpty()
+        val careerReady = state.careerSkills.isNotEmpty() && state.careerTalentsList.isNotEmpty()
+        val allReady = speciesReady && careerReady
 
-        if (!modeReady || !hasAnySelection) return@LaunchedEffect
+        // Wait for both species and career data to be ready
+        if (!allReady) return@LaunchedEffect
+        viewModel.onEvent(
+            CharacterSkillsAndTalentsEvent.InitFromSelections(
+                selectedSkillNames3 = creatorState.skillsTalentsSelectedSkillNames3,
+                selectedSkillNames5 = creatorState.skillsTalentsSelectedSkillNames5,
+                careerSkillPoints = creatorState.skillsTalentsCareerSkillPoints,
+                selectedSpeciesTalentNames = creatorState.skillsTalentsSelectedSpeciesTalentNames,
+                selectedCareerTalentNames = creatorState.skillsTalentsSelectedCareerTalentNames,
+                rolledTalents = creatorState.skillsTalentsRolledTalents
+            )
+        )
+
+        // Mark as restored to prevent future restorations
+        restored = true
+    }
+
+    // Sync selections back to creatorViewModel when they change
+    LaunchedEffect(
+        restored,
+        state.selectedSkills3, state.selectedSkills5, state.careerSkillPoints,
+        state.selectedSpeciesTalents, state.selectedCareerTalents, state.rolledTalents
+    ) {
+        // Only sync after the initial restoration
+        if (!restored) return@LaunchedEffect
         creatorViewModel.onEvent(
-            CharacterCreatorEvent.SetSkillsTalentsDraft(
-                isSpeciesMode = state.speciesOrCareer == SpeciesOrCareer.SPECIES,
+            CharacterCreatorEvent.SetSkillsTalentsSelections(
                 selectedSkillNames3 = state.selectedSkills3.map { it.name },
                 selectedSkillNames5 = state.selectedSkills5.map { it.name },
                 careerSkillPoints = state.careerSkillPoints,
@@ -124,52 +143,17 @@ fun CharacterSkillsAndTalentsScreenRoot(
         )
     }
 
-    LaunchedEffect(
-        state.speciesSkillsList, state.careerSkillsList,
-        state.speciesTalentsList, state.careerTalentsList
-    ) {
-        val hasDraft =
-            creatorState.skillsTalentsDraftSelectedSkillNames3.isNotEmpty() ||
-                    creatorState.skillsTalentsDraftSelectedSkillNames5.isNotEmpty() ||
-                    creatorState.skillsTalentsDraftCareerSkillPoints.isNotEmpty() ||
-                    creatorState.skillsTalentsDraftSelectedSpeciesTalentNames.isNotEmpty() ||
-                    creatorState.skillsTalentsDraftSelectedCareerTalentNames.isNotEmpty() ||
-                    creatorState.skillsTalentsDraftRolledTalents.isNotEmpty() ||
-                    (creatorState.skillsTalentsDraftIsSpeciesMode != null)
+    // Decide which skills to show based on species or career
+    val currentSkills =
+        if (state.speciesOrCareer == SpeciesOrCareer.SPECIES) state.speciesSkills
+        else state.careerSkills
 
-        val draftMode = creatorState.skillsTalentsDraftIsSpeciesMode
-        val ready = when (draftMode) {
-            true -> state.speciesSkillsList.isNotEmpty() && state.speciesTalentsList.isNotEmpty()
-            false -> state.careerSkillsList.isNotEmpty() && state.careerTalentsList.isNotEmpty()
-            null -> false
-        }
-
-        if (ready && hasDraft) {
-            val mode = if (draftMode == true) SpeciesOrCareer.SPECIES else SpeciesOrCareer.CAREER
-            viewModel.onEvent(
-                CharacterSkillsAndTalentsEvent.InitFromDraft(
-                    speciesOrCareer = mode,
-                    selectedSkillNames3 = creatorState.skillsTalentsDraftSelectedSkillNames3,
-                    selectedSkillNames5 = creatorState.skillsTalentsDraftSelectedSkillNames5,
-                    careerSkillPoints = creatorState.skillsTalentsDraftCareerSkillPoints,
-                    selectedSpeciesTalentNames = creatorState.skillsTalentsDraftSelectedSpeciesTalentNames,
-                    selectedCareerTalentNames = creatorState.skillsTalentsDraftSelectedCareerTalentNames,
-                    rolledTalents = creatorState.skillsTalentsDraftRolledTalents
-                )
-            )
-        }
-    }
-
-
-    val currentSkills = when (state.speciesOrCareer) {
-        SpeciesOrCareer.SPECIES -> state.skillList.getOrNull(0) ?: emptyList()
-        SpeciesOrCareer.CAREER -> state.skillList.getOrNull(1) ?: emptyList()
-    }
-
+    // Save skills and talents to the main creator state
     fun handleSaveSkillsAndTalents(
         state: CharacterSkillsAndTalentsState,
         character: CharacterItem
     ) {
+        // Helper to convert SkillItem to row format
         fun toSkillRow(skill: SkillItem, bonus: Int): List<String> {
             return listOf(
                 skill.name,
@@ -179,21 +163,21 @@ fun CharacterSkillsAndTalentsScreenRoot(
             )
         }
 
-        // 1. Pobierz species skille jako mapę (zsumujemy później)
+        // Map selected skills to their bonuses
         val speciesMap =
             (state.selectedSkills3.map { it to 3 } + state.selectedSkills5.map { it to 5 })
                 .groupBy({ it.first.name }, { it })
-                .mapValues { it.value.first() } // zostaje SkillItem + bonus
+                .mapValues { it.value.first() }
 
-        // 2. Career skille jako mapa: nazwa → SkillItem + bonus
-        val flatCareerSkills = state.careerSkillsList.flatten()
+        // Map career skills with allocated points
+        val flatCareerSkills = state.careerSkills
         val careerMap =
             state.careerSkillPoints.filterValues { it > 0 }.mapNotNull { (name, bonus) ->
                 flatCareerSkills.find { it.name == name }?.let { it to bonus }
             }.groupBy({ it.first.name }, { it })
                 .mapValues { it.value.first() }
 
-        // 3. Scal species i career
+        // Combine species and career skills, summing bonuses
         val allSkillsMap = (speciesMap.keys + careerMap.keys).associateWith { skillName ->
             val speciesEntry = speciesMap[skillName]
             val careerEntry = careerMap[skillName]
@@ -206,9 +190,11 @@ fun CharacterSkillsAndTalentsScreenRoot(
             skill to totalBonus
         }
 
+        // Separate into basic and advanced skills
         val careerBasicSkills = mutableListOf<List<String>>()
         val careerAdvancedSkills = mutableListOf<List<String>>()
 
+        // Populate the skill lists
         allSkillsMap.values.forEach { (skill, totalBonus) ->
             if (skill.isBasic == true)
                 careerBasicSkills.add(toSkillRow(skill, totalBonus))
@@ -243,6 +229,7 @@ fun CharacterSkillsAndTalentsScreenRoot(
         snackbarHostState = snackbarHostState,
         onEvent = { event ->
             when (event) {
+                // Enforce max 3 selections for +3 skills
                 is CharacterSkillsAndTalentsEvent.OnSkillChecked3 -> {
                     if (event.isChecked && state.selectedSkills3.size >= 3) {
                         creatorViewModel.onEvent(
@@ -253,6 +240,7 @@ fun CharacterSkillsAndTalentsScreenRoot(
                     }
                 }
 
+                // Enforce max 3 selections for +5 skills
                 is CharacterSkillsAndTalentsEvent.OnSkillChecked5 -> {
                     if (event.isChecked && state.selectedSkills5.size >= 3) {
                         creatorViewModel.onEvent(
@@ -263,10 +251,12 @@ fun CharacterSkillsAndTalentsScreenRoot(
                     }
                 }
 
+                // Handle switching between species and career modes
                 is CharacterSkillsAndTalentsEvent.OnSaveSkillsAndTalents -> {
                     handleSaveSkillsAndTalents(state, character)
                 }
 
+                // Go to next module only if 40 points are allocated
                 is CharacterSkillsAndTalentsEvent.OnNextClick -> {
                     if (state.totalAllocatedPoints != 40) {
                         creatorViewModel.onEvent(
@@ -284,6 +274,7 @@ fun CharacterSkillsAndTalentsScreenRoot(
     )
 }
 
+// Helper to get attribute value from character based on attribute name
 private fun getAttributeValue(character: CharacterItem, attributeName: String): Int {
     return when (attributeName) {
         "Weapon Skill" -> character.weaponSkill.firstOrNull() ?: 0
@@ -323,9 +314,7 @@ fun CharacterSkillsAndTalentsScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                item {
-                    CharacterCreatorTitle("Character Skills and Talents")
-                }
+                // Table with skills
                 item {
                     SkillsTable(
                         skills = skills,
@@ -359,6 +348,8 @@ fun CharacterSkillsAndTalentsScreen(
                         }
                     )
                 }
+
+                // Table with talents
                 item {
                     TalentsTable(
                         talentsGroups = when (state.speciesOrCareer) {
@@ -388,6 +379,7 @@ fun CharacterSkillsAndTalentsScreen(
                     )
                 }
 
+                // Button for switching modes and proceeding
                 item {
                     if (state.speciesOrCareer == SpeciesOrCareer.CAREER) {
                         CharacterCreatorButton(
@@ -399,6 +391,8 @@ fun CharacterSkillsAndTalentsScreen(
                         )
                     }
                 }
+
+                // Button for career skills and talents or next step
                 item {
                     val buttonText = if (state.speciesOrCareer == SpeciesOrCareer.SPECIES) {
                         "Next: Career Skills and Talents"

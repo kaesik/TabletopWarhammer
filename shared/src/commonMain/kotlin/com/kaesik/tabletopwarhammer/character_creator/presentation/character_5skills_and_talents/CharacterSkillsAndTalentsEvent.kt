@@ -17,8 +17,7 @@ sealed class CharacterSkillsAndTalentsEvent {
         val careerPathName: String,
     ) : CharacterSkillsAndTalentsEvent()
 
-    data class InitFromDraft(
-        val speciesOrCareer: SpeciesOrCareer,
+    data class InitFromSelections(
         val selectedSkillNames3: List<String>,
         val selectedSkillNames5: List<String>,
         val careerSkillPoints: Map<String, Int>,
