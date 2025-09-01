@@ -41,4 +41,7 @@ data class CharacterCreatorState(
     val skillsTalentsSelectedSpeciesTalentNames: List<String> = emptyList(),
     val skillsTalentsSelectedCareerTalentNames: List<String> = emptyList(),
     val skillsTalentsRolledTalents: Map<Pair<Int, Int>, String> = emptyMap(),
+
+    // TRAPPINGS & WEALTH
+    val hasGeneratedWealth: Boolean = false,
 )

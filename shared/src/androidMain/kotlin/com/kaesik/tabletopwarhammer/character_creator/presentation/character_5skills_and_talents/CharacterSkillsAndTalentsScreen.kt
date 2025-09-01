@@ -383,7 +383,7 @@ fun CharacterSkillsAndTalentsScreen(
                 item {
                     if (state.speciesOrCareer == SpeciesOrCareer.CAREER) {
                         CharacterCreatorButton(
-                            text = "Back: Species Skills and Talents",
+                            text = "Back to Species",
                             onClick = {
                                 onEvent(CharacterSkillsAndTalentsEvent.OnSaveSkillsAndTalents)
                                 onEvent(CharacterSkillsAndTalentsEvent.OnSpeciesOrCareerClick)
@@ -395,9 +395,9 @@ fun CharacterSkillsAndTalentsScreen(
                 // Button for career skills and talents or next step
                 item {
                     val buttonText = if (state.speciesOrCareer == SpeciesOrCareer.SPECIES) {
-                        "Next: Career Skills and Talents"
+                        "Go to Career"
                     } else {
-                        "Next: Trappings"
+                        "Next"
                     }
                     CharacterCreatorButton(
                         text = buttonText,

@@ -4,10 +4,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -16,11 +18,11 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator.AndroidCharacterCreatorViewModel
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator.CharacterCreatorEvent
-import com.kaesik.tabletopwarhammer.character_creator.presentation.character_6trappings.components.ClassOrCareer
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_6trappings.components.TrappingsTable
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorButton
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorTitle
-import com.kaesik.tabletopwarhammer.core.domain.library.items.ItemItem
+import com.kaesik.tabletopwarhammer.character_creator.presentation.components.SnackbarType
+import com.kaesik.tabletopwarhammer.character_creator.presentation.components.showCharacterCreatorSnackbar
 import com.kaesik.tabletopwarhammer.core.presentation.MainScaffold
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.getKoin
@@ -32,45 +34,65 @@ fun CharacterTrappingsScreenRoot(
     onNextClick: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val creatorState by creatorViewModel.state.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
     val character = creatorViewModel.state.value.character
 
-    LaunchedEffect(true) {
+    // Handle messages from the creatorViewModel
+    LaunchedEffect(creatorState.message, creatorState.isError) {
+        creatorState.message?.let { message ->
+            snackbarHostState.showCharacterCreatorSnackbar(
+                message = message,
+                type = if (creatorState.isError) SnackbarType.Error else SnackbarType.Success
+            )
+            creatorViewModel.onEvent(CharacterCreatorEvent.ClearMessage)
+        }
+    }
+
+    // Initialize trappings list
+    LaunchedEffect(Unit) {
         viewModel.onEvent(
             CharacterTrappingsEvent.InitTrappingsList(
-                from = ClassOrCareer.CLASS,
                 className = character.cLass,
                 careerPathName = character.careerPath
             )
         )
+    }
 
-        if (viewModel.state.value.wealth.isEmpty()) {
-            viewModel.onEvent(
-                CharacterTrappingsEvent.InitWealthList(
-                    careerPathName = character.careerPath
-                )
-            )
+    // Initialize wealth
+    LaunchedEffect(Unit) {
+        // If wealth was already generated in the creator, use that
+        if (creatorState.hasGeneratedWealth) {
+            viewModel.onEvent(CharacterTrappingsEvent.SetWealthCached(character.wealth))
+        } else {
+            viewModel.onEvent(CharacterTrappingsEvent.InitWealth(careerPathName = character.careerPath))
         }
     }
 
-    val trappings = state.trappingList
-    val classTrappings = trappings.getOrNull(0) ?: emptyList()
-    val careerTrappings = trappings.getOrNull(1) ?: emptyList()
+    // Autosave wealth to creatorViewModel when it's loaded and character wealth is empty
+    LaunchedEffect(state.wealth) {
+        if (state.wealth.isNotEmpty() && !creatorState.hasGeneratedWealth) {
+            creatorViewModel.onEvent(CharacterCreatorEvent.SetWealth(state.wealth))
+        }
+    }
 
     CharacterTrappingsScreen(
         state = state,
-        classTrappings = classTrappings,
-        careerTrappings = careerTrappings,
         onEvent = { event ->
             when (event) {
                 is CharacterTrappingsEvent.OnNextClick -> {
-                    val mergedTrappings = (classTrappings + careerTrappings).map { it.name }
+                    // Merge class and career trappings
+                    val mergedTrappings = (state.classTrappings + state.careerTrappings)
+                        .map { it.name }
 
+                    // Set trappings in the creator view model
                     creatorViewModel.onEvent(
                         CharacterCreatorEvent.SetTrappings(
                             trappings = mergedTrappings
                         )
                     )
 
+                    // Set wealth in the creator view model
                     creatorViewModel.onEvent(
                         CharacterCreatorEvent.SetWealth(
                             wealth = state.wealth
@@ -90,8 +112,6 @@ fun CharacterTrappingsScreenRoot(
 @Composable
 fun CharacterTrappingsScreen(
     state: CharacterTrappingsState,
-    classTrappings: List<ItemItem>,
-    careerTrappings: List<ItemItem>,
     onEvent: (CharacterTrappingsEvent) -> Unit,
 ) {
     MainScaffold(
@@ -106,25 +126,26 @@ fun CharacterTrappingsScreen(
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                item {
-                    CharacterCreatorTitle("Character Trappings Screen")
-                }
+                // Class Trappings
                 item {
                     CharacterCreatorTitle("Class Trappings")
                 }
                 item {
-                    TrappingsTable(trappings = classTrappings)
+                    TrappingsTable(trappings = state.classTrappings)
                 }
+
+                // Career Trappings
                 item {
                     CharacterCreatorTitle("Career Trappings")
                 }
                 item {
-                    TrappingsTable(trappings = careerTrappings)
+                    TrappingsTable(trappings = state.careerTrappings)
                 }
+
+                // Starting Wealth
                 item {
                     CharacterCreatorTitle("Starting Wealth")
                 }
-
                 item {
                     Text(
                         text = formatWealth(state.wealth),
@@ -132,6 +153,8 @@ fun CharacterTrappingsScreen(
                         fontWeight = FontWeight.Medium
                     )
                 }
+
+                // Next Button
                 item {
                     CharacterCreatorButton(
                         text = "Next",
@@ -145,6 +168,7 @@ fun CharacterTrappingsScreen(
     )
 }
 
+// Format wealth list [brass, silver, gold] into a readable string
 fun formatWealth(wealth: List<Int>): String {
     val (brass, silver, gold) = wealth + List(3 - wealth.size) { 0 }
     return buildList {
@@ -154,13 +178,13 @@ fun formatWealth(wealth: List<Int>): String {
     }.ifEmpty { listOf("No starting wealth") }.joinToString(", ")
 }
 
+private fun List<Int>.isWealthSet(): Boolean = size >= 3 && any { it > 0 }
+
 @Preview
 @Composable
 fun CharacterTrappingsScreenPreview() {
     CharacterTrappingsScreen(
         state = CharacterTrappingsState(),
-        classTrappings = TODO(),
-        careerTrappings = TODO(),
         onEvent = {}
     )
 }

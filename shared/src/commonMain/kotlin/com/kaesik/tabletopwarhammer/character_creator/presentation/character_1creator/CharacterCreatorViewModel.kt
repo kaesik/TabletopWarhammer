@@ -40,6 +40,7 @@ class CharacterCreatorViewModel : ViewModel() {
                         skillsTalentsSelectedSpeciesTalentNames = emptyList(),
                         skillsTalentsSelectedCareerTalentNames = emptyList(),
                         skillsTalentsRolledTalents = emptyMap(),
+                        hasGeneratedWealth = false,
                     )
                     updated
                 }
@@ -298,6 +299,7 @@ class CharacterCreatorViewModel : ViewModel() {
                     )
                     val updated = current.copy(
                         character = updatedCharacter,
+                        hasGeneratedWealth = true,
                         message = "Wealth selected!"
                     )
                     println("Updated CharacterItem: $updatedCharacter")
