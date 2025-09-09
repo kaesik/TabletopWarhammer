@@ -20,6 +20,7 @@ import com.kaesik.tabletopwarhammer.core.data.local.DatabaseDriverFactory
 import com.kaesik.tabletopwarhammer.core.domain.character.CharacterDataSource
 import com.kaesik.tabletopwarhammer.core.domain.library.LibraryDataSource
 import com.kaesik.tabletopwarhammer.database.TabletopWarhammerDatabase
+import com.kaesik.tabletopwarhammer.features.info.AndroidInfoDialogViewModel
 import com.kaesik.tabletopwarhammer.library.presentation.library_1.AndroidLibraryViewModel
 import com.kaesik.tabletopwarhammer.library.presentation.library_2list.AndroidLibraryListViewModel
 import com.kaesik.tabletopwarhammer.library.presentation.library_3item.AndroidLibraryItemViewModel
@@ -43,6 +44,10 @@ actual val platformModule: Module
         single { TabletopWarhammerDatabase(get()) }
         single<CharacterDataSource> { SqlDelightCharacterDataSource(get()) }
         single<LibraryDataSource> { SqlDelightLibraryDataSource(get()) }
+
+        //Features
+        // //Info
+        viewModelOf(::AndroidInfoDialogViewModel)
 
         // Auth
         single { AuthManager(androidContext()) }

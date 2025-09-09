@@ -26,10 +26,14 @@ import com.kaesik.tabletopwarhammer.core.data.local.DatabaseDriverFactory
 import com.kaesik.tabletopwarhammer.core.data.remote.HttpClientFactory
 import com.kaesik.tabletopwarhammer.core.data.remote.SupabaseLibrarySyncManagerImpl
 import com.kaesik.tabletopwarhammer.core.domain.character.CharacterDataSource
+import com.kaesik.tabletopwarhammer.core.domain.info.InfoMappers
+import com.kaesik.tabletopwarhammer.core.domain.info.InfoRepository
+import com.kaesik.tabletopwarhammer.core.domain.info.SimpleInfoMappers
 import com.kaesik.tabletopwarhammer.core.domain.library.LibraryDataSource
 import com.kaesik.tabletopwarhammer.core.domain.library.items.AttributeItem
 import com.kaesik.tabletopwarhammer.core.domain.remote.SupabaseLibrarySyncManager
 import com.kaesik.tabletopwarhammer.database.TabletopWarhammerDatabase
+import com.kaesik.tabletopwarhammer.features.presentation.info.InfoDialogViewModel
 import com.kaesik.tabletopwarhammer.library.data.LibraryClientImpl
 import com.kaesik.tabletopwarhammer.library.domain.library.LibraryClient
 import com.kaesik.tabletopwarhammer.library.domain.library.items.LibraryItem
@@ -70,6 +74,11 @@ val sharedModule = module {
         )
     }
 
+    //Features
+    // //Info
+    single<InfoMappers> { SimpleInfoMappers() }
+    single { InfoRepository(library = get(), mappers = get()) }
+    viewModelOf(::InfoDialogViewModel)
 
     // Auth
     single<AuthClient> { AuthClientImpl() }
