@@ -20,6 +20,7 @@ import com.kaesik.tabletopwarhammer.core.domain.util.DataError
 import com.kaesik.tabletopwarhammer.core.domain.util.DataException
 import com.kaesik.tabletopwarhammer.core.domain.util.SessionManager
 import com.kaesik.tabletopwarhammer.core.presentation.di.LocalNavController
+import com.kaesik.tabletopwarhammer.features.info.ProvideInfoCenter
 
 @Composable
 fun MainScaffold(
@@ -104,10 +105,12 @@ fun MainScaffold(
                     color = MaterialTheme.colorScheme.error
                 )
 
-                else -> Box(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    content(padding)
+                else -> ProvideInfoCenter {
+                    Box(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        content(padding)
+                    }
                 }
             }
         }

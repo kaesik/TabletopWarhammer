@@ -1,8 +1,10 @@
 package com.kaesik.tabletopwarhammer.character_creator.presentation.character_2species
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -22,8 +24,12 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.components.Ch
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorSnackbarHost
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.SnackbarType
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.showCharacterCreatorSnackbar
+import com.kaesik.tabletopwarhammer.core.data.library.LibraryEnum
+import com.kaesik.tabletopwarhammer.core.domain.info.InspectRef
 import com.kaesik.tabletopwarhammer.core.domain.library.items.SpeciesItem
 import com.kaesik.tabletopwarhammer.core.presentation.MainScaffold
+import com.kaesik.tabletopwarhammer.features.info.InspectInfoIcon
+import com.kaesik.tabletopwarhammer.features.info.LocalOpenInfo
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.getKoin
 
@@ -170,12 +176,42 @@ fun CharacterSpeciesScreen(
 
                 // Display the selected species or a message if none is selected
                 items(species) { speciesItem ->
-                    CharacterCreatorButton(
-                        text = speciesItem.name,
-                        onClick = { onEvent(CharacterSpeciesEvent.OnSpeciesSelect(speciesItem.id)) },
-                        isSelected = state.selectedSpecies?.id == speciesItem.id,
-                        enabled = state.canSelectSpecies && (state.selectedSpecies?.id != speciesItem.id),
-                    )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            CharacterCreatorButton(
+                                text = speciesItem.name,
+                                onClick = {
+                                    onEvent(CharacterSpeciesEvent.OnSpeciesSelect(speciesItem.id))
+                                },
+                                isSelected = state.selectedSpecies?.id == speciesItem.id,
+                                enabled = state.canSelectSpecies && (state.selectedSpecies?.id != speciesItem.id),
+                            )
+                        }
+
+                        // Info icon to inspect the species details
+                        val openInfo = LocalOpenInfo.current
+                        InspectInfoIcon(
+                            onClick = {
+                                openInfo(
+                                    InspectRef(
+                                        type = LibraryEnum.SPECIES,
+                                        key = speciesItem.name
+                                    )
+                                )
+                            },
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .padding(start = 256.dp)
+                        )
+                    }
                 }
 
                 // If no species is selected, show a next button
