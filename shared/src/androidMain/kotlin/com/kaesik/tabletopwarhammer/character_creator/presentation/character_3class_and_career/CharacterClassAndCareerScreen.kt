@@ -27,9 +27,13 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.components.Ch
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorSnackbarHost
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.SnackbarType
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.showCharacterCreatorSnackbar
+import com.kaesik.tabletopwarhammer.core.data.library.LibraryEnum
+import com.kaesik.tabletopwarhammer.core.domain.info.InspectRef
 import com.kaesik.tabletopwarhammer.core.domain.library.items.CareerItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.ClassItem
 import com.kaesik.tabletopwarhammer.core.presentation.MainScaffold
+import com.kaesik.tabletopwarhammer.features.info.InspectInfoIcon
+import com.kaesik.tabletopwarhammer.features.info.LocalOpenInfo
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.getKoin
 
@@ -218,6 +222,8 @@ fun CharacterClassAndCareerScreen(
                 // Display possible classes based on species
                 item {
                     var expanded by remember { mutableStateOf(false) }
+                    val openInfo = LocalOpenInfo.current
+
                     Box {
                         CharacterCreatorButton(
                             text = state.selectedClass?.name ?: "Select Class",
@@ -238,6 +244,18 @@ fun CharacterClassAndCareerScreen(
                                                 classItem.id
                                             )
                                         )
+                                    },
+                                    trailingIcon = {
+                                        InspectInfoIcon(
+                                            onClick = {
+                                                openInfo(
+                                                    InspectRef(
+                                                        type = LibraryEnum.CLASS,
+                                                        key = classItem.name
+                                                    )
+                                                )
+                                            }
+                                        )
                                     }
                                 )
                             }
@@ -248,6 +266,9 @@ fun CharacterClassAndCareerScreen(
                 // Display possible careers based on selected class
                 item {
                     var expanded by remember { mutableStateOf(false) }
+
+                    // Info icon to inspect the species details
+                    val openInfo = LocalOpenInfo.current
                     Box {
                         CharacterCreatorButton(
                             text = state.selectedCareer?.name ?: "Select Career",
@@ -269,6 +290,18 @@ fun CharacterClassAndCareerScreen(
                                             CharacterClassAndCareerEvent.OnCareerSelect(
                                                 careerItem.id
                                             )
+                                        )
+                                    },
+                                    trailingIcon = {
+                                        InspectInfoIcon(
+                                            onClick = {
+                                                openInfo(
+                                                    InspectRef(
+                                                        type = LibraryEnum.CAREER,
+                                                        key = careerItem.name
+                                                    )
+                                                )
+                                            }
                                         )
                                     }
                                 )

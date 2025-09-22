@@ -12,6 +12,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.kaesik.tabletopwarhammer.core.data.library.LibraryEnum
+import com.kaesik.tabletopwarhammer.core.domain.info.InspectRef
+import com.kaesik.tabletopwarhammer.features.info.InspectInfoIcon
+import com.kaesik.tabletopwarhammer.features.info.LocalOpenInfo
 
 @Composable
 fun AttributesTableItem(
@@ -37,6 +41,20 @@ fun AttributesTableItem(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             AttributeTableItemCell(attributeName, modifier = Modifier.weight(1f))
+
+            // Info icon to inspect the species details
+            val openInfo = LocalOpenInfo.current
+            InspectInfoIcon(
+                onClick = {
+                    openInfo(
+                        InspectRef(
+                            type = LibraryEnum.ATTRIBUTE,
+                            key = attributeName
+                        )
+                    )
+                }
+            )
+
             AttributeTableItemCell(baseValue, modifier = Modifier.weight(0.5f))
             AttributeTableItemCell(totalValue, modifier = Modifier.weight(0.5f))
         }
@@ -46,7 +64,11 @@ fun AttributesTableItem(
 @Composable
 fun AttributesTableItemHeader() {
     Surface(shadowElevation = 4.dp) {
-        Row(modifier = Modifier.padding(4.dp).fillMaxWidth()) {
+        Row(
+            modifier = Modifier
+                .padding(4.dp)
+                .fillMaxWidth()
+        ) {
             AttributeTableItemCell("Attribute")
             AttributeTableItemCell("Base Value")
             AttributeTableItemCell("Total Value")

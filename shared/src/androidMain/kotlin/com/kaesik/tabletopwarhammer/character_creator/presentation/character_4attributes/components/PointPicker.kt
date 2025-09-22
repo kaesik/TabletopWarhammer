@@ -1,6 +1,11 @@
 package com.kaesik.tabletopwarhammer.character_creator.presentation.character_4attributes.components
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
@@ -14,10 +19,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.kaesik.tabletopwarhammer.core.data.library.LibraryEnum
+import com.kaesik.tabletopwarhammer.core.domain.info.InspectRef
+import com.kaesik.tabletopwarhammer.features.info.InspectInfoIcon
+import com.kaesik.tabletopwarhammer.features.info.LocalOpenInfo
 
 @Composable
 fun PointPicker(
-    name: String,
+    attributeName: String,
     value: Int,
     onIncrease: () -> Unit,
     onDecrease: () -> Unit,
@@ -36,7 +45,20 @@ fun PointPicker(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Text(text = name)
+            Text(text = attributeName)
+
+            // Info icon to inspect the species details
+            val openInfo = LocalOpenInfo.current
+            InspectInfoIcon(
+                onClick = {
+                    openInfo(
+                        InspectRef(
+                            type = LibraryEnum.ATTRIBUTE,
+                            key = attributeName
+                        )
+                    )
+                }
+            )
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -45,11 +67,11 @@ fun PointPicker(
             ) {
                 IconButton(
                     onClick = { onDecrease() },
-                    enabled = canDecrease // <- blokada zmniejszania
+                    enabled = canDecrease
                 ) {
                     Icon(
                         imageVector = Icons.Filled.KeyboardArrowLeft,
-                        contentDescription = "Decrease $name"
+                        contentDescription = "Decrease $attributeName"
                     )
                 }
 
@@ -61,7 +83,7 @@ fun PointPicker(
                 ) {
                     Icon(
                         imageVector = Icons.Filled.KeyboardArrowRight,
-                        contentDescription = "Increase $name"
+                        contentDescription = "Increase $attributeName"
                     )
                 }
             }
@@ -73,7 +95,7 @@ fun PointPicker(
 @Preview
 fun PointPickerPreview() {
     PointPicker(
-        name = "Test",
+        attributeName = "Test",
         value = 10,
         onIncrease = {},
         onDecrease = {},

@@ -28,11 +28,10 @@ fun AllocationCard(
     onPlus: (Int) -> Unit,
     onMinus: (Int) -> Unit,
     onMax: (Int) -> Unit,
-    onConfirm: () -> Unit,
-    onCancel: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
     ) {
         Column(
@@ -81,15 +80,6 @@ fun AllocationCard(
                         }
                     }
                 }
-            }
-
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                CharacterCreatorButton(text = "Cancel", onClick = onCancel)
-                CharacterCreatorButton(
-                    text = "Confirm",
-                    onClick = onConfirm,
-                    enabled = pointsLeft == 0
-                )
             }
         }
     }

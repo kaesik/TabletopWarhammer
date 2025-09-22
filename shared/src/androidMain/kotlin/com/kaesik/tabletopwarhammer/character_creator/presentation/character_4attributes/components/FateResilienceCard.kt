@@ -47,7 +47,7 @@ fun FateResilienceCard(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 PointPicker(
-                    name = "Fate Points",
+                    attributeName = "Fate Points",
                     value = fatePoints,
                     onIncrease = onFatePointsIncrease,
                     onDecrease = onFatePointsDecrease,
@@ -55,7 +55,7 @@ fun FateResilienceCard(
                     canDecrease = fatePoints > baseFatePoints
                 )
                 PointPicker(
-                    name = "Resilience Points",
+                    attributeName = "Resilience Points",
                     value = resiliencePoints,
                     onIncrease = onResiliencePointsIncrease,
                     onDecrease = onResiliencePointsDecrease,
