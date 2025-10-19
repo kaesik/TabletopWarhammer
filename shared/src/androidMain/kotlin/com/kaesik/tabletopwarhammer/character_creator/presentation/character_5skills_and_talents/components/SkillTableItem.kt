@@ -13,7 +13,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.kaesik.tabletopwarhammer.core.data.library.LibraryEnum
+import com.kaesik.tabletopwarhammer.core.domain.info.InspectRef
 import com.kaesik.tabletopwarhammer.core.domain.library.items.SkillItem
+import com.kaesik.tabletopwarhammer.features.info.InspectInfoIcon
+import com.kaesik.tabletopwarhammer.features.info.LocalOpenInfo
 
 @Composable
 fun SkillTableItem(
@@ -38,6 +42,19 @@ fun SkillTableItem(
             Text(
                 text = skill.name,
                 modifier = Modifier.weight(2f)
+            )
+
+            // Info icon to inspect the species details
+            val openInfo = LocalOpenInfo.current
+            InspectInfoIcon(
+                onClick = {
+                    openInfo(
+                        InspectRef(
+                            type = LibraryEnum.SKILL,
+                            key = skill.name
+                        )
+                    )
+                }
             )
 
             if (onPointsChanged != null && allocatedPoints != null) {

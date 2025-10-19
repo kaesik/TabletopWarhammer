@@ -11,7 +11,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.kaesik.tabletopwarhammer.core.data.library.LibraryEnum
+import com.kaesik.tabletopwarhammer.core.domain.info.InspectRef
 import com.kaesik.tabletopwarhammer.core.domain.library.items.TalentItem
+import com.kaesik.tabletopwarhammer.features.info.InspectInfoIcon
+import com.kaesik.tabletopwarhammer.features.info.LocalOpenInfo
 
 @Composable
 fun TalentTableRowChoice(
@@ -20,6 +24,7 @@ fun TalentTableRowChoice(
     sourceLabel: String,
     onTalentSelected: (TalentItem) -> Unit
 ) {
+    val openInfo = LocalOpenInfo.current
     Surface(shadowElevation = 4.dp) {
         Row(
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
@@ -27,6 +32,16 @@ fun TalentTableRowChoice(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(text = talent.name, modifier = Modifier.weight(2f))
+            InspectInfoIcon(
+                onClick = {
+                    openInfo(
+                        InspectRef(
+                            type = LibraryEnum.TALENT,
+                            key = talent.name
+                        )
+                    )
+                }
+            )
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically

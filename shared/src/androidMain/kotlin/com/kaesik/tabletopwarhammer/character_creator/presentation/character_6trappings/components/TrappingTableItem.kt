@@ -14,12 +14,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.kaesik.tabletopwarhammer.core.data.library.LibraryEnum
+import com.kaesik.tabletopwarhammer.core.domain.info.InspectRef
 import com.kaesik.tabletopwarhammer.core.domain.library.items.ItemItem
+import com.kaesik.tabletopwarhammer.features.info.InspectInfoIcon
+import com.kaesik.tabletopwarhammer.features.info.LocalOpenInfo
 
 @Composable
 fun TrappingTableItem(
     trapping: ItemItem,
 ) {
+    val openInfo = LocalOpenInfo.current
+
     Surface(
         modifier = Modifier,
         shadowElevation = 4.dp,
@@ -42,6 +48,17 @@ fun TrappingTableItem(
                     text = trapping.name,
                 )
             }
+
+            InspectInfoIcon(
+                onClick = {
+                    openInfo(
+                        InspectRef(
+                            type = LibraryEnum.ITEM,
+                            key = trapping.name
+                        )
+                    )
+                }
+            )
         }
     }
 }
