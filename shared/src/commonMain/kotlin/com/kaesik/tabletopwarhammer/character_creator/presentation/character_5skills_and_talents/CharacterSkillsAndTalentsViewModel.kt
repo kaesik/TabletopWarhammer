@@ -106,11 +106,18 @@ class CharacterSkillsAndTalentsViewModel(
                 val speciesSkillsList = specializedSkillsList.getOrNull(0) ?: emptyList()
                 val careerSkillsList = specializedSkillsList.getOrNull(1) ?: emptyList()
 
+                // Load all basic skills if not already loaded
+                val basicSkills = _state.value.basicSkills.ifEmpty { fetchBasicSkillsList() }
+
                 _state.update {
                     when (from) {
                         SpeciesOrCareer.SPECIES -> it.copy(speciesSkills = speciesSkillsList)
                         SpeciesOrCareer.CAREER -> it.copy(careerSkills = careerSkillsList)
-                    }.copy(skillList = specializedSkillsList, isLoading = false)
+                    }.copy(
+                        skillList = specializedSkillsList,
+                        basicSkills = basicSkills,
+                        isLoading = false
+                    )
                 }
             } catch (_: Exception) {
                 _state.update { it.copy(isLoading = false) }
@@ -187,6 +194,24 @@ class CharacterSkillsAndTalentsViewModel(
                     speciesName = speciesName,
                     careerPathName = careerPathName
                 )
+            }
+        } catch (e: DataException) {
+            _state.update { it.copy(error = e.error) }; emptyList()
+        } catch (_: CancellationException) {
+            emptyList()
+        } catch (_: Exception) {
+            _state.update { it.copy(error = DataError.Local.UNKNOWN) }
+            emptyList()
+        }
+    }
+
+    private suspend fun fetchBasicSkillsList(): List<SkillItem> {
+        return try {
+            // PLACEHOLDER: Replace with actual condition to determine data source
+            if (true) {
+                libraryDataSource.getBasicSkills()
+            } else {
+                characterCreatorClient.getBasicSkills()
             }
         } catch (e: DataException) {
             _state.update { it.copy(error = e.error) }; emptyList()

@@ -187,6 +187,25 @@ class CharacterCreatorClientImpl : CharacterCreatorClient {
         }
     }
 
+    override suspend fun getBasicSkills(): List<SkillItem> {
+        return try {
+            supabaseClient
+                .from(LibraryEnum.SKILL.tableName)
+                .select {
+                    filter {
+                        eq("is_basic", true)
+                    }
+                }
+                .decodeList<SkillDto>()
+                .map { it.toSkillItem() }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            handleException(e)
+        }
+    }
+
+
     override suspend fun getFilteredSkills(
         speciesName: String,
         careerPathName: String

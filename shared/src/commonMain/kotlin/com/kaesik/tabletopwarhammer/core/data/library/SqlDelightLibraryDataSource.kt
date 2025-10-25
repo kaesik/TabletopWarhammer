@@ -270,6 +270,13 @@ class SqlDelightLibraryDataSource(
             .map { it.toSkillItem() }
     }
 
+    override fun getBasicSkills(): List<SkillItem> {
+        return queries.getSkillEntity()
+            .executeAsList()
+            .map { it.toSkillItem() }
+            .filter { it.isBasic == true }
+    }
+
     override fun getSkill(skillName: String): SkillItem {
         return queries.getSkillEntityByName(skillName)
             .executeAsOne()

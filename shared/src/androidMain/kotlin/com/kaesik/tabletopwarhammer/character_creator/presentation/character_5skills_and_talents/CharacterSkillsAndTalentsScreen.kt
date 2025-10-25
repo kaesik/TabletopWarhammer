@@ -104,10 +104,11 @@ fun CharacterSkillsAndTalentsScreenRoot(
         // Check if species and career data are loaded
         val speciesReady = state.speciesSkills.isNotEmpty() && state.speciesTalentsList.isNotEmpty()
         val careerReady = state.careerSkills.isNotEmpty() && state.careerTalentsList.isNotEmpty()
-        val allReady = speciesReady && careerReady
+        val basicsReady = state.basicSkills.isNotEmpty()
+        val allReady = speciesReady && careerReady && basicsReady
+        if (!allReady) return@LaunchedEffect
 
         // Wait for both species and career data to be ready
-        if (!allReady) return@LaunchedEffect
         viewModel.onEvent(
             CharacterSkillsAndTalentsEvent.InitFromSelections(
                 selectedSkillNames3 = creatorState.skillsTalentsSelectedSkillNames3,
@@ -202,14 +203,28 @@ fun CharacterSkillsAndTalentsScreenRoot(
                 careerAdvancedSkills.add(toSkillRow(skill, totalBonus))
         }
 
-        // 4. Talenty
+        // Add missing basic skills  with 0 bonus
+        if (state.basicSkills.isNotEmpty()) {
+            val presentNames = allSkillsMap.keys
+            state.basicSkills
+                .filter { it.isBasic == true && it.name !in presentNames }
+                .forEach { missingBasic ->
+                    careerBasicSkills.add(toSkillRow(missingBasic, 0))
+                }
+        }
+
+        // Sort skills alphabetically before saving
+        careerBasicSkills.sortBy { it[0].lowercase() }
+        careerAdvancedSkills.sortBy { it[0].lowercase() }
+
+        // 4. Talents
         val allTalents = state.selectedSpeciesTalents + state.selectedCareerTalents
 
         val talents = allTalents.map {
             listOf(it.name, it.source.orEmpty(), it.page?.toString() ?: "")
         }
 
-        // 5. Zapis
+        // 5. Save
         creatorViewModel.onEvent(
             CharacterCreatorEvent.SetSkillsAndTalents(
                 speciesBasicSkills = emptyList(),

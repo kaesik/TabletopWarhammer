@@ -15,6 +15,7 @@ data class CharacterSkillsAndTalentsState(
 
     // SKILLS
     val skillList: List<List<SkillItem>> = emptyList(),
+    val basicSkills: List<SkillItem> = emptyList(),
     val speciesSkills: List<SkillItem> = emptyList(),
     val careerSkills: List<SkillItem> = emptyList(),
     val selectedSkills: List<SkillItem> = emptyList(),

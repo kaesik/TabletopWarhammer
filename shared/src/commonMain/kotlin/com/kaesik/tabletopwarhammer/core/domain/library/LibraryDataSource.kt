@@ -46,6 +46,7 @@ interface LibraryDataSource {
     suspend fun insertQualityFlaw(item: QualityFlawItem)
 
     fun getAllSkills(): List<SkillItem>
+    fun getBasicSkills(): List<SkillItem>
     fun getFilteredSkills(
         speciesName: String,
         careerPathName: String
