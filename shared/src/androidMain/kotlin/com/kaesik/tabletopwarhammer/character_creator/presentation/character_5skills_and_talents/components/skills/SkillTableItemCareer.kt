@@ -1,11 +1,10 @@
-package com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components
+package com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.skills
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -21,16 +20,10 @@ import com.kaesik.tabletopwarhammer.features.info.InspectInfoIcon
 import com.kaesik.tabletopwarhammer.features.info.LocalOpenInfo
 
 @Composable
-fun SkillTableItem(
+fun SkillTableItemCareer(
     skill: SkillItem,
-    isSelected3: Boolean = false,
-    isSelected5: Boolean = false,
-    limitReached3: Boolean = false,
-    limitReached5: Boolean = false,
-    allocatedPoints: Int? = null,
-    onCheckedChange3: ((Boolean) -> Unit)? = null,
-    onCheckedChange5: ((Boolean) -> Unit)? = null,
-    onPointsChanged: ((Int) -> Unit)? = null,
+    allocatedPoints: Int,
+    onPointsChanged: (Int) -> Unit,
     modifier: Modifier = Modifier,
     compact: Boolean = false
 ) {
@@ -62,36 +55,18 @@ fun SkillTableItem(
                 )
             }
 
-            if (onPointsChanged != null && allocatedPoints != null) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 Slider(
                     value = allocatedPoints.toFloat(),
-                    onValueChange = { onPointsChanged(it.toInt()) },
+                    onValueChange = { onPointsChanged(it.toInt().coerceIn(0, 10)) },
                     valueRange = 0f..10f,
                     steps = 9,
                     modifier = Modifier.width(if (compact) 110.dp else 150.dp)
                 )
-                Text(
-                    "$allocatedPoints",
-                    modifier = Modifier.width(28.dp)
-                )
-            } else {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Checkbox(
-                        checked = isSelected3,
-                        onCheckedChange = onCheckedChange3,
-                        enabled = isSelected3 || !limitReached3
-                    )
-                    Text("+3")
-                    Checkbox(
-                        checked = isSelected5,
-                        onCheckedChange = onCheckedChange5,
-                        enabled = isSelected5 || !limitReached5
-                    )
-                    Text("+5")
-                }
+                Text("$allocatedPoints", modifier = Modifier.width(28.dp))
             }
         }
     }
