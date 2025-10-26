@@ -4,6 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kaesik.tabletopwarhammer.character_creator.domain.CharacterCreatorClient
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.SpeciesOrCareer
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.baseOf
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.canon
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.inSameOrGroup
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.mapSpecializedSkills
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.normalizeTalentGroups
 import com.kaesik.tabletopwarhammer.core.domain.library.LibraryDataSource
@@ -87,6 +90,30 @@ class CharacterSkillsAndTalentsViewModel(
         }
     }
 
+    private fun buildSkillOrGroups(
+        raw: List<List<SkillItem>>
+    ): Map<String, Set<String>> {
+        val paren = Regex("""^(.*)\s*\((.*)\)$""")
+        val orSplit = Regex("\\s+or\\s+", RegexOption.IGNORE_CASE)
+        val result = mutableMapOf<String, MutableSet<String>>()
+
+        raw.flatten().forEach { s0 ->
+            val name = canon(s0.name)
+            val match = paren.matchEntire(name) ?: return@forEach
+            val base = match.groupValues[1].trim()
+            val inside = match.groupValues[2].trim()
+            if (!orSplit.containsMatchIn(inside)) return@forEach
+
+            inside.split(orSplit)
+                .map { it.trim() }
+                .filter { it.isNotEmpty() }
+                .forEach { spec ->
+                    result.getOrPut(base) { mutableSetOf() }.add(canon("$base ($spec)"))
+                }
+        }
+        return result
+    }
+
     private fun loadSkillsList(
         from: SpeciesOrCareer,
         speciesName: String,
@@ -98,6 +125,9 @@ class CharacterSkillsAndTalentsViewModel(
             try {
                 // Fetch skills from the appropriate data source
                 val skillsList = fetchSkillsList(speciesName, careerPathName)
+
+                // Check and build skill "or" groups
+                val skillOrGroups = buildSkillOrGroups(skillsList)
 
                 // Map the fetched skills to specialized and basic skills
                 val specializedSkillsList = mapSpecializedSkills(skillsList)
@@ -116,6 +146,7 @@ class CharacterSkillsAndTalentsViewModel(
                     }.copy(
                         skillList = specializedSkillsList,
                         basicSkills = basicSkills,
+                        skillOrGroups = skillOrGroups,
                         isLoading = false
                     )
                 }
@@ -330,11 +361,19 @@ class CharacterSkillsAndTalentsViewModel(
 
     private fun updateSelectedSkills3(skill: SkillItem, isChecked: Boolean) {
         _state.update { current ->
+            val groups = current.skillOrGroups
+
             // Ensure the skill is only in one of the two lists at a time
-            val removedFrom5 = current.selectedSkills5.filterNot { it.name == skill.name }
+            val removedFrom5 = current.selectedSkills5.filterNot {
+                inSameOrGroup(it.name, skill.name, groups)
+            }
+
             // Add or remove the skill from the 3-point skills list based on isChecked
-            val updated3 = if (isChecked) current.selectedSkills3 + skill
-            else current.selectedSkills3.filterNot { it.name == skill.name }
+            val baseFiltered3 = current.selectedSkills3.filterNot {
+                inSameOrGroup(it.name, skill.name, groups)
+            }
+            val updated3 = if (isChecked) baseFiltered3 + skill
+            else baseFiltered3.filterNot { it.name == skill.name }
 
             current.copy(selectedSkills3 = updated3, selectedSkills5 = removedFrom5)
         }
@@ -342,11 +381,19 @@ class CharacterSkillsAndTalentsViewModel(
 
     private fun updateSelectedSkills5(skill: SkillItem, isChecked: Boolean) {
         _state.update { current ->
+            val groups = current.skillOrGroups
+
             // Ensure the skill is only in one of the two lists at a time
-            val removedFrom3 = current.selectedSkills3.filterNot { it.name == skill.name }
+            val removedFrom3 = current.selectedSkills3.filterNot {
+                inSameOrGroup(it.name, skill.name, groups)
+            }
+
             // Add or remove the skill from the 5-point skills list based on isChecked
-            val updated5 = if (isChecked) current.selectedSkills5 + skill
-            else current.selectedSkills5.filterNot { it.name == skill.name }
+            val baseFiltered5 = current.selectedSkills5.filterNot {
+                inSameOrGroup(it.name, skill.name, groups)
+            }
+            val updated5 = if (isChecked) baseFiltered5 + skill
+            else baseFiltered5.filterNot { it.name == skill.name }
 
             current.copy(selectedSkills3 = removedFrom3, selectedSkills5 = updated5)
         }
@@ -354,16 +401,26 @@ class CharacterSkillsAndTalentsViewModel(
 
     private fun onCareerPointsChanged(skill: SkillItem, requested: Int) {
         _state.update { current ->
+            // If this skill belongs to a true "OR" group, zero out other variants first
+            val base = baseOf(skill.name)
+            val orSet = current.skillOrGroups[base].orEmpty()
+            val newMap = current.careerSkillPoints.toMutableMap()
+
+            if (orSet.isNotEmpty() && orSet.contains(skill.name)) {
+                // Zero out other options from the same "OR" group
+                orSet.filter { it != skill.name }.forEach { other ->
+                    newMap[other] = 0
+                }
+            }
+
             // Calculate the maximum points that can be allocated to this skill
-            val oldForThis = current.careerSkillPoints[skill.name] ?: 0
-            val otherTotal = current.totalAllocatedPoints - oldForThis
+            val oldForThis = newMap[skill.name] ?: 0
+            val otherTotal = newMap.values.sum() - oldForThis
             val maxForThis = (40 - otherTotal).coerceIn(0, 10)
             val newValue = requested.coerceIn(0, maxForThis)
 
             // Update the career skill points map with the new value for this skill
-            val newMap = current.careerSkillPoints.toMutableMap().apply {
-                this[skill.name] = newValue
-            }
+            newMap[skill.name] = newValue
 
             current.copy(
                 careerSkillPoints = newMap,

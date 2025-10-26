@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.kaesik.tabletopwarhammer.core.data.library.LibraryEnum
 import com.kaesik.tabletopwarhammer.core.domain.info.InspectRef
@@ -29,46 +30,51 @@ fun SkillTableItem(
     allocatedPoints: Int? = null,
     onCheckedChange3: ((Boolean) -> Unit)? = null,
     onCheckedChange5: ((Boolean) -> Unit)? = null,
-    onPointsChanged: ((Int) -> Unit)? = null
+    onPointsChanged: ((Int) -> Unit)? = null,
+    modifier: Modifier = Modifier,
+    compact: Boolean = false
 ) {
-    Surface(shadowElevation = 4.dp) {
+    Surface(shadowElevation = if (compact) 0.dp else 4.dp) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
+            modifier = (if (compact) modifier else modifier.fillMaxWidth())
                 .padding(horizontal = 8.dp, vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = if (compact) Arrangement.spacedBy(8.dp) else Arrangement.SpaceBetween
         ) {
             Text(
                 text = skill.name,
-                modifier = Modifier.weight(2f)
+                modifier = Modifier.weight(if (compact) 1f else 2f),
+                maxLines = if (compact) 1 else Int.MAX_VALUE,
+                overflow = TextOverflow.Ellipsis
             )
 
-            // Info icon to inspect the species details
-            val openInfo = LocalOpenInfo.current
-            InspectInfoIcon(
-                onClick = {
-                    openInfo(
-                        InspectRef(
-                            type = LibraryEnum.SKILL,
-                            key = skill.name
+            if (!compact) {
+                val openInfo = LocalOpenInfo.current
+                InspectInfoIcon(
+                    onClick = {
+                        openInfo(
+                            InspectRef(
+                                type = LibraryEnum.SKILL,
+                                key = skill.name
+                            )
                         )
-                    )
-                }
-            )
+                    }
+                )
+            }
 
             if (onPointsChanged != null && allocatedPoints != null) {
-                // CAREER MODE
                 Slider(
                     value = allocatedPoints.toFloat(),
                     onValueChange = { onPointsChanged(it.toInt()) },
                     valueRange = 0f..10f,
                     steps = 9,
-                    modifier = Modifier.width(150.dp)
+                    modifier = Modifier.width(if (compact) 110.dp else 150.dp)
                 )
-                Text("$allocatedPoints", modifier = Modifier.width(32.dp))
+                Text(
+                    "$allocatedPoints",
+                    modifier = Modifier.width(28.dp)
+                )
             } else {
-                // SPECIES MODE
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically

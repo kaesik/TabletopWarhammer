@@ -360,7 +360,8 @@ fun CharacterSkillsAndTalentsScreen(
                                     newValue
                                 )
                             )
-                        }
+                        },
+                        skillOrGroups = state.skillOrGroups
                     )
                 }
 
