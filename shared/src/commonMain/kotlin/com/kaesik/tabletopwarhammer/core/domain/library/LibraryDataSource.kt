@@ -47,10 +47,12 @@ interface LibraryDataSource {
 
     fun getAllSkills(): List<SkillItem>
     fun getBasicSkills(): List<SkillItem>
+    fun getSkillSpecializations(skillNameOrBase: String): List<String>
     fun getFilteredSkills(
         speciesName: String,
         careerPathName: String
     ): List<List<SkillItem>>
+
 
     fun getSkill(skillName: String): SkillItem
     suspend fun insertSkill(item: SkillItem)
@@ -60,6 +62,7 @@ interface LibraryDataSource {
     suspend fun insertSpecies(item: SpeciesItem)
 
     fun getAllTalents(): List<TalentItem>
+    fun getTalentSpecializations(talentNameOrBase: String): List<String>
     fun getFilteredTalents(
         speciesName: String,
         careerPathName: String

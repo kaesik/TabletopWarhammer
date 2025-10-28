@@ -33,4 +33,6 @@ data class CharacterSkillsAndTalentsState(
     val selectedSpeciesTalents: List<TalentItem> = emptyList(),
     val selectedCareerTalents: List<TalentItem> = emptyList(),
     val rolledTalents: Map<Pair<Int, Int>, String> = emptyMap(),
+    val talentSpecializations: Map<String, List<String>> = emptyMap(),
+    val loadingTalentSpecs: Set<String> = emptySet(),
 )

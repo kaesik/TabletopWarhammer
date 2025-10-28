@@ -4,10 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kaesik.tabletopwarhammer.character_creator.domain.CharacterCreatorClient
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.SpeciesOrCareer
-import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.baseOf
-import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.canon
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.getBaseName
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.inSameOrGroup
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.mapSpecializedSkills
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.normalizeSkillOrTalentName
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.normalizeTalentGroups
 import com.kaesik.tabletopwarhammer.core.domain.library.LibraryDataSource
 import com.kaesik.tabletopwarhammer.core.domain.library.items.SkillItem
@@ -86,6 +86,10 @@ class CharacterSkillsAndTalentsViewModel(
                 event.skill, event.newValue
             )
 
+            is CharacterSkillsAndTalentsEvent.RequestTalentSpecializations -> onRequestTalentSpecializations(
+                event.baseName
+            )
+
             else -> Unit
         }
     }
@@ -98,7 +102,7 @@ class CharacterSkillsAndTalentsViewModel(
         val result = mutableMapOf<String, MutableSet<String>>()
 
         raw.flatten().forEach { s0 ->
-            val name = canon(s0.name)
+            val name = normalizeSkillOrTalentName(s0.name)
             val match = paren.matchEntire(name) ?: return@forEach
             val base = match.groupValues[1].trim()
             val inside = match.groupValues[2].trim()
@@ -108,7 +112,8 @@ class CharacterSkillsAndTalentsViewModel(
                 .map { it.trim() }
                 .filter { it.isNotEmpty() }
                 .forEach { spec ->
-                    result.getOrPut(base) { mutableSetOf() }.add(canon("$base ($spec)"))
+                    result.getOrPut(base) { mutableSetOf() }
+                        .add(normalizeSkillOrTalentName("$base ($spec)"))
                 }
         }
         return result
@@ -402,7 +407,7 @@ class CharacterSkillsAndTalentsViewModel(
     private fun onCareerPointsChanged(skill: SkillItem, requested: Int) {
         _state.update { current ->
             // If this skill belongs to a true "OR" group, zero out other variants first
-            val base = baseOf(skill.name)
+            val base = getBaseName(skill.name)
             val orSet = current.skillOrGroups[base].orEmpty()
             val newMap = current.careerSkillPoints.toMutableMap()
 
@@ -426,6 +431,62 @@ class CharacterSkillsAndTalentsViewModel(
                 careerSkillPoints = newMap,
                 totalAllocatedPoints = otherTotal + newValue
             )
+        }
+    }
+
+    private fun onRequestTalentSpecializations(baseName: String) {
+        val talentSpecCache = mutableMapOf<String, List<String>>()
+        val key = baseName.trim()
+        val currentState = _state.value
+
+        if (currentState.talentSpecializations.containsKey(key)) return
+
+        talentSpecCache[key]?.let { cachedList ->
+            _state.update { stateBefore ->
+                val updatedMap = stateBefore.talentSpecializations.toMutableMap().apply {
+                    put(key, cachedList)
+                }
+                stateBefore.copy(talentSpecializations = updatedMap)
+            }
+            return
+        }
+
+        viewModelScope.launch {
+            _state.update { stateBefore ->
+                val updatedLoading =
+                    stateBefore.loadingTalentSpecs.toMutableSet().apply { add(key) }
+                stateBefore.copy(loadingTalentSpecs = updatedLoading)
+            }
+
+            val fetchedList = try {
+                val local = try {
+                    libraryDataSource.getTalentSpecializations(key)
+                } catch (_: Exception) {
+                    emptyList()
+                }
+                if (local.isNotEmpty()) local
+                else try {
+                    characterCreatorClient.getTalentSpecializations(key)
+                } catch (_: Exception) {
+                    emptyList()
+                }
+            } catch (_: Exception) {
+                emptyList()
+            }
+
+            talentSpecCache[key] = fetchedList
+
+            _state.update { stateBefore ->
+                val updatedMap = stateBefore.talentSpecializations.toMutableMap().apply {
+                    put(key, fetchedList)
+                }
+                val updatedLoading =
+                    stateBefore.loadingTalentSpecs.toMutableSet().apply { remove(key) }
+                stateBefore.copy(
+                    talentSpecializations = updatedMap,
+                    loadingTalentSpecs = updatedLoading
+                )
+            }
         }
     }
 }

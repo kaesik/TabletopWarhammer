@@ -35,6 +35,7 @@ import kotlin.coroutines.cancellation.CancellationException
 class CharacterCreatorClientImpl : CharacterCreatorClient {
     private val supabaseClient = SupabaseClient.supabaseClient
 
+    // SPECIES
     override suspend fun getAllSpecies(): List<SpeciesItem> {
         return try {
             val speciesList = supabaseClient
@@ -64,6 +65,7 @@ class CharacterCreatorClientImpl : CharacterCreatorClient {
         }
     }
 
+    // CLASS & CAREER
     override suspend fun getAllClasses(): List<ClassItem> {
         return try {
             val classList = supabaseClient
@@ -155,6 +157,7 @@ class CharacterCreatorClientImpl : CharacterCreatorClient {
         }
     }
 
+    // ATTRIBUTES
     override suspend fun getAllAttributes(): List<AttributeItem> {
         return try {
             val attributeList = supabaseClient
@@ -187,6 +190,7 @@ class CharacterCreatorClientImpl : CharacterCreatorClient {
         }
     }
 
+    // SKILLS
     override suspend fun getBasicSkills(): List<SkillItem> {
         return try {
             supabaseClient
@@ -205,6 +209,28 @@ class CharacterCreatorClientImpl : CharacterCreatorClient {
         }
     }
 
+    override suspend fun getSkillSpecializations(skillNameOrBase: String): List<String> {
+        return try {
+            val base = skillNameOrBase.substringBefore(" (").trim()
+            val dto = supabaseClient
+                .from(LibraryEnum.SKILL.tableName)
+                .select {
+                    filter { ilike("name", "%$base%") }
+                    limit(1)
+                }
+                .decodeSingle<SkillDto>()
+
+            dto.specialization
+                ?.split(",")
+                ?.map { it.trim() }
+                ?.filter { it.isNotEmpty() }
+                ?: emptyList()
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            handleException(e)
+        }
+    }
 
     override suspend fun getFilteredSkills(
         speciesName: String,
@@ -289,6 +315,7 @@ class CharacterCreatorClientImpl : CharacterCreatorClient {
         }
     }
 
+    // TALENTS
     override suspend fun getFilteredTalents(
         speciesName: String,
         careerPathName: String
@@ -331,6 +358,29 @@ class CharacterCreatorClientImpl : CharacterCreatorClient {
         }
     }
 
+    override suspend fun getTalentSpecializations(talentNameOrBase: String): List<String> {
+        return try {
+            val base = talentNameOrBase.substringBefore(" (").trim()
+            val dto = supabaseClient
+                .from(LibraryEnum.TALENT.tableName)
+                .select {
+                    filter { ilike("name", "%$base%") }
+                    limit(1)
+                }
+                .decodeSingle<TalentDto>()
+
+            dto.specialization
+                ?.split(",")
+                ?.map { it.trim() }
+                ?.filter { it.isNotEmpty() }
+                ?: emptyList()
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            handleException(e)
+        }
+    }
+
     override suspend fun getTalentsDetails(talentName: String): TalentItem {
         return try {
             supabaseClient
@@ -348,6 +398,7 @@ class CharacterCreatorClientImpl : CharacterCreatorClient {
         }
     }
 
+    // TRAPPINGS
     override suspend fun getTrappings(
         className: String,
         careerPathName: String
@@ -444,6 +495,7 @@ class CharacterCreatorClientImpl : CharacterCreatorClient {
         TODO("Not yet implemented")
     }
 
+    // WEALTH
     override suspend fun getWealth(careerPathName: String): List<Int> {
         val careerPath = supabaseClient
             .from("careerpath")
@@ -466,5 +518,4 @@ class CharacterCreatorClientImpl : CharacterCreatorClient {
             else -> listOf(0, 0, 0)
         }
     }
-
 }

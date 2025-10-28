@@ -1,6 +1,68 @@
 package com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components
 
+import com.kaesik.tabletopwarhammer.core.domain.library.items.SkillItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.TalentItem
+
+fun normalizeSkillOrTalentName(name: String): String {
+    val trimmed = name.trim()
+    val i = trimmed.indexOf('(')
+    return if (i >= 0) {
+        val base = trimmed.substring(0, i).trim()
+        val rest = trimmed.substring(i).trim()
+        "$base $rest"
+    } else trimmed
+}
+
+fun getBaseName(name: String): String = normalizeSkillOrTalentName(name).substringBefore("(").trim()
+
+fun getFullNameWithSpecialization(base: String, spec: String): String =
+    "${base.trim()} (${spec.trim()})"
+
+fun hasAnyMarker(name: String): Boolean {
+    return Regex("\\bany\\b", RegexOption.IGNORE_CASE).containsMatchIn(name)
+}
+
+fun inSameOrGroup(a: String, b: String, groups: Map<String, Set<String>>): Boolean {
+    val aC = normalizeSkillOrTalentName(a)
+    val bC = normalizeSkillOrTalentName(b)
+    val baseA = getBaseName(aC)
+    val baseB = getBaseName(bC)
+    if (baseA != baseB) return false
+    val set = groups[baseA] ?: return false
+    return aC in set && bC in set
+}
+
+fun mapSpecializedSkills(skillLists: List<List<SkillItem>>): List<List<SkillItem>> {
+    val parenRegex = Regex("""^(.*)\s*\((.*)\)$""")
+    val orSplit = Regex("\\s+or\\s+", RegexOption.IGNORE_CASE)
+
+    return skillLists.map { list ->
+        list.flatMap { skill ->
+            val name = normalizeSkillOrTalentName(skill.name)
+            val match = parenRegex.matchEntire(name)
+            if (match != null) {
+                val (baseNameRaw, insideRaw) = match.destructured
+                val baseName = baseNameRaw.trim()
+                val inside = insideRaw.trim()
+
+                val options = inside.split(orSplit)
+                    .map { it.trim() }
+                    .filter { it.isNotEmpty() }
+
+                val specializations = if (options.size >= 2) options else listOf(inside)
+
+                specializations.map { spec ->
+                    skill.copy(
+                        name = normalizeSkillOrTalentName("$baseName ($spec)"),
+                        specialization = spec
+                    )
+                }
+            } else {
+                listOf(skill.copy(name = name))
+            }
+        }
+    }
+}
 
 fun extractTalents(raw: String?): List<List<String>> {
     return raw

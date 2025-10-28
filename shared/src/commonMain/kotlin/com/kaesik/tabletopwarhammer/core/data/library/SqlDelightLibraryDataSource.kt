@@ -277,6 +277,16 @@ class SqlDelightLibraryDataSource(
             .filter { it.isBasic == true }
     }
 
+    override fun getSkillSpecializations(skillNameOrBase: String): List<String> {
+        val base = skillNameOrBase.substringBefore(" (").trim()
+        val entity = queries.getSkillEntityByName(base).executeAsOneOrNull()
+        return entity?.specialization
+            ?.split(",")
+            ?.map { it.trim() }
+            ?.filter { it.isNotEmpty() }
+            ?: emptyList()
+    }
+
     override fun getSkill(skillName: String): SkillItem {
         return queries.getSkillEntityByName(skillName)
             .executeAsOne()
@@ -396,6 +406,16 @@ class SqlDelightLibraryDataSource(
             .map { it.toTalentItem() }
     }
 
+    override fun getTalentSpecializations(talentNameOrBase: String): List<String> {
+        val base = talentNameOrBase.substringBefore(" (").trim()
+        val entity = queries.getTalentEntityByName(base).executeAsOneOrNull()
+        return entity?.specialization
+            ?.split(",")
+            ?.map { it.trim() }
+            ?.filter { it.isNotEmpty() }
+            ?: emptyList()
+    }
+
     override fun getFilteredTalents(
         speciesName: String,
         careerPathName: String
@@ -443,6 +463,7 @@ class SqlDelightLibraryDataSource(
             max = item.max,
             tests = item.tests,
             description = item.description,
+            specialization = item.specialization,
             source = item.source,
             page = item.page?.toLong()
         )

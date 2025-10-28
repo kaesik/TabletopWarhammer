@@ -2,13 +2,13 @@ package com.kaesik.tabletopwarhammer.character_creator.presentation.character_5s
 
 fun rollRandomTalent(excludedTalents: List<String> = emptyList()): String {
     val randomTalentsTable = mapOf(
-        1..3 to "Acute Sense (any one)",
+        1..3 to "Acute Sense (Any)",
         4..6 to "Ambidextrous",
         7..9 to "Animal Affinity",
         10..12 to "Artistic",
         13..15 to "Attractive",
         16..18 to "Coolheaded",
-        19..21 to "Craftsman (any one)",
+        19..21 to "Craftsman (Any)",
         22..24 to "Flee!",
         25..28 to "Hardy",
         29..31 to "Lightning Reflexes",
@@ -23,7 +23,7 @@ fun rollRandomTalent(excludedTalents: List<String> = emptyList()): String {
         56..58 to "Perfect Pitch",
         59..62 to "Pure Soul",
         63..65 to "Read/Write",
-        66..68 to "Resistance (any one)",
+        66..68 to "Resistance (Any)",
         69..71 to "Savvy",
         72..74 to "Sharp",
         75..78 to "Sixth Sense",

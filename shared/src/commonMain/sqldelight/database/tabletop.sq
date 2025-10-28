@@ -195,6 +195,7 @@ CREATE TABLE talentEntity (
     max TEXT,
     tests TEXT,
     description TEXT,
+    specialization TEXT,
     source TEXT,
     page INTEGER
 );
@@ -408,5 +409,5 @@ LIMIT 1;
 
 insertTalentEntity:
 INSERT OR REPLACE INTO talentEntity (
-    id, name, max, tests, description, source, page
-) VALUES (?, ?, ?, ?, ?, ?, ?);
+    id, name, max, tests, description, specialization, source, page
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?);

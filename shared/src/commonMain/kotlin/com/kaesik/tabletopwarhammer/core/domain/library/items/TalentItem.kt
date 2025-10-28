@@ -8,6 +8,7 @@ data class TalentItem(
     val max: String? = null,
     val tests: String? = null,
     val description: String? = null,
+    val specialization: String? = null,
     val source: String? = null,
     val page: Int? = null,
 ) : LibraryItem {
@@ -18,6 +19,7 @@ data class TalentItem(
             max = null,
             tests = null,
             description = null,
+            specialization = null,
             source = null,
             page = null
         )

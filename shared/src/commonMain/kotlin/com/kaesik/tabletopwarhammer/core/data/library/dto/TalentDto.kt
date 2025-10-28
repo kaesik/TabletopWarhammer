@@ -15,6 +15,8 @@ data class TalentDto(
     val tests: String?,
     @SerialName("description")
     val description: String?,
+    @SerialName("specialization")
+    val specialization: String?,
     @SerialName("source")
     val source: String?,
     @SerialName("page")

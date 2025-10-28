@@ -10,8 +10,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.SeparatorOr
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.SpeciesOrCareer
-import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.baseOf
-import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.canon
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.getBaseName
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.normalizeSkillOrTalentName
 import com.kaesik.tabletopwarhammer.core.domain.library.items.SkillItem
 
 @Composable
@@ -29,10 +29,11 @@ fun SkillsTable(
     val limitReached3 = selectedSkills3.size >= 3
     val limitReached5 = selectedSkills5.size >= 3
 
-    val canonSkills = remember(skills) { skills.map { it.copy(name = canon(it.name)) } }
+    val canonSkills =
+        remember(skills) { skills.map { it.copy(name = normalizeSkillOrTalentName(it.name)) } }
     val groups = remember(canonSkills) {
         canonSkills
-            .groupBy { baseOf(it.name) }
+            .groupBy { getBaseName(it.name) }
             .values
             .map { it.sortedBy { s -> s.name } }
             .toList()
@@ -40,12 +41,12 @@ fun SkillsTable(
 
     fun shouldRenderAsOr(base: String, variants: List<SkillItem>): Boolean {
         val set = skillOrGroups[base] ?: return false
-        return variants.isNotEmpty() && variants.all { canon(it.name) in set }
+        return variants.isNotEmpty() && variants.all { normalizeSkillOrTalentName(it.name) in set }
     }
 
     Column {
         groups.forEach { group ->
-            val base = baseOf(group.first().name)
+            val base = getBaseName(group.first().name)
             val renderAsOr = group.size > 1 && shouldRenderAsOr(base, group)
 
             when (speciesOrCareer) {

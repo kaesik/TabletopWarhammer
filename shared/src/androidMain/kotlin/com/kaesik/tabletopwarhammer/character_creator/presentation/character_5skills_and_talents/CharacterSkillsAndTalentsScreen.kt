@@ -1,6 +1,5 @@
 package com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents
 
-import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.talents.TalentsTable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -20,8 +19,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator.AndroidCharacterCreatorViewModel
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator.CharacterCreatorEvent
-import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.skills.SkillsTable
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.SpeciesOrCareer
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.skills.SkillsTable
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.talents.TalentsTable
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorButton
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorSnackbarHost
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.SnackbarType
@@ -285,6 +285,13 @@ fun CharacterSkillsAndTalentsScreenRoot(
 
                 else -> viewModel.onEvent(event)
             }
+        },
+        talentSpecializations = state.talentSpecializations,
+        loadingTalentSpecs = state.loadingTalentSpecs,
+        requestTalentSpecializations = { baseName ->
+            viewModel.onEvent(
+                CharacterSkillsAndTalentsEvent.RequestTalentSpecializations(baseName)
+            )
         }
     )
 }
@@ -313,7 +320,10 @@ fun CharacterSkillsAndTalentsScreen(
     speciesLabel: String,
     careerLabel: String,
     onEvent: (CharacterSkillsAndTalentsEvent) -> Unit,
-    snackbarHostState: SnackbarHostState
+    snackbarHostState: SnackbarHostState,
+    talentSpecializations: Map<String, List<String>>,
+    loadingTalentSpecs: Set<String>,
+    requestTalentSpecializations: (String) -> Unit
 ) {
     MainScaffold(
         title = "Skills and Talents",
@@ -391,7 +401,10 @@ fun CharacterSkillsAndTalentsScreen(
                                     groupIndex, talentIndex, rolledName
                                 )
                             )
-                        }
+                        },
+                        talentSpecializations = talentSpecializations,
+                        loadingTalentSpecs = loadingTalentSpecs,
+                        requestTalentSpecializations = requestTalentSpecializations
                     )
                 }
 
@@ -441,6 +454,9 @@ fun CharacterSkillsAndTalentsScreenPreview() {
         speciesLabel = "Species",
         careerLabel = "Career",
         onEvent = { },
-        snackbarHostState = remember { SnackbarHostState() }
+        snackbarHostState = remember { SnackbarHostState() },
+        talentSpecializations = emptyMap(),
+        loadingTalentSpecs = emptySet(),
+        requestTalentSpecializations = { _ -> }
     )
 }
