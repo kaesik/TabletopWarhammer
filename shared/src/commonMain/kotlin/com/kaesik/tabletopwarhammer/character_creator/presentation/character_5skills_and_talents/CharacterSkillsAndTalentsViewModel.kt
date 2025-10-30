@@ -90,6 +90,10 @@ class CharacterSkillsAndTalentsViewModel(
                 event.baseName
             )
 
+            is CharacterSkillsAndTalentsEvent.RequestSkillSpecializations -> onRequestSkillSpecializations(
+                event.baseName
+            )
+
             else -> Unit
         }
     }
@@ -485,6 +489,55 @@ class CharacterSkillsAndTalentsViewModel(
                 stateBefore.copy(
                     talentSpecializations = updatedMap,
                     loadingTalentSpecs = updatedLoading
+                )
+            }
+        }
+    }
+
+    private fun onRequestSkillSpecializations(baseName: String) {
+        val skillSpecCache = mutableMapOf<String, List<String>>()
+        val key = baseName.trim()
+        val current = _state.value
+
+        if (current.skillSpecializations.containsKey(key)) return
+
+        skillSpecCache[key]?.let { cachedList ->
+            _state.update { stateBefore ->
+                val updatedMap = stateBefore.skillSpecializations.toMutableMap().apply {
+                    put(key, cachedList)
+                }
+                stateBefore.copy(skillSpecializations = updatedMap)
+            }
+            return
+        }
+
+        viewModelScope.launch {
+            _state.update { stateBefore ->
+                val updatedLoading = stateBefore.loadingSkillSpecs.toMutableSet().apply { add(key) }
+                stateBefore.copy(loadingSkillSpecs = updatedLoading)
+            }
+
+            val fetchedList = try {
+                val local = runCatching { libraryDataSource.getSkillSpecializations(key) }
+                    .getOrElse { emptyList() }
+                if (local.isNotEmpty()) local
+                else runCatching { characterCreatorClient.getSkillSpecializations(key) }
+                    .getOrElse { emptyList() }
+            } catch (_: Exception) {
+                emptyList()
+            }
+
+            skillSpecCache[key] = fetchedList
+
+            _state.update { stateBefore ->
+                val updatedMap = stateBefore.skillSpecializations.toMutableMap().apply {
+                    put(key, fetchedList)
+                }
+                val updatedLoading =
+                    stateBefore.loadingSkillSpecs.toMutableSet().apply { remove(key) }
+                stateBefore.copy(
+                    skillSpecializations = updatedMap,
+                    loadingSkillSpecs = updatedLoading
                 )
             }
         }

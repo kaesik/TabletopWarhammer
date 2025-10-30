@@ -58,6 +58,7 @@ sealed class CharacterSkillsAndTalentsEvent {
     ) : CharacterSkillsAndTalentsEvent()
 
     data class RequestTalentSpecializations(val baseName: String) : CharacterSkillsAndTalentsEvent()
+    data class RequestSkillSpecializations(val baseName: String) : CharacterSkillsAndTalentsEvent()
 
     data object OnSaveSkillsAndTalents : CharacterSkillsAndTalentsEvent()
     data object OnSpeciesOrCareerClick : CharacterSkillsAndTalentsEvent()

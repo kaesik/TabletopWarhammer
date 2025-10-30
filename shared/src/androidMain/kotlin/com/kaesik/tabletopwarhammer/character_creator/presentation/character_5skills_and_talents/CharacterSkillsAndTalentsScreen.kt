@@ -20,6 +20,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator.AndroidCharacterCreatorViewModel
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator.CharacterCreatorEvent
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.SpeciesOrCareer
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.getBaseName
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.skills.SkillsTable
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.talents.TalentsTable
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorButton
@@ -154,7 +155,6 @@ fun CharacterSkillsAndTalentsScreenRoot(
         state: CharacterSkillsAndTalentsState,
         character: CharacterItem
     ) {
-        // Helper to convert SkillItem to row format
         fun toSkillRow(skill: SkillItem, bonus: Int): List<String> {
             return listOf(
                 skill.name,
@@ -164,21 +164,58 @@ fun CharacterSkillsAndTalentsScreenRoot(
             )
         }
 
-        // Map selected skills to their bonuses
+        fun specOf(name: String): String? {
+            val i = name.indexOf('(')
+            val j = name.lastIndexOf(')')
+            return if (i in 0..<j) name.substring(i + 1, j).trim().ifBlank { null } else null
+        }
+
+        fun inferIsBasic(name: String, templateIsBasic: Boolean): Boolean {
+            val base = getBaseName(name)
+            val spec = specOf(name)?.lowercase()
+            if (base.equals("Melee", true)) {
+                return spec == "basic"
+            }
+            return if (spec != null) (templateIsBasic && spec == "basic") else templateIsBasic
+        }
+
+        fun normalizeMeleeBasic(skill: SkillItem): SkillItem {
+            val base = getBaseName(skill.name)
+            if (base.equals("Melee", true) && specOf(skill.name) == null) {
+                return skill.copy(name = "Melee (Basic)", isBasic = true)
+            }
+            return skill
+        }
+
         val speciesMap =
             (state.selectedSkills3.map { it to 3 } + state.selectedSkills5.map { it to 5 })
                 .groupBy({ it.first.name }, { it })
                 .mapValues { it.value.first() }
 
-        // Map career skills with allocated points
         val flatCareerSkills = state.careerSkills
+
         val careerMap =
-            state.careerSkillPoints.filterValues { it > 0 }.mapNotNull { (name, bonus) ->
-                flatCareerSkills.find { it.name == name }?.let { it to bonus }
-            }.groupBy({ it.first.name }, { it })
+            state.careerSkillPoints
+                .filterValues { it > 0 }
+                .mapNotNull { (name, bonus) ->
+                    val exact = flatCareerSkills.find { it.name == name }
+                    val templ = exact ?: run {
+                        val baseSkill = flatCareerSkills.find {
+                            getBaseName(it.name).equals(getBaseName(name), true)
+                        }
+                        baseSkill?.copy(
+                            name = name,
+                            isBasic = inferIsBasic(
+                                name = name,
+                                templateIsBasic = baseSkill.isBasic == true
+                            )
+                        )
+                    }
+                    templ?.let { it to bonus }
+                }
+                .groupBy({ it.first.name }, { it })
                 .mapValues { it.value.first() }
 
-        // Combine species and career skills, summing bonuses
         val allSkillsMap = (speciesMap.keys + careerMap.keys).associateWith { skillName ->
             val speciesEntry = speciesMap[skillName]
             val careerEntry = careerMap[skillName]
@@ -188,43 +225,42 @@ fun CharacterSkillsAndTalentsScreenRoot(
             val careerBonus = careerEntry?.second ?: 0
             val totalBonus = speciesBonus + careerBonus
 
-            skill to totalBonus
+            val normalizedSkill = if (specOf(skill.name) != null) {
+                skill.copy(isBasic = inferIsBasic(skill.name, skill.isBasic == true))
+            } else skill
+
+            normalizeMeleeBasic(normalizedSkill) to totalBonus
         }
 
-        // Separate into basic and advanced skills
         val careerBasicSkills = mutableListOf<List<String>>()
         val careerAdvancedSkills = mutableListOf<List<String>>()
 
-        // Populate the skill lists
         allSkillsMap.values.forEach { (skill, totalBonus) ->
-            if (skill.isBasic == true)
-                careerBasicSkills.add(toSkillRow(skill, totalBonus))
+            val fixed = normalizeMeleeBasic(skill)
+            if (fixed.isBasic == true)
+                careerBasicSkills.add(toSkillRow(fixed, totalBonus))
             else
-                careerAdvancedSkills.add(toSkillRow(skill, totalBonus))
+                careerAdvancedSkills.add(toSkillRow(fixed, totalBonus))
         }
 
-        // Add missing basic skills  with 0 bonus
         if (state.basicSkills.isNotEmpty()) {
-            val presentNames = allSkillsMap.keys
+            val presentNamesLC = allSkillsMap.keys.map { it.lowercase() }.toSet()
             state.basicSkills
-                .filter { it.isBasic == true && it.name !in presentNames }
+                .filter { it.isBasic == true }
+                .map { normalizeMeleeBasic(it) }
+                .filter { it.name.lowercase() !in presentNamesLC }
                 .forEach { missingBasic ->
                     careerBasicSkills.add(toSkillRow(missingBasic, 0))
                 }
         }
 
-        // Sort skills alphabetically before saving
         careerBasicSkills.sortBy { it[0].lowercase() }
         careerAdvancedSkills.sortBy { it[0].lowercase() }
 
-        // 4. Talents
         val allTalents = state.selectedSpeciesTalents + state.selectedCareerTalents
+        val talents =
+            allTalents.map { listOf(it.name, it.source.orEmpty(), it.page?.toString() ?: "") }
 
-        val talents = allTalents.map {
-            listOf(it.name, it.source.orEmpty(), it.page?.toString() ?: "")
-        }
-
-        // 5. Save
         creatorViewModel.onEvent(
             CharacterCreatorEvent.SetSkillsAndTalents(
                 speciesBasicSkills = emptyList(),
@@ -286,11 +322,14 @@ fun CharacterSkillsAndTalentsScreenRoot(
                 else -> viewModel.onEvent(event)
             }
         },
-        talentSpecializations = state.talentSpecializations,
-        loadingTalentSpecs = state.loadingTalentSpecs,
         requestTalentSpecializations = { baseName ->
             viewModel.onEvent(
                 CharacterSkillsAndTalentsEvent.RequestTalentSpecializations(baseName)
+            )
+        },
+        requestSkillSpecializations = { baseName ->
+            viewModel.onEvent(
+                CharacterSkillsAndTalentsEvent.RequestSkillSpecializations(baseName)
             )
         }
     )
@@ -321,9 +360,8 @@ fun CharacterSkillsAndTalentsScreen(
     careerLabel: String,
     onEvent: (CharacterSkillsAndTalentsEvent) -> Unit,
     snackbarHostState: SnackbarHostState,
-    talentSpecializations: Map<String, List<String>>,
-    loadingTalentSpecs: Set<String>,
-    requestTalentSpecializations: (String) -> Unit
+    requestTalentSpecializations: (String) -> Unit,
+    requestSkillSpecializations: (String) -> Unit
 ) {
     MainScaffold(
         title = "Skills and Talents",
@@ -371,7 +409,10 @@ fun CharacterSkillsAndTalentsScreen(
                                 )
                             )
                         },
-                        skillOrGroups = state.skillOrGroups
+                        skillOrGroups = state.skillOrGroups,
+                        skillSpecializations = state.skillSpecializations,
+                        loadingSkillSpecs = state.loadingSkillSpecs,
+                        requestSkillSpecializations = requestSkillSpecializations
                     )
                 }
 
@@ -402,8 +443,8 @@ fun CharacterSkillsAndTalentsScreen(
                                 )
                             )
                         },
-                        talentSpecializations = talentSpecializations,
-                        loadingTalentSpecs = loadingTalentSpecs,
+                        talentSpecializations = state.talentSpecializations,
+                        loadingTalentSpecs = state.loadingTalentSpecs,
                         requestTalentSpecializations = requestTalentSpecializations
                     )
                 }
@@ -455,8 +496,7 @@ fun CharacterSkillsAndTalentsScreenPreview() {
         careerLabel = "Career",
         onEvent = { },
         snackbarHostState = remember { SnackbarHostState() },
-        talentSpecializations = emptyMap(),
-        loadingTalentSpecs = emptySet(),
-        requestTalentSpecializations = { _ -> }
+        requestTalentSpecializations = { _ -> },
+        requestSkillSpecializations = { _ -> }
     )
 }
