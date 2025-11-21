@@ -132,3 +132,18 @@ fun normalizeTalentGroups(rawGroups: List<List<TalentItem>>): List<List<TalentIt
 
     }
 }
+
+fun extractSpec(fullName: String): String? =
+    fullName.substringAfter("(", "").removeSuffix(")").trim().ifBlank { null }
+
+fun groupSkills(skills: List<SkillItem>): Map<String, List<SkillItem>> =
+    skills.map { it.copy(name = normalizeSkillOrTalentName(it.name)) }
+        .groupBy { getBaseName(it.name) }
+        .mapValues { (_, v) -> v.sortedBy(SkillItem::name) }
+
+fun nonAnyVariantNames(group: List<SkillItem>) =
+    group.filterNot { hasAnyMarker(it.name) }.map { normalizeSkillOrTalentName(it.name) }.toSet()
+
+fun nonAnyVariantSpecsLower(group: List<SkillItem>) =
+    group.filterNot { hasAnyMarker(it.name) }.mapNotNull { extractSpec(it.name)?.lowercase() }
+        .toSet()

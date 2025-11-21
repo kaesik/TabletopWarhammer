@@ -2,24 +2,15 @@ package com.kaesik.tabletopwarhammer.character_creator.presentation.character_5s
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
@@ -31,9 +22,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.SeparatorOr
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.SpecializationDialog
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.SpeciesOrCareer
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.getBaseName
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.getFullNameWithSpecialization
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.hasAnyMarker
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.nonAnyVariantNames
+import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.nonAnyVariantSpecsLower
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.normalizeSkillOrTalentName
 import com.kaesik.tabletopwarhammer.core.data.library.LibraryEnum
 import com.kaesik.tabletopwarhammer.core.domain.info.InspectRef
@@ -77,23 +72,10 @@ fun SkillsTable(
         return variants.isNotEmpty() && variants.all { normalizeSkillOrTalentName(it.name) in set }
     }
 
-    fun hasAnyMarker(name: String): Boolean =
-        Regex("\\bany\\b", RegexOption.IGNORE_CASE).containsMatchIn(name)
-
     fun extractSpec(fullName: String): String? {
         val inside = fullName.substringAfter("(", "").removeSuffix(")").trim()
         return inside.ifBlank { null }
     }
-
-    fun nonAnyVariantNames(group: List<SkillItem>): Set<String> =
-        group.filterNot { hasAnyMarker(it.name) }
-            .map { normalizeSkillOrTalentName(it.name) }
-            .toSet()
-
-    fun nonAnyVariantSpecs(group: List<SkillItem>): Set<String> =
-        group.filterNot { hasAnyMarker(it.name) }
-            .mapNotNull { extractSpec(it.name)?.lowercase() }
-            .toSet()
 
     fun findSelectedSpecForBaseInSpecies(base: String, groupNonAnyNames: Set<String>): String? {
         val chosen = (selectedSkills3 + selectedSkills5).firstOrNull {
@@ -112,98 +94,13 @@ fun SkillsTable(
         return extractSpec(key)
     }
 
-    @Composable
-    fun SpecializationDialog(
-        base: String,
-        loading: Boolean,
-        options: List<String>,
-        forbiddenSpecsLower: Set<String>,
-        onConfirm: (String) -> Unit,
-        onDismiss: () -> Unit
-    ) {
-        var picked by remember(base, options, forbiddenSpecsLower) { mutableStateOf<String?>(null) }
-        var custom by remember(base) { mutableStateOf("") }
-
-        val filteredOptions = options.filterNot { it.lowercase() in forbiddenSpecsLower }
-        val allowCustom = filteredOptions.any { it.equals("Other", true) } || options.any {
-            it.equals(
-                "Other",
-                true
-            )
-        }
-
-        val effectivePicked = when {
-            picked == null -> null
-            picked!!.equals("Other", true) && allowCustom -> custom.ifBlank { null }
-            else -> picked
-        }
-
-        AlertDialog(
-            onDismissRequest = onDismiss,
-            title = { Text(base) },
-            text = {
-                if (loading) {
-                    Box(
-                        Modifier
-                            .height(120.dp)
-                            .fillMaxWidth(),
-                        contentAlignment = Alignment.Center
-                    ) { CircularProgressIndicator() }
-                } else {
-                    Column {
-                        val listToShow =
-                            if (filteredOptions.isEmpty() && allowCustom) listOf("Other") else filteredOptions
-                        if (listToShow.isEmpty()) {
-                            Text("None")
-                        } else {
-                            Column(
-                                Modifier
-                                    .heightIn(max = 260.dp)
-                                    .verticalScroll(rememberScrollState())
-                            ) {
-                                listToShow.forEach { opt ->
-                                    Row(
-                                        Modifier
-                                            .fillMaxWidth()
-                                            .clickable { picked = opt }
-                                            .padding(vertical = 6.dp),
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        val mark = if (picked == opt) "  ✓" else ""
-                                        Text(opt + mark)
-                                    }
-                                }
-                            }
-                        }
-                        if (allowCustom && picked?.equals("Other", true) == true) {
-                            OutlinedTextField(
-                                value = custom,
-                                onValueChange = { custom = it },
-                                label = { Text("Other") },
-                                singleLine = true,
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                        }
-                    }
-                }
-            },
-            confirmButton = {
-                TextButton(
-                    enabled = !loading && effectivePicked != null,
-                    onClick = { onConfirm(effectivePicked!!) }
-                ) { Text("OK") }
-            },
-            dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } }
-        )
-    }
-
     Column {
         groups.forEach { group ->
             val base = getBaseName(group.first().name)
             val renderAsOr = group.size > 1 && shouldRenderAsOr(base, group)
 
             val groupNonAnyNames = nonAnyVariantNames(group)
-            val groupNonAnySpecsLower = nonAnyVariantSpecs(group)
+            val groupNonAnySpecsLower = nonAnyVariantSpecsLower(group)
 
             when (speciesOrCareer) {
                 SpeciesOrCareer.SPECIES -> {

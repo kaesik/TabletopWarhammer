@@ -81,9 +81,6 @@ kotlin {
             implementation(libs.supabase.postgrest)
             implementation(libs.supabase.auth)
             implementation(libs.supabase.realtime)
-
-//            implementation(libs.mongodb.driver)
-//            implementation(libs.mongodb.bson)
         }
 
         androidMain.dependencies {
