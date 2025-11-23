@@ -1,27 +1,36 @@
 package com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.CharacterSheetAttributesTab
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.CharacterSheetCombatTab
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.CharacterSheetGeneralTab
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.CharacterSheetInventoryTab
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.CharacterSheetNotesTab
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.CharacterSheetPartyTab
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.CharacterSheetPointsTab
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.CharacterSheetSkillsTab
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.CharacterSheetSpellsAndPrayersTab
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.CharacterSheetTab
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.CharacterSheetTalentsTab
 import com.kaesik.tabletopwarhammer.core.domain.character.CharacterItem
-import com.kaesik.tabletopwarhammer.core.domain.character.getAttributeValue
 import com.kaesik.tabletopwarhammer.core.presentation.MainScaffold
-import com.kaesik.tabletopwarhammer.core.presentation.components.InfoText
-import com.kaesik.tabletopwarhammer.core.presentation.components.SectionTitle
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -31,37 +40,31 @@ fun CharacterSheetScreenRoot(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(characterId) {
         viewModel.onEvent(CharacterSheetEvent.LoadCharacterById(characterId))
     }
 
     if (state.isLoading) {
         Box(
-            modifier = Modifier.fillMaxSize(),
+            Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator()
-        }
-    } else {
-        state.character?.let {
-            CharacterSheetScreen(
-                state = state,
-                character = it,
-                onEvent = { event ->
-                    when (event) {
-                        else -> Unit
-                    }
-
-                    viewModel.onEvent(event)
-                }
-            )
-        } ?: Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text("Nie znaleziono postaci", style = MaterialTheme.typography.bodyLarge)
-        }
+        ) { CircularProgressIndicator() }
+        return
     }
+
+    val character = state.character
+    if (character == null) {
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text("No character", style = MaterialTheme.typography.bodyLarge)
+        }
+        return
+    }
+
+    CharacterSheetScreen(
+        state = state,
+        character = character,
+        onEvent = viewModel::onEvent
+    )
 }
 
 @Composable
@@ -70,146 +73,65 @@ fun CharacterSheetScreen(
     character: CharacterItem,
     onEvent: (CharacterSheetEvent) -> Unit
 ) {
+    var currentTab by rememberSaveable { mutableStateOf(CharacterSheetTab.General) }
+    val tabs = CharacterSheetTab.entries
+
     MainScaffold(
         title = character.name,
         isLoading = state.isLoading,
         isError = state.isError,
         error = state.error,
         content = {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                // General Info
-                item { SectionTitle("General Information") }
-                item { InfoText("Name", character.name) }
-                item { InfoText("Species", character.species) }
-                item { InfoText("Class", character.cLass) }
-                item { InfoText("Career", character.career) }
-                item { InfoText("Career Level", character.careerLevel) }
-                item { InfoText("Career Path", character.careerPath) }
-                item { InfoText("Status", character.status) }
-                item { InfoText("Age", character.age) }
-                item { InfoText("Height", character.height) }
-                item { InfoText("Hair", character.hair) }
-                item { InfoText("Eyes", character.eyes) }
-
-                // Attributes
-                item { SectionTitle("Attributes") }
-                item { InfoText("Weapon Skill", character.weaponSkill.joinToString("/")) }
-                item { InfoText("Ballistic Skill", character.ballisticSkill.joinToString("/")) }
-                item { InfoText("Strength", character.strength.joinToString("/")) }
-                item { InfoText("Toughness", character.toughness.joinToString("/")) }
-                item { InfoText("Initiative", character.initiative.joinToString("/")) }
-                item { InfoText("Agility", character.agility.joinToString("/")) }
-                item { InfoText("Dexterity", character.dexterity.joinToString("/")) }
-                item { InfoText("Intelligence", character.intelligence.joinToString("/")) }
-                item { InfoText("Willpower", character.willPower.joinToString("/")) }
-                item { InfoText("Fellowship", character.fellowship.joinToString("/")) }
-
-                // Fate and Resolve
-                item { SectionTitle("Points and Motivation") }
-                item { InfoText("Fate", character.fate.toString()) }
-                item { InfoText("Fortune", character.fortune.toString()) }
-                item { InfoText("Resilience", character.resilience.toString()) }
-                item { InfoText("Resolve", character.resolve.toString()) }
-                item { InfoText("Motivation", character.motivation) }
-
-                // Experience
-                item { SectionTitle("Experience") }
-                item {
-                    InfoText(
-                        "Current / Spent / Total",
-                        character.experience.joinToString(" / ")
-                    )
-                }
-
-                // Movement
-                item { SectionTitle("Movement") }
-                item { InfoText("Base", character.movement.toString()) }
-                item { InfoText("Walk", character.walk.toString()) }
-                item { InfoText("Run", character.run.toString()) }
-
-                // Skills
-                item { SectionTitle("Basic Skills") }
-                character.basicSkills.groupBy { it[0] }.forEach { (name, entries) ->
-                    val bonus = entries.sumOf { it[2].toIntOrNull() ?: 0 }
-                    val attr = entries.firstOrNull()?.get(1) ?: ""
-                    val base = getAttributeValue(character, attr)
-                    item { InfoText("$name ($attr)", "$bonus / $base / ${bonus + base}") }
-                }
-
-                item { SectionTitle("Advanced Skills") }
-                character.advancedSkills.groupBy { it[0] }.forEach { (name, entries) ->
-                    val bonus = entries.sumOf { it[2].toIntOrNull() ?: 0 }
-                    val attr = entries.firstOrNull()?.get(1) ?: ""
-                    val base = getAttributeValue(character, attr)
-                    item { InfoText("$name ($attr)", "$bonus / $base / ${bonus + base}") }
-                }
-
-                // Talents
-                item { SectionTitle("Talents") }
-                character.talents.groupBy { it[0] }.forEach { (name, entries) ->
-                    val count = entries.size
-                    item { InfoText(name, "$count") }
-                }
-
-                // Trappings
-                if (character.trappings.isNotEmpty()) {
-                    item { SectionTitle("Trappings") }
-                    character.trappings.forEach { trap ->
-                        item { InfoText("-", trap) }
+            Column(Modifier.fillMaxSize()) {
+                TabRow(selectedTabIndex = tabs.indexOf(currentTab)) {
+                    tabs.forEach { tab ->
+                        Tab(
+                            selected = tab == currentTab,
+                            onClick = { currentTab = tab },
+                            text = { Text(tab.title) }
+                        )
                     }
                 }
 
-                // Wealth
-                item { SectionTitle("Wealth") }
-                item { InfoText("Brass", character.wealth.getOrNull(0)?.toString() ?: "0") }
-                item { InfoText("Silver", character.wealth.getOrNull(1)?.toString() ?: "0") }
-                item { InfoText("Gold", character.wealth.getOrNull(2)?.toString() ?: "0") }
-
-                // Party Info
-                if (character.partyName.isNotBlank()) {
-                    item { SectionTitle("Party") }
-                    item { InfoText("Name", character.partyName) }
-                    item { InfoText("Short-Term Ambition", character.partyAmbitionShortTerm) }
-                    item { InfoText("Long-Term Ambition", character.partyAmbitionLongTerm) }
-                    character.partyMembers.forEachIndexed { index, member ->
-                        item { InfoText("Member ${index + 1}", member) }
+                when (currentTab) {
+                    CharacterSheetTab.General -> {
+                        CharacterSheetGeneralTab(character)
                     }
-                }
 
-                // Psychology & Mutations
-                if (character.psychology.isNotEmpty()) {
-                    item { SectionTitle("Psychology") }
-                    character.psychology.forEach { item { InfoText("-", it) } }
-                }
-                if (character.mutations.isNotEmpty()) {
-                    item { SectionTitle("Mutations") }
-                    character.mutations.forEach { item { InfoText("-", it) } }
-                }
-
-                // Spells
-                if (character.spells.isNotEmpty()) {
-                    item { SectionTitle("Spells") }
-                    character.spells.forEach { spell ->
-                        val name = spell.getOrNull(0) ?: "?"
-                        val range = spell.getOrNull(2) ?: ""
-                        val effect = spell.getOrNull(4) ?: ""
-                        item { InfoText(name, "Range: $range | Effect: $effect") }
+                    CharacterSheetTab.Points -> {
+                        CharacterSheetPointsTab(character)
                     }
-                }
 
-                // Prayers
-                if (character.prayers.isNotEmpty()) {
-                    item { SectionTitle("Prayers") }
-                    character.prayers.forEach { prayer ->
-                        val name = prayer.getOrNull(0) ?: "?"
-                        val range = prayer.getOrNull(2) ?: ""
-                        val effect = prayer.getOrNull(4) ?: ""
-                        item { InfoText(name, "Range: $range | Effect: $effect") }
+                    CharacterSheetTab.Attributes -> {
+                        CharacterSheetAttributesTab(character)
+                    }
+
+                    CharacterSheetTab.Skills -> {
+                        CharacterSheetSkillsTab(character)
+                    }
+
+                    CharacterSheetTab.Talents -> {
+                        CharacterSheetTalentsTab(character)
+                    }
+
+                    CharacterSheetTab.Inventory -> {
+                        CharacterSheetInventoryTab(character)
+                    }
+
+                    CharacterSheetTab.SpellsAndPrayers -> {
+                        CharacterSheetSpellsAndPrayersTab(character)
+                    }
+
+                    CharacterSheetTab.Party -> {
+                        CharacterSheetPartyTab(character)
+                    }
+
+                    CharacterSheetTab.Combat -> {
+                        CharacterSheetCombatTab(character)
+                    }
+
+                    CharacterSheetTab.Notes -> {
+                        CharacterSheetNotesTab(character)
                     }
                 }
             }
