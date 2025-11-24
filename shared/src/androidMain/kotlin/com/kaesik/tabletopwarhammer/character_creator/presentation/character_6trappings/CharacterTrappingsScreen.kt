@@ -21,8 +21,8 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1cr
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_6trappings.components.TrappingsTable
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorButton
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorTitle
-import com.kaesik.tabletopwarhammer.character_creator.presentation.components.SnackbarType
-import com.kaesik.tabletopwarhammer.character_creator.presentation.components.showCharacterCreatorSnackbar
+import com.kaesik.tabletopwarhammer.core.presentation.components.SnackbarType
+import com.kaesik.tabletopwarhammer.core.presentation.components.showWarhammerSnackbar
 import com.kaesik.tabletopwarhammer.core.presentation.MainScaffold
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.getKoin
@@ -41,7 +41,7 @@ fun CharacterTrappingsScreenRoot(
     // Handle messages from the creatorViewModel
     LaunchedEffect(creatorState.message, creatorState.isError) {
         creatorState.message?.let { message ->
-            snackbarHostState.showCharacterCreatorSnackbar(
+            snackbarHostState.showWarhammerSnackbar(
                 message = message,
                 type = if (creatorState.isError) SnackbarType.Error else SnackbarType.Success
             )

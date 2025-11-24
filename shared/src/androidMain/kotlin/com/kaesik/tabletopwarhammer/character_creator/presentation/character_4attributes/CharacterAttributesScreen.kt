@@ -25,9 +25,9 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.character_4at
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_4attributes.components.AttributesTable
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_4attributes.components.FateResilienceCard
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorButton
-import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorSnackbarHost
-import com.kaesik.tabletopwarhammer.character_creator.presentation.components.SnackbarType
-import com.kaesik.tabletopwarhammer.character_creator.presentation.components.showCharacterCreatorSnackbar
+import com.kaesik.tabletopwarhammer.core.presentation.components.WarhammerSnackbarHost
+import com.kaesik.tabletopwarhammer.core.presentation.components.SnackbarType
+import com.kaesik.tabletopwarhammer.core.presentation.components.showWarhammerSnackbar
 import com.kaesik.tabletopwarhammer.core.domain.library.items.AttributeItem
 import com.kaesik.tabletopwarhammer.core.presentation.MainScaffold
 import org.koin.androidx.compose.koinViewModel
@@ -47,7 +47,7 @@ fun CharacterAttributesScreenRoot(
     // Handle messages from the creatorViewModel
     LaunchedEffect(creatorState.message, creatorState.isError) {
         creatorState.message?.let { message ->
-            snackbarHostState.showCharacterCreatorSnackbar(
+            snackbarHostState.showWarhammerSnackbar(
                 message = message,
                 type = if (creatorState.isError) SnackbarType.Error else SnackbarType.Success
             )
@@ -265,7 +265,7 @@ fun CharacterAttributesScreen(
 ) {
     MainScaffold(
         title = "Attributes",
-        snackbarHost = { CharacterCreatorSnackbarHost(snackbarHostState) },
+        snackbarHost = { WarhammerSnackbarHost(snackbarHostState) },
         isLoading = state.isLoading,
         isError = state.isError,
         error = state.error,

@@ -1,4 +1,4 @@
-package com.kaesik.tabletopwarhammer.character_creator.presentation.components
+package com.kaesik.tabletopwarhammer.core.presentation.components
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Snackbar
@@ -13,7 +13,7 @@ enum class SnackbarType {
     Error
 }
 
-suspend fun SnackbarHostState.showCharacterCreatorSnackbar(message: String, type: SnackbarType) {
+suspend fun SnackbarHostState.showWarhammerSnackbar(message: String, type: SnackbarType) {
     this.showSnackbar(
         message = message,
         withDismissAction = false,
@@ -26,7 +26,7 @@ suspend fun SnackbarHostState.showCharacterCreatorSnackbar(message: String, type
 }
 
 @Composable
-fun CharacterCreatorSnackbarHost(snackbarHostState: SnackbarHostState) {
+fun WarhammerSnackbarHost(snackbarHostState: SnackbarHostState) {
     SnackbarHost(snackbarHostState) { snackbarData: SnackbarData ->
         Snackbar(
             snackbarData = snackbarData,

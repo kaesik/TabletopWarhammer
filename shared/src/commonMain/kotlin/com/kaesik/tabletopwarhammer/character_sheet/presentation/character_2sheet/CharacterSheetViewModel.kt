@@ -7,6 +7,7 @@ import com.kaesik.tabletopwarhammer.core.domain.util.DataError
 import com.kaesik.tabletopwarhammer.core.domain.util.DataException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class CharacterSheetViewModel(
@@ -48,6 +49,14 @@ class CharacterSheetViewModel(
                         )
                     }
                 }
+            }
+
+            is CharacterSheetEvent.ShowMessage -> {
+                _state.update { it.copy(message = event.message) }
+            }
+
+            is CharacterSheetEvent.ClearMessage -> {
+                _state.update { it.copy(message = null) }
             }
 
             else -> Unit

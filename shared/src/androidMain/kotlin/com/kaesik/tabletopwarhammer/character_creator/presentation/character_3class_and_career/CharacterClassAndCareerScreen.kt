@@ -24,9 +24,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator.AndroidCharacterCreatorViewModel
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator.CharacterCreatorEvent
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorButton
-import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorSnackbarHost
-import com.kaesik.tabletopwarhammer.character_creator.presentation.components.SnackbarType
-import com.kaesik.tabletopwarhammer.character_creator.presentation.components.showCharacterCreatorSnackbar
+import com.kaesik.tabletopwarhammer.core.presentation.components.WarhammerSnackbarHost
+import com.kaesik.tabletopwarhammer.core.presentation.components.SnackbarType
+import com.kaesik.tabletopwarhammer.core.presentation.components.showWarhammerSnackbar
 import com.kaesik.tabletopwarhammer.core.data.library.LibraryEnum
 import com.kaesik.tabletopwarhammer.core.domain.info.InspectRef
 import com.kaesik.tabletopwarhammer.core.domain.library.items.CareerItem
@@ -53,7 +53,7 @@ fun CharacterClassAndCareerScreenRoot(
     // Handle messages from the creatorViewModel
     LaunchedEffect(creatorState.message, creatorState.isError) {
         creatorState.message?.let { message ->
-            snackbarHostState.showCharacterCreatorSnackbar(
+            snackbarHostState.showWarhammerSnackbar(
                 message = message,
                 type = if (creatorState.isError) SnackbarType.Error else SnackbarType.Success
             )
@@ -182,7 +182,7 @@ fun CharacterClassAndCareerScreen(
 ) {
     MainScaffold(
         title = "Class & Career",
-        snackbarHost = { CharacterCreatorSnackbarHost(snackbarHostState) },
+        snackbarHost = { WarhammerSnackbarHost(snackbarHostState) },
         isLoading = state.isLoading,
         isError = state.isError,
         error = state.error,

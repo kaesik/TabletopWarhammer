@@ -8,9 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.kaesik.tabletopwarhammer.character_creator.presentation.character_4attributes.CharacterAttributesEvent
-import com.kaesik.tabletopwarhammer.character_creator.presentation.character_4attributes.CharacterAttributesState
-import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorSnackbarHost
+import com.kaesik.tabletopwarhammer.core.presentation.components.WarhammerSnackbarHost
 import com.kaesik.tabletopwarhammer.core.presentation.MainScaffold
 import org.koin.androidx.compose.koinViewModel
 
@@ -41,7 +39,7 @@ fun UserScreen(
 ) {
     MainScaffold(
         title = "User",
-        snackbarHost = { CharacterCreatorSnackbarHost(snackbarHostState) },
+        snackbarHost = { WarhammerSnackbarHost(snackbarHostState) },
         isLoading = state.isLoading,
         isError = state.isError,
         error = state.error,

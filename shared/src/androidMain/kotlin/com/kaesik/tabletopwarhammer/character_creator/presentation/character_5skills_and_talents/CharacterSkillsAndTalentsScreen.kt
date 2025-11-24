@@ -24,12 +24,12 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5sk
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.skills.SkillsTable
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.talents.TalentsTable
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorButton
-import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorSnackbarHost
-import com.kaesik.tabletopwarhammer.character_creator.presentation.components.SnackbarType
-import com.kaesik.tabletopwarhammer.character_creator.presentation.components.showCharacterCreatorSnackbar
 import com.kaesik.tabletopwarhammer.core.domain.character.CharacterItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.SkillItem
 import com.kaesik.tabletopwarhammer.core.presentation.MainScaffold
+import com.kaesik.tabletopwarhammer.core.presentation.components.SnackbarType
+import com.kaesik.tabletopwarhammer.core.presentation.components.WarhammerSnackbarHost
+import com.kaesik.tabletopwarhammer.core.presentation.components.showWarhammerSnackbar
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.getKoin
 
@@ -52,9 +52,9 @@ fun CharacterSkillsAndTalentsScreenRoot(
     // Handle messages from the creatorViewModel
     LaunchedEffect(creatorState.message, creatorState.isError) {
         creatorState.message?.let { message ->
-            snackbarHostState.showCharacterCreatorSnackbar(
+            snackbarHostState.showWarhammerSnackbar(
                 message = message,
-                type = if (creatorState.isError == true) SnackbarType.Error else SnackbarType.Success
+                type = if (creatorState.isError) SnackbarType.Error else SnackbarType.Success
             )
             creatorViewModel.onEvent(CharacterCreatorEvent.ClearMessage)
         }
@@ -365,7 +365,7 @@ fun CharacterSkillsAndTalentsScreen(
 ) {
     MainScaffold(
         title = "Skills and Talents",
-        snackbarHost = { CharacterCreatorSnackbarHost(snackbarHostState) },
+        snackbarHost = { WarhammerSnackbarHost(snackbarHostState) },
         isLoading = state.isLoading,
         isError = state.isError,
         error = state.error,

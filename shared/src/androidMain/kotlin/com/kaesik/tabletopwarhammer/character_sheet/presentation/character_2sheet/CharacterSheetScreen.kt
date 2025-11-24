@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
@@ -12,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -31,6 +33,8 @@ import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2shee
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.CharacterSheetTalentsTab
 import com.kaesik.tabletopwarhammer.core.domain.character.CharacterItem
 import com.kaesik.tabletopwarhammer.core.presentation.MainScaffold
+import com.kaesik.tabletopwarhammer.core.presentation.components.SnackbarType
+import com.kaesik.tabletopwarhammer.core.presentation.components.showWarhammerSnackbar
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -39,11 +43,25 @@ fun CharacterSheetScreenRoot(
     characterId: Int
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
 
+    // Handle messages from the viewModel
+    LaunchedEffect(state.message, state.isError) {
+        state.message?.let { message ->
+            snackbarHostState.showWarhammerSnackbar(
+                message = message,
+                type = if (state.isError) SnackbarType.Error else SnackbarType.Success
+            )
+        }
+        viewModel.onEvent(CharacterSheetEvent.ClearMessage)
+    }
+
+    // Load character when characterId changes
     LaunchedEffect(characterId) {
         viewModel.onEvent(CharacterSheetEvent.LoadCharacterById(characterId))
     }
 
+    // Show loading or error states
     if (state.isLoading) {
         Box(
             Modifier.fillMaxSize(),
@@ -52,6 +70,7 @@ fun CharacterSheetScreenRoot(
         return
     }
 
+    // Show no character state
     val character = state.character
     if (character == null) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

@@ -20,9 +20,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator.AndroidCharacterCreatorViewModel
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator.CharacterCreatorEvent
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorButton
-import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorSnackbarHost
-import com.kaesik.tabletopwarhammer.character_creator.presentation.components.SnackbarType
-import com.kaesik.tabletopwarhammer.character_creator.presentation.components.showCharacterCreatorSnackbar
+import com.kaesik.tabletopwarhammer.core.presentation.components.WarhammerSnackbarHost
+import com.kaesik.tabletopwarhammer.core.presentation.components.SnackbarType
+import com.kaesik.tabletopwarhammer.core.presentation.components.showWarhammerSnackbar
 import com.kaesik.tabletopwarhammer.core.domain.character.CharacterDataSource
 import com.kaesik.tabletopwarhammer.core.domain.character.CharacterItem
 import com.kaesik.tabletopwarhammer.core.domain.character.getAttributeValue
@@ -48,7 +48,7 @@ fun CharacterFinalScreenRoot(
 
     LaunchedEffect(creatorState.message, creatorState.isError) {
         creatorState.message?.let { message ->
-            snackbarHostState.showCharacterCreatorSnackbar(
+            snackbarHostState.showWarhammerSnackbar(
                 message = message,
                 type = if (creatorState.isError == true) SnackbarType.Error else SnackbarType.Success
             )
@@ -61,7 +61,7 @@ fun CharacterFinalScreenRoot(
             try {
                 characterDataSource.insertCharacter(character)
 
-                snackbarHostState.showCharacterCreatorSnackbar(
+                snackbarHostState.showWarhammerSnackbar(
                     message = "Character saved successfully! [${character.name}]",
                     type = SnackbarType.Success
                 )
@@ -69,7 +69,7 @@ fun CharacterFinalScreenRoot(
                 onSaveClick()
                 isSaving = false
             } catch (e: Exception) {
-                snackbarHostState.showCharacterCreatorSnackbar(
+                snackbarHostState.showWarhammerSnackbar(
                     message = "Error saving character: ${e.localizedMessage}",
                     type = SnackbarType.Error
                 )
@@ -108,7 +108,7 @@ fun CharacterFinalScreen(
     onEvent: (CharacterFinalEvent) -> Unit,
 ) {
     MainScaffold(
-        snackbarHost = { CharacterCreatorSnackbarHost(snackbarHostState) },
+        snackbarHost = { WarhammerSnackbarHost(snackbarHostState) },
         isLoading = state.isLoading,
         isError = state.isError,
         error = state.error,
