@@ -78,9 +78,9 @@ CREATE TABLE characterEntity (
     sin INTEGER NOT NULL,
 
     -- AUDIT
-    created_at INTEGER NOT NULL,
-    updated_at INTEGER NOT NULL,
-    deleted_at INTEGER
+    createdAt INTEGER NOT NULL,
+    updatedAt INTEGER NOT NULL,
+    deletedAt INTEGER
 );
 CREATE TABLE attributeEntity (
     id TEXT PRIMARY KEY,
@@ -88,8 +88,8 @@ CREATE TABLE attributeEntity (
     description TEXT,
     shortName TEXT,
     page INTEGER,
-    updated_at INTEGER NOT NULL,
-    deleted_at INTEGER
+    updatedAt INTEGER NOT NULL,
+    deletedAt INTEGER
 );
 CREATE TABLE careerEntity (
     id TEXT PRIMARY KEY,
@@ -103,8 +103,8 @@ CREATE TABLE careerEntity (
     careerPath TEXT,
     className TEXT,
     page INTEGER,
-    updated_at INTEGER NOT NULL,
-    deleted_at INTEGER
+    updatedAt INTEGER NOT NULL,
+    deletedAt INTEGER
 );
 CREATE TABLE careerPathEntity (
     id TEXT PRIMARY KEY,
@@ -113,8 +113,8 @@ CREATE TABLE careerPathEntity (
     skills TEXT,
     trappings TEXT,
     talents TEXT,
-    updated_at INTEGER NOT NULL,
-    deleted_at INTEGER
+    updatedAt INTEGER NOT NULL,
+    deletedAt INTEGER
 );
 CREATE TABLE classEntity (
     id TEXT PRIMARY KEY,
@@ -123,8 +123,8 @@ CREATE TABLE classEntity (
     trappings TEXT,
     careers TEXT,
     page INTEGER,
-    updated_at INTEGER NOT NULL,
-    deleted_at INTEGER
+    updatedAt INTEGER NOT NULL,
+    deletedAt INTEGER
 );
 CREATE TABLE itemEntity (
     id TEXT PRIMARY KEY,
@@ -147,8 +147,8 @@ CREATE TABLE itemEntity (
     meeleRanged TEXT,
     type TEXT,
     page INTEGER,
-    updated_at INTEGER NOT NULL,
-    deleted_at INTEGER
+    updatedAt INTEGER NOT NULL,
+    deletedAt INTEGER
 );
 CREATE TABLE qualityFlawEntity (
     id TEXT PRIMARY KEY,
@@ -158,8 +158,8 @@ CREATE TABLE qualityFlawEntity (
     isQuality INTEGER,
     source TEXT,
     page INTEGER,
-    updated_at INTEGER NOT NULL,
-    deleted_at INTEGER
+    updatedAt INTEGER NOT NULL,
+    deletedAt INTEGER
 );
 CREATE TABLE skillEntity (
     id TEXT PRIMARY KEY,
@@ -171,8 +171,8 @@ CREATE TABLE skillEntity (
     specialization TEXT,
     source TEXT,
     page INTEGER,
-    updated_at INTEGER NOT NULL,
-    deleted_at INTEGER
+    updatedAt INTEGER NOT NULL,
+    deletedAt INTEGER
 );
 CREATE TABLE speciesEntity (
     id TEXT PRIMARY KEY,
@@ -207,8 +207,8 @@ CREATE TABLE speciesEntity (
     initiative TEXT,
     page INTEGER,
     names TEXT,
-    updated_at INTEGER NOT NULL,
-    deleted_at INTEGER
+    updatedAt INTEGER NOT NULL,
+    deletedAt INTEGER
 );
 CREATE TABLE talentEntity (
     id TEXT PRIMARY KEY,
@@ -219,13 +219,53 @@ CREATE TABLE talentEntity (
     specialization TEXT,
     source TEXT,
     page INTEGER,
-    updated_at INTEGER NOT NULL,
-    deleted_at INTEGER
+    updatedAt INTEGER NOT NULL,
+    deletedAt INTEGER
+);
+CREATE TABLE spellEntity (
+    id TEXT PRIMARY KEY,
+    lore TEXT,
+    name TEXT NOT NULL,
+    castingNumber INTEGER,
+    range TEXT,
+    target TEXT,
+    duration TEXT,
+    description TEXT,
+    source TEXT,
+    page INTEGER,
+    updatedAt INTEGER NOT NULL,
+    deletedAt INTEGER
+);
+CREATE TABLE blessingEntity (
+    id TEXT PRIMARY KEY,
+    cult TEXT,
+    name TEXT NOT NULL,
+    range TEXT,
+    duration TEXT,
+    target TEXT,
+    description TEXT,
+    source TEXT,
+    page INTEGER,
+    updatedAt INTEGER NOT NULL,
+    deletedAt INTEGER
+);
+CREATE TABLE miracleEntity (
+    id TEXT PRIMARY KEY,
+    cult TEXT,
+    name TEXT NOT NULL,
+    range TEXT,
+    duration TEXT,
+    target TEXT,
+    description TEXT,
+    source TEXT,
+    page INTEGER,
+    updatedAt INTEGER NOT NULL,
+    deletedAt INTEGER
 );
 
-CREATE TABLE sync_state (
-  table_name TEXT NOT NULL PRIMARY KEY,
-  last_sync_epoch_ms INTEGER NOT NULL
+CREATE TABLE syncState (
+  tableName TEXT NOT NULL PRIMARY KEY,
+  lastSyncEpochMs INTEGER NOT NULL
 );
 
 -- CHARACTER
@@ -288,9 +328,9 @@ INTO characterEntity (
     spells,
     prayers,
     sin,
-    created_at,
-    updated_at,
-    deleted_at
+    createdAt,
+    updatedAt,
+    deletedAt
 )
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,
     ?, ?, ?, ?, ?, ?, ?, ?,
@@ -304,147 +344,189 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,
 -- ATTRIBUTE
 getAttributeEntity:
 SELECT * FROM attributeEntity
-WHERE deleted_at IS NULL
+WHERE deletedAt IS NULL
 ORDER BY id DESC;
 
 getAttributeEntityByName:
 SELECT * FROM attributeEntity
 WHERE name = :attributeName
-AND deleted_at IS NULL
+AND deletedAt IS NULL
 LIMIT 1;
 
 insertAttributeEntity:
 INSERT OR REPLACE
-INTO attributeEntity (id, name, description, shortName, page, updated_at, deleted_at)
+INTO attributeEntity (id, name, description, shortName, page, updatedAt, deletedAt)
 VALUES (?, ?, ?, ?, ?, ?, ?);
+
+getAttributeIds:
+SELECT id FROM attributeEntity;
+
+deleteAttributeById:
+DELETE FROM attributeEntity WHERE id = ?;
 
 -- CAREER
 getCareerEntity:
 SELECT * FROM careerEntity
-WHERE deleted_at IS NULL
+WHERE deletedAt IS NULL
 ORDER BY id DESC;
 
 getCareerEntityByName:
 SELECT * FROM careerEntity
 WHERE name = :careerName
-AND deleted_at IS NULL
+AND deletedAt IS NULL
 LIMIT 1;
 
 getCareerEntityFiltered:
 SELECT * FROM careerEntity
 WHERE className LIKE '%' || :className || '%'
   AND limitations LIKE '%' || :speciesName || '%'
-AND deleted_at IS NULL
+AND deletedAt IS NULL
 ORDER BY id DESC;
 
 insertCareerEntity:
 INSERT OR REPLACE
 INTO careerEntity ( id, name, limitations, description, advanceScheme,quotations, adventuring,
-source, careerPath, className, page, updated_at, deleted_at)
+source, careerPath, className, page, updatedAt, deletedAt)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?,
 ?, ?, ?, ?, ?);
+
+getCareerIds:
+SELECT id FROM careerEntity;
+
+deleteCareerById:
+DELETE FROM careerEntity WHERE id = ?;
 
 -- CAREER PATH
 getCareerPathEntity:
 SELECT * FROM careerPathEntity
-WHERE deleted_at IS NULL
+WHERE deletedAt IS NULL
 ORDER BY id DESC;
 
 getCareerPathEntityByName:
 SELECT * FROM careerPathEntity
 WHERE name = :pathName
-AND deleted_at IS NULL
+AND deletedAt IS NULL
 LIMIT 1;
 
 insertCareerPathEntity:
 INSERT OR REPLACE
-INTO careerPathEntity (id, name, status, skills, trappings, talents, updated_at, deleted_at)
+INTO careerPathEntity (id, name, status, skills, trappings, talents, updatedAt, deletedAt)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+
+getCareerPathIds:
+SELECT id FROM careerPathEntity;
+
+deleteCareerPathById:
+DELETE FROM careerPathEntity WHERE id = ?;
 
 -- CLASS
 getClassEntity:
 SELECT * FROM classEntity
-WHERE deleted_at IS NULL
+WHERE deletedAt IS NULL
 ORDER BY id DESC;
 
 getClassEntityByName:
 SELECT * FROM classEntity
 WHERE name = :className
-AND deleted_at IS NULL
+AND deletedAt IS NULL
 LIMIT 1;
 
 insertClassEntity:
 INSERT OR REPLACE
-INTO classEntity (id, name, description, trappings, careers, page, updated_at, deleted_at)
+INTO classEntity (id, name, description, trappings, careers, page, updatedAt, deletedAt)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+
+getClassIds:
+SELECT id FROM classEntity;
+
+deleteClassById:
+DELETE FROM classEntity WHERE id = ?;
 
 -- ITEM
 getItemEntity:
 SELECT * FROM itemEntity
-WHERE deleted_at IS NULL
+WHERE deletedAt IS NULL
 ORDER BY id DESC;
 
 getItemEntityByName:
 SELECT * FROM itemEntity
 WHERE name = :itemName
-AND deleted_at IS NULL
+AND deletedAt IS NULL
 LIMIT 1;
 
 insertItemEntity:
 INSERT OR REPLACE
 INTO itemEntity (id, name, `group`, source, ap, availability, carries, damage, description,
 encumbrance, isTwoHanded,locations, penalty, price, qualitiesAndFlaws, quantity,range,
-meeleRanged, type, page, updated_at, deleted_at)
+meeleRanged, type, page, updatedAt, deletedAt)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,
 ?, ?, ?, ?, ?, ?, ?, ?,
 ?, ?, ?, ?, ?);
 
+getItemIds:
+SELECT id FROM itemEntity;
+
+deleteItemById:
+DELETE FROM itemEntity WHERE id = ?;
+
 -- QUALITY FLAW
 getQualityFlawEntity:
 SELECT * FROM qualityFlawEntity
-WHERE deleted_at IS NULL
+WHERE deletedAt IS NULL
 ORDER BY id DESC;
 
 getQualityFlawEntityByName:
 SELECT * FROM qualityFlawEntity
 WHERE name = :name
-AND deleted_at IS NULL
+AND deletedAt IS NULL
 LIMIT 1;
 
 insertQualityFlawEntity:
 INSERT OR REPLACE
-INTO qualityFlawEntity (id, name, `group`, description, isQuality, source, page, updated_at, deleted_at)
+INTO qualityFlawEntity (id, name, `group`, description, isQuality, source, page, updatedAt, deletedAt)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+getQualityFlawIds:
+SELECT id FROM qualityFlawEntity;
+
+deleteQualityFlawById:
+DELETE FROM qualityFlawEntity WHERE id = ?;
 
 -- SKILL
 getSkillEntity:
 SELECT * FROM skillEntity
-WHERE deleted_at IS NULL
+WHERE deletedAt IS NULL
 ORDER BY id DESC;
 
 getSkillEntityByName:
 SELECT * FROM skillEntity
 WHERE name = :skillName
-AND deleted_at IS NULL
+AND deletedAt IS NULL
 LIMIT 1;
 
 insertSkillEntity:
 INSERT OR REPLACE
 INTO skillEntity (id, name, attribute, isBasic, isGrouped,description, specialization, source,
-page, updated_at, deleted_at)
+page, updatedAt, deletedAt)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?,
 ?, ?, ?);
+
+getSkillIds:
+SELECT id FROM skillEntity;
+
+deleteSkillById:
+DELETE FROM skillEntity WHERE id = ?;
 
 -- SPECIES
 getSpeciesEntity:
 SELECT * FROM speciesEntity
-WHERE deleted_at IS NULL
+WHERE deletedAt IS NULL
 ORDER BY id DESC;
 
 getSpeciesEntityByName:
 SELECT * FROM speciesEntity
 WHERE name LIKE '%' || :speciesName || '%'
-AND deleted_at IS NULL
+AND deletedAt IS NULL
 LIMIT 1;
 
 insertSpeciesEntity:
@@ -452,35 +534,68 @@ INSERT OR REPLACE
 INTO speciesEntity ( id, name, description, opinions, source, weaponSkill, ballisticSkill,
 strength, toughness, agility, dexterity, intelligence, willpower, fellowship, wounds, fatePoints,
 resilience, extraPoints, movement, skills, talents, forenames, surnames, clans, epithets, age,
-eyeColour, hairColour, height, initiative, page, names, updated_at, deleted_at)
+eyeColour, hairColour, height, initiative, page, names, updatedAt, deletedAt)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?,
 ?, ?, ?, ?, ?, ?, ?, ?,
 ?, ?, ?, ?, ?, ?, ?, ?, ?,
 ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
+getSpeciesIds:
+SELECT id FROM speciesEntity;
+
+deleteSpeciesById:
+DELETE FROM speciesEntity WHERE id = ?;
+
 -- TALENT
 getTalentEntity:
 SELECT * FROM talentEntity
-WHERE deleted_at IS NULL
+WHERE deletedAt IS NULL
 ORDER BY id DESC;
 
 getTalentEntityByName:
 SELECT * FROM talentEntity
 WHERE name = :talentName
-AND deleted_at IS NULL
+AND deletedAt IS NULL
 LIMIT 1;
 
 insertTalentEntity:
 INSERT OR REPLACE
-INTO talentEntity (id, name, max, tests, description, specialization, source, page, updated_at, deleted_at)
+INTO talentEntity (id, name, max, tests, description, specialization, source, page, updatedAt, deletedAt)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+getTalentIds:
+SELECT id FROM talentEntity;
+
+deleteTalentById:
+DELETE FROM talentEntity WHERE id = ?;
+
+-- SPELL
+getSpellIds:
+SELECT id FROM spellEntity;
+
+deleteSpellById:
+DELETE FROM spellEntity WHERE id = ?;
+
+-- BLESSING
+getBlessingIds:
+SELECT id FROM blessingEntity;
+
+deleteBlessingById:
+DELETE FROM blessingEntity WHERE id = ?;
+
+-- MIRACLE
+getMiracleIds:
+SELECT id FROM miracleEntity;
+
+deleteMiracleById:
+DELETE FROM miracleEntity WHERE id = ?;
 
 -- SYNC METADATA
 getSyncState:
-SELECT last_sync_epoch_ms FROM sync_state
-WHERE table_name = ?;
+SELECT lastSyncEpochMs FROM syncState
+WHERE tableName = ?;
 
 setSyncState:
 INSERT OR REPLACE
-INTO sync_state(table_name, last_sync_epoch_ms)
+INTO syncState(tableName, lastSyncEpochMs)
 VALUES (?, ?);
