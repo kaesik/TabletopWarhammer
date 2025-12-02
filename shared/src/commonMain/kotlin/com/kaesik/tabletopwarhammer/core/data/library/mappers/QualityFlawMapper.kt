@@ -36,7 +36,8 @@ fun QualityFlawEntity.toQualityFlawItem(): QualityFlawItem {
         description = description,
         isQuality = isQuality?.toInt() == 1,
         source = source,
-        page = page?.toInt()
+        page = page?.toInt(),
+        updatedAt = updatedAt.toString(),
     )
 }
 
@@ -48,6 +49,7 @@ fun QualityFlawDto.toQualityFlawItem(): QualityFlawItem {
         description = description,
         isQuality = isQuality,
         source = source,
-        page = page
+        page = page,
+        updatedAt = updatedAt,
     )
 }

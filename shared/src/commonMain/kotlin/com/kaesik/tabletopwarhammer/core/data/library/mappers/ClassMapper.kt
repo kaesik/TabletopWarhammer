@@ -35,7 +35,8 @@ fun ClassEntity.toClassItem(): ClassItem {
         description = description,
         trappings = trappings,
         careers = careers,
-        page = page?.toInt()
+        page = page?.toInt(),
+        updatedAt = updatedAt.toString()
     )
 }
 
@@ -46,6 +47,7 @@ fun ClassDto.toClassItem(): ClassItem {
         description = description,
         trappings = trappings,
         careers = careers,
-        page = page
+        page = page,
+        updatedAt = updatedAt
     )
 }

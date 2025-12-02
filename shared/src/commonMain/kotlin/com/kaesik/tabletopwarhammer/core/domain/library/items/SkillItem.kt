@@ -12,6 +12,7 @@ data class SkillItem(
     val specialization: String? = null,
     val source: String? = null,
     val page: Int? = null,
+    override val updatedAt: String? = null
 ) : LibraryItem {
     companion object {
         fun default(): SkillItem = SkillItem(

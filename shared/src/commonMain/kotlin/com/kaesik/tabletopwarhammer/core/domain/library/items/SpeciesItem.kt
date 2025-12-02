@@ -35,6 +35,7 @@ data class SpeciesItem(
     val initiative: String? = null,
     val page: Int? = null,
     val names: String? = null,
+    override val updatedAt: String? = null
 ) : LibraryItem {
     companion object {
         fun default(): SpeciesItem {

@@ -1,7 +1,7 @@
 package com.kaesik.tabletopwarhammer.core.domain.character
 
 data class CharacterItem(
-    val id: Int ,
+    val id: Int,
 
     // CHARACTER
     val name: String,
@@ -97,7 +97,12 @@ data class CharacterItem(
     val spells: List<List<String>>,
     // PRAYERS[NAME[CN,RANGE,TARGET,DURATION,EFFECT]
     val prayers: List<List<String>>,
-    val sin: Int
+    val sin: Int,
+
+    //
+    val updatedAt: String?,
+    val createdAt: String?,
+    val deletedAt: String?,
 ) {
     companion object {
         fun default() = CharacterItem(
@@ -151,7 +156,10 @@ data class CharacterItem(
             wounds = listOf(0, 0, 0),
             spells = emptyList(),
             prayers = emptyList(),
-            sin = 0
+            sin = 0,
+            updatedAt = null,
+            createdAt = null,
+            deletedAt = null,
         )
     }
 }

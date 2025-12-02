@@ -34,7 +34,8 @@ fun AttributeEntity.toAttributeItem(): AttributeItem {
         name = name,
         description = description,
         shortName = shortName,
-        page = page?.toInt()
+        page = page?.toInt(),
+        updatedAt = updatedAt.toString(),
     )
 }
 
@@ -46,5 +47,6 @@ fun AttributeDto.toAttributeItem(): AttributeItem {
         description = this.description,
         shortName = this.shortName,
         page = this.page,
+        updatedAt = this.updatedAt,
     )
 }

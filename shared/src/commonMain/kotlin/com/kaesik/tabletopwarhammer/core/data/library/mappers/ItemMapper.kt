@@ -49,7 +49,8 @@ fun ItemEntity.toItemItem(): ItemItem {
         range = range,
         meeleRanged = meeleRanged,
         type = type,
-        page = page?.toInt()
+        page = page?.toInt(),
+        updatedAt = updatedAt.toString()
     )
 }
 
@@ -74,6 +75,7 @@ fun ItemDto.toItemItem(): ItemItem {
         range = range,
         meeleRanged = meeleRanged,
         type = type,
-        page = page
+        page = page,
+        updatedAt = updatedAt
     )
 }

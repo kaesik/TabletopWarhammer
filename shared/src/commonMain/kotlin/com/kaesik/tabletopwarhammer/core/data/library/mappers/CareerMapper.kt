@@ -40,7 +40,8 @@ fun CareerEntity.toCareerItem(): CareerItem {
         source = source,
         careerPath = careerPath,
         className = className,
-        page = page?.toInt()
+        page = page?.toInt(),
+        updatedAt = updatedAt.toString(),
     )
 }
 
@@ -56,6 +57,7 @@ fun CareerDto.toCareerItem(): CareerItem {
         source = source,
         careerPath = careerPath,
         className = className,
-        page = page
+        page = page,
+        updatedAt = updatedAt,
     )
 }

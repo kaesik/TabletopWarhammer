@@ -35,7 +35,8 @@ fun CareerPathEntity.toCareerPathItem(): CareerPathItem {
         status = status,
         skills = skills,
         trappings = trappings,
-        talents = talents
+        talents = talents,
+        updatedAt = updatedAt.toString(),
     )
 }
 
@@ -46,6 +47,7 @@ fun CareerPathDto.toCareerPathItem(): CareerPathItem {
         skills = skills,
         status = status,
         trappings = trappings,
-        talents = talents
+        talents = talents,
+        updatedAt = updatedAt,
     )
 }

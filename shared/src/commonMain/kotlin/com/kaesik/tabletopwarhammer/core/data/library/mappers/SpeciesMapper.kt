@@ -61,7 +61,8 @@ fun SpeciesEntity.toSpeciesItem(): SpeciesItem {
         height = height,
         initiative = initiative,
         page = page?.toInt(),
-        names = names
+        names = names,
+        updatedAt = updatedAt.toString(),
     )
 }
 
@@ -98,6 +99,7 @@ fun SpeciesDto.toSpeciesItem(): SpeciesItem {
         height = height,
         initiative = initiative,
         page = page,
-        names = names
+        names = names,
+        updatedAt = updatedAt,
     )
 }

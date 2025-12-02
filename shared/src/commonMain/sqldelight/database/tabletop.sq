@@ -78,9 +78,9 @@ CREATE TABLE characterEntity (
     sin INTEGER NOT NULL,
 
     -- AUDIT
-    createdAt INTEGER NOT NULL,
-    updatedAt INTEGER NOT NULL,
-    deletedAt INTEGER
+    createdAt TEXT NOT NULL,
+    updatedAt TEXT NOT NULL,
+    deletedAt TEXT
 );
 CREATE TABLE attributeEntity (
     id TEXT PRIMARY KEY,
@@ -88,8 +88,8 @@ CREATE TABLE attributeEntity (
     description TEXT,
     shortName TEXT,
     page INTEGER,
-    updatedAt INTEGER NOT NULL,
-    deletedAt INTEGER
+    updatedAt TEXT NOT NULL,
+    deletedAt TEXT
 );
 CREATE TABLE careerEntity (
     id TEXT PRIMARY KEY,
@@ -103,8 +103,8 @@ CREATE TABLE careerEntity (
     careerPath TEXT,
     className TEXT,
     page INTEGER,
-    updatedAt INTEGER NOT NULL,
-    deletedAt INTEGER
+    updatedAt TEXT NOT NULL,
+    deletedAt TEXT
 );
 CREATE TABLE careerPathEntity (
     id TEXT PRIMARY KEY,
@@ -113,8 +113,8 @@ CREATE TABLE careerPathEntity (
     skills TEXT,
     trappings TEXT,
     talents TEXT,
-    updatedAt INTEGER NOT NULL,
-    deletedAt INTEGER
+    updatedAt TEXT NOT NULL,
+    deletedAt TEXT
 );
 CREATE TABLE classEntity (
     id TEXT PRIMARY KEY,
@@ -123,8 +123,8 @@ CREATE TABLE classEntity (
     trappings TEXT,
     careers TEXT,
     page INTEGER,
-    updatedAt INTEGER NOT NULL,
-    deletedAt INTEGER
+    updatedAt TEXT NOT NULL,
+    deletedAt TEXT
 );
 CREATE TABLE itemEntity (
     id TEXT PRIMARY KEY,
@@ -147,8 +147,8 @@ CREATE TABLE itemEntity (
     meeleRanged TEXT,
     type TEXT,
     page INTEGER,
-    updatedAt INTEGER NOT NULL,
-    deletedAt INTEGER
+    updatedAt TEXT NOT NULL,
+    deletedAt TEXT
 );
 CREATE TABLE qualityFlawEntity (
     id TEXT PRIMARY KEY,
@@ -158,8 +158,8 @@ CREATE TABLE qualityFlawEntity (
     isQuality INTEGER,
     source TEXT,
     page INTEGER,
-    updatedAt INTEGER NOT NULL,
-    deletedAt INTEGER
+    updatedAt TEXT NOT NULL,
+    deletedAt TEXT
 );
 CREATE TABLE skillEntity (
     id TEXT PRIMARY KEY,
@@ -171,8 +171,8 @@ CREATE TABLE skillEntity (
     specialization TEXT,
     source TEXT,
     page INTEGER,
-    updatedAt INTEGER NOT NULL,
-    deletedAt INTEGER
+    updatedAt TEXT NOT NULL,
+    deletedAt TEXT
 );
 CREATE TABLE speciesEntity (
     id TEXT PRIMARY KEY,
@@ -207,8 +207,8 @@ CREATE TABLE speciesEntity (
     initiative TEXT,
     page INTEGER,
     names TEXT,
-    updatedAt INTEGER NOT NULL,
-    deletedAt INTEGER
+    updatedAt TEXT NOT NULL,
+    deletedAt TEXT
 );
 CREATE TABLE talentEntity (
     id TEXT PRIMARY KEY,
@@ -219,8 +219,8 @@ CREATE TABLE talentEntity (
     specialization TEXT,
     source TEXT,
     page INTEGER,
-    updatedAt INTEGER NOT NULL,
-    deletedAt INTEGER
+    updatedAt TEXT NOT NULL,
+    deletedAt TEXT
 );
 CREATE TABLE spellEntity (
     id TEXT PRIMARY KEY,
@@ -233,8 +233,8 @@ CREATE TABLE spellEntity (
     description TEXT,
     source TEXT,
     page INTEGER,
-    updatedAt INTEGER NOT NULL,
-    deletedAt INTEGER
+    updatedAt TEXT NOT NULL,
+    deletedAt TEXT
 );
 CREATE TABLE blessingEntity (
     id TEXT PRIMARY KEY,
@@ -246,8 +246,8 @@ CREATE TABLE blessingEntity (
     description TEXT,
     source TEXT,
     page INTEGER,
-    updatedAt INTEGER NOT NULL,
-    deletedAt INTEGER
+    updatedAt TEXT NOT NULL,
+    deletedAt TEXT
 );
 CREATE TABLE miracleEntity (
     id TEXT PRIMARY KEY,
@@ -259,8 +259,8 @@ CREATE TABLE miracleEntity (
     description TEXT,
     source TEXT,
     page INTEGER,
-    updatedAt INTEGER NOT NULL,
-    deletedAt INTEGER
+    updatedAt TEXT NOT NULL,
+    deletedAt TEXT
 );
 
 CREATE TABLE syncState (

@@ -9,6 +9,7 @@ data class ClassItem(
     val trappings: String? = null,
     val careers: String? = null,
     val page: Int? = null,
+    override val updatedAt: String? = null
 ) : LibraryItem {
     companion object {
         fun default(): ClassItem {

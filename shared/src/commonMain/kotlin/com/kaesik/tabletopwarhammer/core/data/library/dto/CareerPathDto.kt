@@ -17,4 +17,6 @@ data class CareerPathDto(
     val trappings: String?,
     @SerialName("talents")
     val talents: String?,
+    @SerialName("updated_at")
+    val updatedAt: String?,
 )

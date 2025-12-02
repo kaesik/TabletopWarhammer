@@ -5,6 +5,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class DeletionLogDto(
-    @SerialName("entity_id") val entityId: String,
-    @SerialName("deleted_at") val deletedAt: String
+    @SerialName("entity_id")
+    val entityId: String,
+    @SerialName("deleted_at")
+    val deletedAt: String
 )

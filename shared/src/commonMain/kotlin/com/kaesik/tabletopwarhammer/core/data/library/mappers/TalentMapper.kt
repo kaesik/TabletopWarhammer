@@ -37,7 +37,7 @@ fun TalentEntity.toTalentItem(): TalentItem {
         description = description,
         specialization = specialization,
         source = source,
-        page = page?.toInt()
+        page = page?.toInt(),
     )
 }
 

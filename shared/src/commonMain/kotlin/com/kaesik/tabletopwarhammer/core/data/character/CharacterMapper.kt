@@ -71,6 +71,9 @@ fun CharacterEntity.toCharacterItem(): CharacterItem {
         wounds = parseIntList(wounds),
         spells = parseListOfStringLists(spells),
         prayers = parseListOfStringLists(prayers),
-        sin = sin.toInt()
+        sin = sin.toInt(),
+        createdAt = createdAt,
+        updatedAt = updatedAt,
+        deletedAt = deletedAt
     )
 }

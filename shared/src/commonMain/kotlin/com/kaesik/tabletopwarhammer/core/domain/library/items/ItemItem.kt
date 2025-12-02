@@ -23,6 +23,7 @@ data class ItemItem(
     val meeleRanged: String? = null,
     val type: String? = null,
     val page: Int? = null,
+    override val updatedAt: String? = null
 ) : LibraryItem {
     companion object {
         fun default(): ItemItem {

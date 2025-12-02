@@ -159,6 +159,9 @@ class SqlDelightCharacterDataSource(
                 characterItem.prayers
             ),
             sin = characterItem.sin.toLong(),
+            createdAt = characterItem.createdAt.toString(),
+            updatedAt = characterItem.updatedAt.toString(),
+            deletedAt = characterItem.deletedAt.toString(),
         )
     }
 }

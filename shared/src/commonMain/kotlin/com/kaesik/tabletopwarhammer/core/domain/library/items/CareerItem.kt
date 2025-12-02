@@ -14,6 +14,7 @@ data class CareerItem(
     val careerPath: String? = null,
     val className: String? = null,
     val page: Int? = null,
+    override val updatedAt: String? = null
 ) : LibraryItem {
     companion object {
         fun default(): CareerItem = CareerItem(

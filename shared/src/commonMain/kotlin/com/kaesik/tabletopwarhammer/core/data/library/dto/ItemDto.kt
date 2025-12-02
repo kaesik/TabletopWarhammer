@@ -45,4 +45,6 @@ data class ItemDto(
     val type: String?,
     @SerialName("page")
     val page: Int?,
+    @SerialName("updated_at")
+    val updatedAt: String?,
 )

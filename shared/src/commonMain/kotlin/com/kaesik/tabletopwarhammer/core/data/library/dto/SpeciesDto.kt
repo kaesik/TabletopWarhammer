@@ -69,4 +69,6 @@ data class SpeciesDto(
     val page: Int?,
     @SerialName("names")
     val names: String?,
+    @SerialName("updated_at")
+    val updatedAt: String?,
 )

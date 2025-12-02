@@ -9,6 +9,7 @@ data class CareerPathItem(
     val skills: String? = null,
     val trappings: String? = null,
     val talents: String? = null,
+    override val updatedAt: String? = null
 ) : LibraryItem {
     companion object {
         fun default(): CareerPathItem = CareerPathItem(

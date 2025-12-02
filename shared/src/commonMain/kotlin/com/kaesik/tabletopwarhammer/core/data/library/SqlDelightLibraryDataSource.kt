@@ -46,7 +46,9 @@ class SqlDelightLibraryDataSource(
             name = item.name,
             description = item.description,
             shortName = item.shortName,
-            page = item.page?.toLong()
+            page = item.page?.toLong(),
+            updatedAt = item.updatedAt.toString(),
+            deletedAt = null
         )
     }
 
@@ -81,7 +83,9 @@ class SqlDelightLibraryDataSource(
             source = item.source,
             careerPath = item.careerPath,
             className = item.className,
-            page = item.page?.toLong()
+            page = item.page?.toLong(),
+            updatedAt = item.updatedAt.toString(),
+            deletedAt = null
         )
     }
 
@@ -105,7 +109,9 @@ class SqlDelightLibraryDataSource(
             status = item.status,
             skills = item.skills,
             trappings = item.trappings,
-            talents = item.talents
+            talents = item.talents,
+            updatedAt = item.updatedAt.toString(),
+            deletedAt = null
         )
     }
 
@@ -129,7 +135,9 @@ class SqlDelightLibraryDataSource(
             description = item.description,
             trappings = item.trappings,
             careers = item.careers,
-            page = item.page?.toLong()
+            page = item.page?.toLong(),
+            updatedAt = item.updatedAt.toString(),
+            deletedAt = null
         )
     }
 
@@ -234,7 +242,9 @@ class SqlDelightLibraryDataSource(
             range = item.range,
             meeleRanged = item.meeleRanged,
             type = item.type,
-            page = item.page?.toLong()
+            page = item.page?.toLong(),
+            updatedAt = item.updatedAt.toString(),
+            deletedAt = null
         )
     }
 
@@ -259,7 +269,9 @@ class SqlDelightLibraryDataSource(
             description = item.description,
             isQuality = if (item.isQuality == true) 1 else 0,
             source = item.source,
-            page = item.page?.toLong()
+            page = item.page?.toLong(),
+            updatedAt = item.updatedAt.toString(),
+            deletedAt = null
         )
     }
 
@@ -345,7 +357,9 @@ class SqlDelightLibraryDataSource(
             description = item.description,
             specialization = item.specialization,
             source = item.source,
-            page = item.page?.toLong()
+            page = item.page?.toLong(),
+            updatedAt = item.updatedAt.toString(),
+            deletedAt = null
         )
     }
 
@@ -395,7 +409,9 @@ class SqlDelightLibraryDataSource(
             height = item.height,
             initiative = item.initiative,
             page = item.page?.toLong(),
-            names = item.names
+            names = item.names,
+            updatedAt = item.updatedAt.toString(),
+            deletedAt = null
         )
     }
 
@@ -465,7 +481,9 @@ class SqlDelightLibraryDataSource(
             description = item.description,
             specialization = item.specialization,
             source = item.source,
-            page = item.page?.toLong()
+            page = item.page?.toLong(),
+            updatedAt = item.updatedAt.toString(),
+            deletedAt = null
         )
     }
 

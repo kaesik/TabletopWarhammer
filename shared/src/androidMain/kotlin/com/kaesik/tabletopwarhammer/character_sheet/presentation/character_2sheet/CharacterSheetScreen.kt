@@ -220,7 +220,10 @@ fun CharacterSheetScreenPreview() {
             wounds = emptyList(),
             spells = emptyList(),
             prayers = emptyList(),
-            sin = 0
+            sin = 0,
+            createdAt = "",
+            updatedAt = "",
+            deletedAt = ""
         )
     )
 }

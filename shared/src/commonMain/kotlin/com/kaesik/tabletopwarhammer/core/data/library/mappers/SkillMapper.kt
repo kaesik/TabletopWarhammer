@@ -38,7 +38,8 @@ fun SkillEntity.toSkillItem(): SkillItem {
         description = description,
         specialization = specialization,
         source = source,
-        page = page?.toInt()
+        page = page?.toInt(),
+        updatedAt = updatedAt.toString(),
     )
 }
 
@@ -52,6 +53,7 @@ fun SkillDto.toSkillItem(): SkillItem {
         description = description,
         specialization = specialization,
         source = source,
-        page = page
+        page = page,
+        updatedAt = updatedAt,
     )
 }

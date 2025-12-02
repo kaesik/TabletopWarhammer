@@ -8,6 +8,7 @@ data class AttributeItem(
     val description: String? = null,
     val shortName: String? = null,
     val page: Int? = null,
+    override val updatedAt: String? = null,
 ) : LibraryItem {
     companion object {
         fun default(): AttributeItem {
