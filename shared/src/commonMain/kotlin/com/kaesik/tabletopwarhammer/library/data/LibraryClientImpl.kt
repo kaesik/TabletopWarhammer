@@ -118,11 +118,13 @@ class LibraryClientImpl : LibraryClient {
 
     override suspend fun getLibraryDelta(
         fromTable: LibraryEnum,
-        sinceEpochMs: Long?
+        sinceEpochMs: String?
     ): LibraryDelta {
         return try {
             val tableName = fromTable.tableName
-            val sinceIso = sinceEpochMs?.let { Instant.fromEpochMilliseconds(it).toString() }
+            val sinceIso =
+                sinceEpochMs?.let { Instant.fromEpochMilliseconds(it.toLong()).toString() }
+            println("DELTA [$fromTable] sinceEpochMs=$sinceEpochMs, sinceIso=$sinceIso")
 
             val updatedDtos = if (sinceIso == null) {
                 supabaseClient.from(tableName)
@@ -131,7 +133,7 @@ class LibraryClientImpl : LibraryClient {
                 supabaseClient.from(tableName)
                     .select {
                         filter {
-                            gte("updated_at", sinceIso)
+                            gt("updated_at", sinceIso)
                         }
                     }
             }
@@ -240,14 +242,18 @@ class LibraryClientImpl : LibraryClient {
                     ) {
                         filter {
                             eq("table_name", tableName)
-                            gte("deleted_at", sinceIso)
+                            gt("deleted_at", sinceIso)
                         }
                     }
                     .decodeList<DeletionLogDto>()
                     .map { it.entityId }
             }
+            println("DELTA [$fromTable] updatedDtos=${updatedDtos}")
+            println("DELTA [$fromTable] items=${items.size}, timestamps=${updatedTimestamps.size}")
+            println("DELTA [$fromTable] deletedIds=${deletedIds.size}")
 
-            val maxTs = updatedTimestamps.maxOrNull() ?: sinceEpochMs ?: 0L
+            val maxTs = updatedTimestamps.maxOrNull() ?: sinceEpochMs?.toLong() ?: 0L
+            println("DELTA [$fromTable] maxTimestamp=${maxTs}")
 
             LibraryDelta(
                 items = items,

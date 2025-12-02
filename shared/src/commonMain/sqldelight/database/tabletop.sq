@@ -265,7 +265,7 @@ CREATE TABLE miracleEntity (
 
 CREATE TABLE syncState (
   tableName TEXT NOT NULL PRIMARY KEY,
-  lastSyncEpochMs INTEGER NOT NULL
+  lastSyncEpochMs TEXT NOT NULL
 );
 
 -- CHARACTER

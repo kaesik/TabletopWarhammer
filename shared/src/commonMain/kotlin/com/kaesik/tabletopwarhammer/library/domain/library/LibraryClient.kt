@@ -17,6 +17,6 @@ interface LibraryClient {
 
     suspend fun getLibraryDelta(
         fromTable: LibraryEnum,
-        sinceEpochMs: Long?
+        sinceEpochMs: String?
     ): LibraryDelta
 }

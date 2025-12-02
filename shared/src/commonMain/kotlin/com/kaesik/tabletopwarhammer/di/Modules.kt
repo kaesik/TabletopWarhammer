@@ -23,6 +23,8 @@ import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2shee
 import com.kaesik.tabletopwarhammer.core.data.character.SqlDelightCharacterDataSource
 import com.kaesik.tabletopwarhammer.core.data.library.SqlDelightLibraryDataSource
 import com.kaesik.tabletopwarhammer.core.data.local.DatabaseDriverFactory
+import com.kaesik.tabletopwarhammer.core.data.local.SqlDelightSyncStateDataSource
+import com.kaesik.tabletopwarhammer.core.data.local.SyncStateDataSource
 import com.kaesik.tabletopwarhammer.core.data.remote.HttpClientFactory
 import com.kaesik.tabletopwarhammer.core.data.remote.SupabaseLibrarySyncManagerImpl
 import com.kaesik.tabletopwarhammer.core.domain.character.CharacterDataSource
@@ -67,10 +69,13 @@ val sharedModule = module {
     single { TabletopWarhammerDatabase(get()) }
     single<CharacterDataSource> { SqlDelightCharacterDataSource(get()) }
     single<LibraryDataSource> { SqlDelightLibraryDataSource(get()) }
+    single<SyncStateDataSource> { SqlDelightSyncStateDataSource(get()) }
     single<SupabaseLibrarySyncManager> {
         SupabaseLibrarySyncManagerImpl(
             libraryClient = get(),
-            library = get()
+            library = get(),
+            database = get(),
+            syncState = get()
         )
     }
 
