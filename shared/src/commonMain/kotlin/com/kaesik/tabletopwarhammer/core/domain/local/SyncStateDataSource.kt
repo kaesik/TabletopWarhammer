@@ -1,4 +1,4 @@
-package com.kaesik.tabletopwarhammer.core.data.local
+package com.kaesik.tabletopwarhammer.core.domain.local
 
 interface SyncStateDataSource {
     fun getLastSync(table: String): String?

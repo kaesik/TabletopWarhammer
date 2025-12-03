@@ -3,7 +3,7 @@ package com.kaesik.tabletopwarhammer.character_creator.presentation.character_2s
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kaesik.tabletopwarhammer.character_creator.domain.CharacterCreatorClient
-import com.kaesik.tabletopwarhammer.core.domain.library.LibraryDataSource
+import com.kaesik.tabletopwarhammer.core.domain.library.LibraryLocalDataSource
 import com.kaesik.tabletopwarhammer.core.domain.library.items.SpeciesItem
 import com.kaesik.tabletopwarhammer.core.domain.util.DataError
 import com.kaesik.tabletopwarhammer.core.domain.util.DataException
@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 
 class CharacterSpeciesViewModel(
     private val characterCreatorClient: CharacterCreatorClient,
-    private val libraryDataSource: LibraryDataSource,
+    private val libraryLocalDataSource: LibraryLocalDataSource,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(CharacterSpeciesState())
@@ -45,7 +45,7 @@ class CharacterSpeciesViewModel(
             is CharacterSpeciesEvent.SetSelectingSpecies -> _state.update {
                 it.copy(canSelectSpecies = event.canSelectSpecies)
             }
-            
+
             // When the species is selected, update the state with the selected species
             is CharacterSpeciesEvent.OnSpeciesSelect -> onSpeciesSelect(event.id)
 
@@ -59,7 +59,7 @@ class CharacterSpeciesViewModel(
     private suspend fun fetchSpeciesList(): List<SpeciesItem> {
         return try {
             // PLACEHOLDER: Replace with actual condition to determine data source
-            if (true) libraryDataSource.getAllSpecies()
+            if (true) libraryLocalDataSource.getAllSpecies()
             else characterCreatorClient.getAllSpecies()
 
         } catch (e: DataException) {

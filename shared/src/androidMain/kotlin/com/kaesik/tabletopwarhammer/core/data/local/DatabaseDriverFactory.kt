@@ -13,7 +13,7 @@ actual class DatabaseDriverFactory(
         return AndroidSqliteDriver(
             TabletopWarhammerDatabase.Schema,
             context,
-            null
+            "tabletop_warhammer.db"
         )
     }
 }

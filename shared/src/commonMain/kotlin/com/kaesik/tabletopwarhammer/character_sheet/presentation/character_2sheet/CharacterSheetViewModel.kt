@@ -2,7 +2,7 @@ package com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2she
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kaesik.tabletopwarhammer.core.domain.character.CharacterDataSource
+import com.kaesik.tabletopwarhammer.core.domain.character.CharacterLocalDataSource
 import com.kaesik.tabletopwarhammer.core.domain.util.DataError
 import com.kaesik.tabletopwarhammer.core.domain.util.DataException
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class CharacterSheetViewModel(
-    private val characterDataSource: CharacterDataSource
+    private val characterLocalDataSource: CharacterLocalDataSource
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(CharacterSheetState())
@@ -23,7 +23,7 @@ class CharacterSheetViewModel(
                 viewModelScope.launch {
                     _state.value = _state.value.copy(isLoading = true, error = null)
                     try {
-                        val characters = characterDataSource.getAllCharacters()
+                        val characters = characterLocalDataSource.getAllCharacters()
                         val character = characters.find { it.id == event.id }
 
                         if (character != null) {

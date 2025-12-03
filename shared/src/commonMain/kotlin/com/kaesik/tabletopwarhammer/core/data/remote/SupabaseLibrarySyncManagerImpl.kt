@@ -1,8 +1,7 @@
 package com.kaesik.tabletopwarhammer.core.data.remote
 
 import com.kaesik.tabletopwarhammer.core.data.library.LibraryEnum
-import com.kaesik.tabletopwarhammer.core.data.local.SyncStateDataSource
-import com.kaesik.tabletopwarhammer.core.domain.library.LibraryDataSource
+import com.kaesik.tabletopwarhammer.core.domain.library.LibraryLocalDataSource
 import com.kaesik.tabletopwarhammer.core.domain.library.items.AttributeItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.CareerItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.CareerPathItem
@@ -12,18 +11,15 @@ import com.kaesik.tabletopwarhammer.core.domain.library.items.QualityFlawItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.SkillItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.SpeciesItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.TalentItem
+import com.kaesik.tabletopwarhammer.core.domain.local.SyncStateDataSource
 import com.kaesik.tabletopwarhammer.core.domain.remote.SupabaseLibrarySyncManager
-import com.kaesik.tabletopwarhammer.database.TabletopWarhammerDatabase
 import com.kaesik.tabletopwarhammer.library.domain.library.LibraryClient
 
 class SupabaseLibrarySyncManagerImpl(
     private val libraryClient: LibraryClient,
-    private val library: LibraryDataSource,
-    database: TabletopWarhammerDatabase,
+    private val library: LibraryLocalDataSource,
     private val syncState: SyncStateDataSource
 ) : SupabaseLibrarySyncManager {
-
-    private val q = database.tabletopQueries
 
     override suspend fun syncAll() {
         syncAttributes()
@@ -41,23 +37,17 @@ class SupabaseLibrarySyncManagerImpl(
         val key = LibraryEnum.ATTRIBUTE.tableName
         val since = syncState.getLastSync(key)
         val delta = libraryClient.getLibraryDelta(LibraryEnum.ATTRIBUTE, since)
-        println("SYNC [ATTRIBUTE] start, since=${since}")
 
         if (delta.items.isEmpty() && delta.deletedIds.isEmpty()) return
 
         delta.deletedIds.forEach { id ->
-            println("SYNC [ATTRIBUTE] deleting id=$id")
-            q.deleteAttributeById(id)
+            library.deleteById(LibraryEnum.ATTRIBUTE, id)
         }
         delta.items.filterIsInstance<AttributeItem>().forEach { item ->
-            println("SYNC [ATTRIBUTE] upserting id=${item.id}")
             library.insertAttribute(item)
         }
-        println("SYNC [ATTRIBUTE] delta: items=${delta.items.size}, deleted=${delta.deletedIds.size}")
 
         syncState.setLastSync(key, delta.maxTimestampEpochMs.toString())
-        println("SYNC [ATTRIBUTE] finished, newLastSync=${delta.maxTimestampEpochMs}")
-
     }
 
     override suspend fun syncCareers() {
@@ -68,7 +58,7 @@ class SupabaseLibrarySyncManagerImpl(
         if (delta.items.isEmpty() && delta.deletedIds.isEmpty()) return
 
         delta.deletedIds.forEach { id ->
-            q.deleteCareerById(id)
+            library.deleteById(LibraryEnum.CAREER, id)
         }
         delta.items.filterIsInstance<CareerItem>().forEach { item ->
             library.insertCareer(item)
@@ -85,7 +75,7 @@ class SupabaseLibrarySyncManagerImpl(
         if (delta.items.isEmpty() && delta.deletedIds.isEmpty()) return
 
         delta.deletedIds.forEach { id ->
-            q.deleteCareerPathById(id)
+            library.deleteById(LibraryEnum.CAREER_PATH, id)
         }
         delta.items.filterIsInstance<CareerPathItem>().forEach { item ->
             library.insertCareerPath(item)
@@ -102,7 +92,7 @@ class SupabaseLibrarySyncManagerImpl(
         if (delta.items.isEmpty() && delta.deletedIds.isEmpty()) return
 
         delta.deletedIds.forEach { id ->
-            q.deleteClassById(id)
+            library.deleteById(LibraryEnum.CLASS, id)
         }
         delta.items.filterIsInstance<ClassItem>().forEach { item ->
             library.insertClass(item)
@@ -119,7 +109,7 @@ class SupabaseLibrarySyncManagerImpl(
         if (delta.items.isEmpty() && delta.deletedIds.isEmpty()) return
 
         delta.deletedIds.forEach { id ->
-            q.deleteItemById(id)
+            library.deleteById(LibraryEnum.ITEM, id)
         }
         delta.items.filterIsInstance<ItemItem>().forEach { item ->
             library.insertItem(item)
@@ -136,7 +126,7 @@ class SupabaseLibrarySyncManagerImpl(
         if (delta.items.isEmpty() && delta.deletedIds.isEmpty()) return
 
         delta.deletedIds.forEach { id ->
-            q.deleteQualityFlawById(id)
+            library.deleteById(LibraryEnum.QUALITY_FLAW, id)
         }
         delta.items.filterIsInstance<QualityFlawItem>().forEach { item ->
             library.insertQualityFlaw(item)
@@ -153,7 +143,7 @@ class SupabaseLibrarySyncManagerImpl(
         if (delta.items.isEmpty() && delta.deletedIds.isEmpty()) return
 
         delta.deletedIds.forEach { id ->
-            q.deleteSkillById(id)
+            library.deleteById(LibraryEnum.SKILL, id)
         }
         delta.items.filterIsInstance<SkillItem>().forEach { item ->
             library.insertSkill(item)
@@ -170,7 +160,7 @@ class SupabaseLibrarySyncManagerImpl(
         if (delta.items.isEmpty() && delta.deletedIds.isEmpty()) return
 
         delta.deletedIds.forEach { id ->
-            q.deleteSpeciesById(id)
+            library.deleteById(LibraryEnum.SPECIES, id)
         }
         delta.items.filterIsInstance<SpeciesItem>().forEach { item ->
             library.insertSpecies(item)
@@ -187,7 +177,7 @@ class SupabaseLibrarySyncManagerImpl(
         if (delta.items.isEmpty() && delta.deletedIds.isEmpty()) return
 
         delta.deletedIds.forEach { id ->
-            q.deleteTalentById(id)
+            library.deleteById(LibraryEnum.TALENT, id)
         }
         delta.items.filterIsInstance<TalentItem>().forEach { item ->
             library.insertTalent(item)

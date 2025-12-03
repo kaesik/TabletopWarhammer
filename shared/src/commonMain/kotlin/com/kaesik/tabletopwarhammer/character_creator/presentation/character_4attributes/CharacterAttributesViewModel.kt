@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kaesik.tabletopwarhammer.character_creator.domain.CharacterCreatorClient
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_4attributes.components.parseAttributeFormula
-import com.kaesik.tabletopwarhammer.core.domain.library.LibraryDataSource
+import com.kaesik.tabletopwarhammer.core.domain.library.LibraryLocalDataSource
 import com.kaesik.tabletopwarhammer.core.domain.library.items.AttributeItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.SpeciesItem
 import com.kaesik.tabletopwarhammer.core.domain.util.DataError
@@ -18,7 +18,7 @@ import kotlin.coroutines.cancellation.CancellationException
 
 class CharacterAttributesViewModel(
     private val characterCreatorClient: CharacterCreatorClient,
-    private val libraryDataSource: LibraryDataSource,
+    private val libraryLocalDataSource: LibraryLocalDataSource,
 ) : ViewModel() {
     private val _state = MutableStateFlow(CharacterAttributesState())
     val state = _state.asStateFlow()
@@ -33,7 +33,7 @@ class CharacterAttributesViewModel(
 
             // Initialize fate and resilience points based on the species name
             is CharacterAttributesEvent.InitFateAndResilience -> loadFateAndResilience(event)
-            
+
             // Initialize the state from creator flags
             is CharacterAttributesEvent.InitFromCreatorFlags -> {
                 _state.update { it.copy(rolledFromAllocation = event.rolledFromAllocation) }
@@ -201,7 +201,7 @@ class CharacterAttributesViewModel(
     private suspend fun fetchAttributeList(): List<AttributeItem> {
         return try {
             // PLACEHOLDER: Replace with actual condition to determine data source
-            if (true) libraryDataSource.getAllAttributes()
+            if (true) libraryLocalDataSource.getAllAttributes()
             else characterCreatorClient.getAllAttributes()
 
         } catch (e: DataException) {
@@ -217,7 +217,7 @@ class CharacterAttributesViewModel(
     private suspend fun fetchSpecies(speciesName: String): SpeciesItem {
         return try {
             // PLACEHOLDER: Replace with actual condition to determine data source
-            if (true) libraryDataSource.getSpecies(speciesName)
+            if (true) libraryLocalDataSource.getSpecies(speciesName)
             else characterCreatorClient.getSpeciesDetails(speciesName)
 
         } catch (e: DataException) {

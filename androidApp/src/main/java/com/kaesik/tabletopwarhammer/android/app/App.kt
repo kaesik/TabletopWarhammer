@@ -38,7 +38,7 @@ import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_1shee
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.AndroidCharacterSheetViewModel
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.CharacterSheetScreenRoot
 import com.kaesik.tabletopwarhammer.core.domain.Route
-import com.kaesik.tabletopwarhammer.core.domain.character.CharacterDataSource
+import com.kaesik.tabletopwarhammer.core.domain.character.CharacterLocalDataSource
 import com.kaesik.tabletopwarhammer.core.presentation.di.LocalNavController
 import com.kaesik.tabletopwarhammer.library.presentation.library_1.AndroidLibraryViewModel
 import com.kaesik.tabletopwarhammer.library.presentation.library_1.LibraryScreenRoot
@@ -386,12 +386,12 @@ fun App() {
                 composable<Route.CharacterFinal> {
                     val viewModel = koinViewModel<AndroidCharacterFinalViewModel>()
                     val creatorViewModel = getKoin().get<AndroidCharacterCreatorViewModel>()
-                    val characterDataSource = getKoin().get<CharacterDataSource>()
+                    val characterLocalDataSource = getKoin().get<CharacterLocalDataSource>()
 
                     CharacterFinalScreenRoot(
                         viewModel = viewModel,
                         creatorViewModel = creatorViewModel,
-                        characterDataSource = characterDataSource,
+                        characterLocalDataSource = characterLocalDataSource,
                         onSaveClick = {
                             navController.navigate(Route.MainGraph) {
                                 popUpTo(Route.CharacterCreatorGraph) {

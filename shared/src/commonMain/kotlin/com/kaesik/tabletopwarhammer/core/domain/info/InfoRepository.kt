@@ -1,10 +1,10 @@
 package com.kaesik.tabletopwarhammer.core.domain.info
 
 import com.kaesik.tabletopwarhammer.core.data.library.LibraryEnum
-import com.kaesik.tabletopwarhammer.core.domain.library.LibraryDataSource
+import com.kaesik.tabletopwarhammer.core.domain.library.LibraryLocalDataSource
 
 class InfoRepository(
-    private val library: LibraryDataSource,
+    private val library: LibraryLocalDataSource,
     private val mappers: InfoMappers
 ) {
     fun getDetails(ref: InspectRef): InfoDetails? = when (ref.type) {

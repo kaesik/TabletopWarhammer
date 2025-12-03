@@ -3,7 +3,7 @@ package com.kaesik.tabletopwarhammer.character_creator.presentation.character_6t
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kaesik.tabletopwarhammer.character_creator.domain.CharacterCreatorClient
-import com.kaesik.tabletopwarhammer.core.domain.library.LibraryDataSource
+import com.kaesik.tabletopwarhammer.core.domain.library.LibraryLocalDataSource
 import com.kaesik.tabletopwarhammer.core.domain.library.items.ItemItem
 import com.kaesik.tabletopwarhammer.core.domain.util.DataError
 import com.kaesik.tabletopwarhammer.core.domain.util.DataException
@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 
 class CharacterTrappingsViewModel(
     private val characterCreatorClient: CharacterCreatorClient,
-    private val libraryDataSource: LibraryDataSource,
+    private val libraryLocalDataSource: LibraryLocalDataSource,
 ) : ViewModel() {
     private val _state = MutableStateFlow(CharacterTrappingsState())
     val state = _state.asStateFlow()
@@ -50,7 +50,7 @@ class CharacterTrappingsViewModel(
         return try {
             // PLACEHOLDER: Replace with actual condition to determine data source
             val result = if (true) {
-                libraryDataSource.getTrappings(
+                libraryLocalDataSource.getTrappings(
                     className = className,
                     careerPathName = careerPathName
                 )
@@ -79,7 +79,7 @@ class CharacterTrappingsViewModel(
     private suspend fun fetchWealth(careerPathName: String): List<Int> {
         return try {
             // PLACEHOLDER: Replace with actual condition to determine data source
-            if (true) libraryDataSource.getWealth(careerPathName = careerPathName)
+            if (true) libraryLocalDataSource.getWealth(careerPathName = careerPathName)
             else characterCreatorClient.getWealth(careerPathName = careerPathName)
 
         } catch (e: DataException) {

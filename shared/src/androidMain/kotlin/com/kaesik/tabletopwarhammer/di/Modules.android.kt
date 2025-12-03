@@ -14,13 +14,13 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.character_6tr
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_7details.AndroidCharacterDetailsViewModel
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_1sheet_list.AndroidCharacterSheetListViewModel
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.AndroidCharacterSheetViewModel
-import com.kaesik.tabletopwarhammer.core.data.character.SqlDelightCharacterDataSource
-import com.kaesik.tabletopwarhammer.core.data.library.SqlDelightLibraryDataSource
+import com.kaesik.tabletopwarhammer.core.data.character.SqlDelightCharacterLocalDataSource
+import com.kaesik.tabletopwarhammer.core.data.library.SqlDelightLibraryLocalDataSource
 import com.kaesik.tabletopwarhammer.core.data.local.DatabaseDriverFactory
 import com.kaesik.tabletopwarhammer.core.data.local.SqlDelightSyncStateDataSource
-import com.kaesik.tabletopwarhammer.core.data.local.SyncStateDataSource
-import com.kaesik.tabletopwarhammer.core.domain.character.CharacterDataSource
-import com.kaesik.tabletopwarhammer.core.domain.library.LibraryDataSource
+import com.kaesik.tabletopwarhammer.core.domain.character.CharacterLocalDataSource
+import com.kaesik.tabletopwarhammer.core.domain.library.LibraryLocalDataSource
+import com.kaesik.tabletopwarhammer.core.domain.local.SyncStateDataSource
 import com.kaesik.tabletopwarhammer.database.TabletopWarhammerDatabase
 import com.kaesik.tabletopwarhammer.features.info.AndroidInfoDialogViewModel
 import com.kaesik.tabletopwarhammer.library.presentation.library_1.AndroidLibraryViewModel
@@ -44,8 +44,8 @@ actual val platformModule: Module
         single<HttpClientEngine> { OkHttp.create() }
         single { DatabaseDriverFactory(androidApplication()) }
         single { TabletopWarhammerDatabase(get()) }
-        single<CharacterDataSource> { SqlDelightCharacterDataSource(get()) }
-        single<LibraryDataSource> { SqlDelightLibraryDataSource(get()) }
+        single<CharacterLocalDataSource> { SqlDelightCharacterLocalDataSource(get()) }
+        single<LibraryLocalDataSource> { SqlDelightLibraryLocalDataSource(get()) }
         single<SyncStateDataSource> { SqlDelightSyncStateDataSource(get()) }
 
         //Features
@@ -65,7 +65,7 @@ actual val platformModule: Module
         viewModel {
             AndroidMenuViewModel(
                 client = get(),
-                librarySyncManager = get()
+                libraryStartupSync = get()
             )
         }
         viewModelOf(::AndroidSettingsViewModel)

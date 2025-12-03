@@ -9,7 +9,7 @@ import com.kaesik.tabletopwarhammer.core.data.library.mappers.toQualityFlawItem
 import com.kaesik.tabletopwarhammer.core.data.library.mappers.toSkillItem
 import com.kaesik.tabletopwarhammer.core.data.library.mappers.toSpeciesItem
 import com.kaesik.tabletopwarhammer.core.data.library.mappers.toTalentItem
-import com.kaesik.tabletopwarhammer.core.domain.library.LibraryDataSource
+import com.kaesik.tabletopwarhammer.core.domain.library.LibraryLocalDataSource
 import com.kaesik.tabletopwarhammer.core.domain.library.items.AttributeItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.CareerItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.CareerPathItem
@@ -21,11 +21,25 @@ import com.kaesik.tabletopwarhammer.core.domain.library.items.SpeciesItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.TalentItem
 import com.kaesik.tabletopwarhammer.database.TabletopWarhammerDatabase
 
-class SqlDelightLibraryDataSource(
+class SqlDelightLibraryLocalDataSource(
     database: TabletopWarhammerDatabase
-) : LibraryDataSource {
+) : LibraryLocalDataSource {
 
     private val queries = database.tabletopQueries
+    
+    override suspend fun deleteById(table: LibraryEnum, id: String) {
+        when (table) {
+            LibraryEnum.ATTRIBUTE -> queries.deleteAttributeById(id)
+            LibraryEnum.CAREER -> queries.deleteCareerById(id)
+            LibraryEnum.CAREER_PATH -> queries.deleteCareerPathById(id)
+            LibraryEnum.CLASS -> queries.deleteClassById(id)
+            LibraryEnum.ITEM -> queries.deleteItemById(id)
+            LibraryEnum.QUALITY_FLAW -> queries.deleteQualityFlawById(id)
+            LibraryEnum.SKILL -> queries.deleteSkillById(id)
+            LibraryEnum.SPECIES -> queries.deleteSpeciesById(id)
+            LibraryEnum.TALENT -> queries.deleteTalentById(id)
+        }
+    }
 
     // ATTRIBUTES
     override fun getAllAttributes(): List<AttributeItem> {

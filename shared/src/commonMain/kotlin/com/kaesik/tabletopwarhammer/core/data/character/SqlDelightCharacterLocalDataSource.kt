@@ -2,8 +2,8 @@ package com.kaesik.tabletopwarhammer.core.data.character
 
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
-import com.kaesik.tabletopwarhammer.core.domain.character.CharacterDataSource
 import com.kaesik.tabletopwarhammer.core.domain.character.CharacterItem
+import com.kaesik.tabletopwarhammer.core.domain.character.CharacterLocalDataSource
 import com.kaesik.tabletopwarhammer.core.domain.util.CommonFlow
 import com.kaesik.tabletopwarhammer.core.domain.util.toCommonFlow
 import com.kaesik.tabletopwarhammer.database.TabletopWarhammerDatabase
@@ -13,9 +13,9 @@ import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import kotlin.coroutines.CoroutineContext
 
-class SqlDelightCharacterDataSource(
+class SqlDelightCharacterLocalDataSource(
     database: TabletopWarhammerDatabase,
-) : CharacterDataSource {
+) : CharacterLocalDataSource {
 
     private val queries = database.tabletopQueries
 

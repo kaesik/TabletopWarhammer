@@ -9,7 +9,7 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5sk
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.mapSpecializedSkills
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.normalizeSkillOrTalentName
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_5skills_and_talents.components.normalizeTalentGroups
-import com.kaesik.tabletopwarhammer.core.domain.library.LibraryDataSource
+import com.kaesik.tabletopwarhammer.core.domain.library.LibraryLocalDataSource
 import com.kaesik.tabletopwarhammer.core.domain.library.items.SkillItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.TalentItem
 import com.kaesik.tabletopwarhammer.core.domain.util.DataError
@@ -23,7 +23,7 @@ import kotlin.coroutines.cancellation.CancellationException
 
 class CharacterSkillsAndTalentsViewModel(
     private val characterCreatorClient: CharacterCreatorClient,
-    private val libraryDataSource: LibraryDataSource,
+    private val libraryLocalDataSource: LibraryLocalDataSource,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(CharacterSkillsAndTalentsState())
@@ -225,7 +225,7 @@ class CharacterSkillsAndTalentsViewModel(
         return try {
             // PLACEHOLDER: Replace with actual condition to determine data source
             if (true) {
-                libraryDataSource.getFilteredSkills(
+                libraryLocalDataSource.getFilteredSkills(
                     speciesName = speciesName,
                     careerPathName = careerPathName
                 )
@@ -249,7 +249,7 @@ class CharacterSkillsAndTalentsViewModel(
         return try {
             // PLACEHOLDER: Replace with actual condition to determine data source
             if (true) {
-                libraryDataSource.getBasicSkills()
+                libraryLocalDataSource.getBasicSkills()
             } else {
                 characterCreatorClient.getBasicSkills()
             }
@@ -270,7 +270,7 @@ class CharacterSkillsAndTalentsViewModel(
         return try {
             // PLACEHOLDER: Replace with actual condition to determine data source
             if (true) {
-                libraryDataSource.getFilteredTalents(speciesName, careerPathName)
+                libraryLocalDataSource.getFilteredTalents(speciesName, careerPathName)
             } else {
                 characterCreatorClient.getFilteredTalents(speciesName, careerPathName)
             }
@@ -464,7 +464,7 @@ class CharacterSkillsAndTalentsViewModel(
 
             val fetchedList = try {
                 val local = try {
-                    libraryDataSource.getTalentSpecializations(key)
+                    libraryLocalDataSource.getTalentSpecializations(key)
                 } catch (_: Exception) {
                     emptyList()
                 }
@@ -518,7 +518,7 @@ class CharacterSkillsAndTalentsViewModel(
             }
 
             val fetchedList = try {
-                val local = runCatching { libraryDataSource.getSkillSpecializations(key) }
+                val local = runCatching { libraryLocalDataSource.getSkillSpecializations(key) }
                     .getOrElse { emptyList() }
                 if (local.isNotEmpty()) local
                 else runCatching { characterCreatorClient.getSkillSpecializations(key) }

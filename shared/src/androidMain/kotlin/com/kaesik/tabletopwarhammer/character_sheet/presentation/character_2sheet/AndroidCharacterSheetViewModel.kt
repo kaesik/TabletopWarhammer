@@ -1,15 +1,15 @@
 package com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet
 
 import androidx.lifecycle.ViewModel
-import com.kaesik.tabletopwarhammer.core.domain.character.CharacterDataSource
+import com.kaesik.tabletopwarhammer.core.domain.character.CharacterLocalDataSource
 
 class AndroidCharacterSheetViewModel(
-    private val characterDataSource: CharacterDataSource,
+    private val characterLocalDataSource: CharacterLocalDataSource,
 ) : ViewModel() {
 
     private val viewModel by lazy {
         CharacterSheetViewModel(
-            characterDataSource = characterDataSource
+            characterLocalDataSource = characterLocalDataSource
         )
     }
 

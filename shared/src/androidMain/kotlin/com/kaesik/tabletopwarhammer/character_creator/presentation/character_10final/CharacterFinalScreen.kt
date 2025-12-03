@@ -20,15 +20,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator.AndroidCharacterCreatorViewModel
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_1creator.CharacterCreatorEvent
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorButton
-import com.kaesik.tabletopwarhammer.core.presentation.components.WarhammerSnackbarHost
-import com.kaesik.tabletopwarhammer.core.presentation.components.SnackbarType
-import com.kaesik.tabletopwarhammer.core.presentation.components.showWarhammerSnackbar
-import com.kaesik.tabletopwarhammer.core.domain.character.CharacterDataSource
 import com.kaesik.tabletopwarhammer.core.domain.character.CharacterItem
+import com.kaesik.tabletopwarhammer.core.domain.character.CharacterLocalDataSource
 import com.kaesik.tabletopwarhammer.core.domain.character.getAttributeValue
 import com.kaesik.tabletopwarhammer.core.presentation.MainScaffold
 import com.kaesik.tabletopwarhammer.core.presentation.components.InfoText
 import com.kaesik.tabletopwarhammer.core.presentation.components.SectionTitle
+import com.kaesik.tabletopwarhammer.core.presentation.components.SnackbarType
+import com.kaesik.tabletopwarhammer.core.presentation.components.WarhammerSnackbarHost
+import com.kaesik.tabletopwarhammer.core.presentation.components.showWarhammerSnackbar
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.getKoin
 
@@ -36,7 +36,7 @@ import org.koin.compose.getKoin
 fun CharacterFinalScreenRoot(
     viewModel: AndroidCharacterFinalViewModel = koinViewModel(),
     creatorViewModel: AndroidCharacterCreatorViewModel = getKoin().get(),
-    characterDataSource: CharacterDataSource = getKoin().get(),
+    characterLocalDataSource: CharacterLocalDataSource = getKoin().get(),
     onSaveClick: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -59,7 +59,7 @@ fun CharacterFinalScreenRoot(
     LaunchedEffect(isSaving) {
         if (isSaving) {
             try {
-                characterDataSource.insertCharacter(character)
+                characterLocalDataSource.insertCharacter(character)
 
                 snackbarHostState.showWarhammerSnackbar(
                     message = "Character saved successfully! [${character.name}]",

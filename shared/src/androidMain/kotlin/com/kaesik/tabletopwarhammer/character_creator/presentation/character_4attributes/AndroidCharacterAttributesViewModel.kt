@@ -2,17 +2,17 @@ package com.kaesik.tabletopwarhammer.character_creator.presentation.character_4a
 
 import androidx.lifecycle.ViewModel
 import com.kaesik.tabletopwarhammer.character_creator.domain.CharacterCreatorClient
-import com.kaesik.tabletopwarhammer.core.domain.library.LibraryDataSource
+import com.kaesik.tabletopwarhammer.core.domain.library.LibraryLocalDataSource
 
 class AndroidCharacterAttributesViewModel(
     private val characterCreatorClient: CharacterCreatorClient,
-    private val libraryDataSource: LibraryDataSource,
+    private val libraryLocalDataSource: LibraryLocalDataSource,
 ) : ViewModel() {
 
     private val viewModel by lazy {
         CharacterAttributesViewModel(
             characterCreatorClient = characterCreatorClient,
-            libraryDataSource = libraryDataSource
+            libraryLocalDataSource = libraryLocalDataSource
         )
     }
 

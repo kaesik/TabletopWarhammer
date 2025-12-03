@@ -1,5 +1,6 @@
 package com.kaesik.tabletopwarhammer.core.data.local
 
+import com.kaesik.tabletopwarhammer.core.domain.local.SyncStateDataSource
 import com.kaesik.tabletopwarhammer.database.TabletopWarhammerDatabase
 
 class SqlDelightSyncStateDataSource(

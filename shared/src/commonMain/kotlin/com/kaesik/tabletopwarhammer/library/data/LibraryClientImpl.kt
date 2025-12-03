@@ -23,84 +23,44 @@ import com.kaesik.tabletopwarhammer.core.data.library.mappers.toSkillItem
 import com.kaesik.tabletopwarhammer.core.data.library.mappers.toSpeciesItem
 import com.kaesik.tabletopwarhammer.core.data.library.mappers.toTalentItem
 import com.kaesik.tabletopwarhammer.core.data.remote.SupabaseClient
+import com.kaesik.tabletopwarhammer.core.domain.library.LibraryLocalDataSource
 import com.kaesik.tabletopwarhammer.core.domain.util.DataError
 import com.kaesik.tabletopwarhammer.core.domain.util.DataException
-import com.kaesik.tabletopwarhammer.di.libraryList
 import com.kaesik.tabletopwarhammer.library.domain.library.LibraryClient
 import com.kaesik.tabletopwarhammer.library.domain.library.items.LibraryItem
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.query.Columns
 import kotlinx.datetime.Instant
 
-class LibraryClientImpl : LibraryClient {
+class LibraryClientImpl(
+    private val local: LibraryLocalDataSource
+) : LibraryClient {
+
     private val supabaseClient = SupabaseClient.supabaseClient
+
+    private var libraryListCache: List<LibraryItem> = emptyList()
 
     override suspend fun getLibraryList(
         fromTable: LibraryEnum
     ): List<LibraryItem> {
         return try {
-            val supabaseList = supabaseClient.from(fromTable.tableName).select()
-            when (fromTable) {
-                LibraryEnum.ATTRIBUTE -> {
-                    supabaseList
-                        .decodeList<AttributeDto>()
-                        .map { it.toAttributeItem() }
-                }
-
-                LibraryEnum.CAREER -> {
-                    supabaseList
-                        .decodeList<CareerDto>()
-                        .map { it.toCareerItem() }
-                }
-
-                LibraryEnum.CAREER_PATH -> {
-                    supabaseList
-                        .decodeList<CareerPathDto>()
-                        .map { it.toCareerPathItem() }
-                }
-
-                LibraryEnum.CLASS -> {
-                    supabaseList
-                        .decodeList<ClassDto>()
-                        .map { it.toClassItem() }
-                }
-
-                LibraryEnum.ITEM -> {
-                    supabaseList
-                        .decodeList<ItemDto>()
-                        .map { it.toItemItem() }
-                }
-
-                LibraryEnum.QUALITY_FLAW -> {
-                    supabaseList
-                        .decodeList<QualityFlawDto>()
-                        .map { it.toQualityFlawItem() }
-                }
-
-                LibraryEnum.SKILL -> {
-                    supabaseList
-                        .decodeList<SkillDto>()
-                        .map { it.toSkillItem() }
-                }
-
-                LibraryEnum.SPECIES -> {
-                    supabaseList
-                        .decodeList<SpeciesDto>()
-                        .map { it.toSpeciesItem() }
-                }
-
-                LibraryEnum.TALENT -> {
-                    supabaseList
-                        .decodeList<TalentDto>()
-                        .map { it.toTalentItem() }
-                }
-
+            val list: List<LibraryItem> = when (fromTable) {
+                LibraryEnum.ATTRIBUTE -> local.getAllAttributes()
+                LibraryEnum.CAREER -> local.getAllCareers()
+                LibraryEnum.CAREER_PATH -> local.getAllCareerPaths()
+                LibraryEnum.CLASS -> local.getAllClasses()
+                LibraryEnum.ITEM -> local.getAllItems()
+                LibraryEnum.QUALITY_FLAW -> local.getAllQualityFlaws()
+                LibraryEnum.SKILL -> local.getAllSkills()
+                LibraryEnum.SPECIES -> local.getAllSpecies()
+                LibraryEnum.TALENT -> local.getAllTalents()
             }
+            libraryListCache = list
+            list
         } catch (e: Exception) {
-            println("Error fetching library list: ${e.message}")
+            println("Error fetching library list from local: ${e.message}")
             handleException(e)
         }
-
     }
 
     override suspend fun getLibraryItem(
@@ -108,8 +68,8 @@ class LibraryClientImpl : LibraryClient {
         itemId: String
     ): LibraryItem {
         return try {
-            libraryList = getLibraryList(fromTable)
-            libraryList.find { it.id == itemId }
+            val list = getLibraryList(fromTable)
+            list.find { it.id == itemId }
                 ?: throw DataException(DataError.Network.UNKNOWN)
         } catch (e: Exception) {
             handleException(e)
@@ -120,11 +80,18 @@ class LibraryClientImpl : LibraryClient {
         fromTable: LibraryEnum,
         sinceEpochMs: String?
     ): LibraryDelta {
+        println("DELTA [$fromTable] sinceEpochMs=$sinceEpochMs")
+
         return try {
             val tableName = fromTable.tableName
-            val sinceIso =
-                sinceEpochMs?.let { Instant.fromEpochMilliseconds(it.toLong()).toString() }
-            println("DELTA [$fromTable] sinceEpochMs=$sinceEpochMs, sinceIso=$sinceIso")
+
+            val sinceIso = sinceEpochMs
+                ?.toLongOrNull()
+                ?.let { lastMs ->
+                    Instant.fromEpochMilliseconds(lastMs + 1).toString()
+                }
+
+            println("DELTA [$fromTable] sinceIso=$sinceIso")
 
             val updatedDtos = if (sinceIso == null) {
                 supabaseClient.from(tableName)
@@ -138,97 +105,87 @@ class LibraryClientImpl : LibraryClient {
                     }
             }
 
-            val items: List<LibraryItem>
-            val updatedTimestamps: List<Long> = when (fromTable) {
+            val (items, updatedInstants) = when (fromTable) {
 
                 LibraryEnum.ATTRIBUTE -> {
                     val dtos = updatedDtos.decodeList<AttributeDto>()
-                    items = dtos.map { it.toAttributeItem() }
-                    dtos.mapNotNull {
-                        it.updatedAt?.let { ts ->
-                            Instant.parse(ts).toEpochMilliseconds()
-                        }
+                    val items = dtos.map { it.toAttributeItem() }
+                    val instants = dtos.mapNotNull { dto ->
+                        dto.updatedAt?.let { Instant.parse(it) }
                     }
+                    items to instants
                 }
 
                 LibraryEnum.CAREER -> {
                     val dtos = updatedDtos.decodeList<CareerDto>()
-                    items = dtos.map { it.toCareerItem() }
-                    dtos.mapNotNull {
-                        it.updatedAt?.let { ts ->
-                            Instant.parse(ts).toEpochMilliseconds()
-                        }
+                    val items = dtos.map { it.toCareerItem() }
+                    val instants = dtos.mapNotNull { dto ->
+                        dto.updatedAt?.let { Instant.parse(it) }
                     }
+                    items to instants
                 }
 
                 LibraryEnum.CAREER_PATH -> {
                     val dtos = updatedDtos.decodeList<CareerPathDto>()
-                    items = dtos.map { it.toCareerPathItem() }
-                    dtos.mapNotNull {
-                        it.updatedAt?.let { ts ->
-                            Instant.parse(ts).toEpochMilliseconds()
-                        }
+                    val items = dtos.map { it.toCareerPathItem() }
+                    val instants = dtos.mapNotNull { dto ->
+                        dto.updatedAt?.let { Instant.parse(it) }
                     }
+                    items to instants
                 }
 
                 LibraryEnum.CLASS -> {
                     val dtos = updatedDtos.decodeList<ClassDto>()
-                    items = dtos.map { it.toClassItem() }
-                    dtos.mapNotNull {
-                        it.updatedAt?.let { ts ->
-                            Instant.parse(ts).toEpochMilliseconds()
-                        }
+                    val items = dtos.map { it.toClassItem() }
+                    val instants = dtos.mapNotNull { dto ->
+                        dto.updatedAt?.let { Instant.parse(it) }
                     }
+                    items to instants
                 }
 
                 LibraryEnum.ITEM -> {
                     val dtos = updatedDtos.decodeList<ItemDto>()
-                    items = dtos.map { it.toItemItem() }
-                    dtos.mapNotNull {
-                        it.updatedAt?.let { ts ->
-                            Instant.parse(ts).toEpochMilliseconds()
-                        }
+                    val items = dtos.map { it.toItemItem() }
+                    val instants = dtos.mapNotNull { dto ->
+                        dto.updatedAt?.let { Instant.parse(it) }
                     }
+                    items to instants
                 }
 
                 LibraryEnum.QUALITY_FLAW -> {
                     val dtos = updatedDtos.decodeList<QualityFlawDto>()
-                    items = dtos.map { it.toQualityFlawItem() }
-                    dtos.mapNotNull {
-                        it.updatedAt?.let { ts ->
-                            Instant.parse(ts).toEpochMilliseconds()
-                        }
+                    val items = dtos.map { it.toQualityFlawItem() }
+                    val instants = dtos.mapNotNull { dto ->
+                        dto.updatedAt?.let { Instant.parse(it) }
                     }
+                    items to instants
                 }
 
                 LibraryEnum.SKILL -> {
                     val dtos = updatedDtos.decodeList<SkillDto>()
-                    items = dtos.map { it.toSkillItem() }
-                    dtos.mapNotNull {
-                        it.updatedAt?.let { ts ->
-                            Instant.parse(ts).toEpochMilliseconds()
-                        }
+                    val items = dtos.map { it.toSkillItem() }
+                    val instants = dtos.mapNotNull { dto ->
+                        dto.updatedAt?.let { Instant.parse(it) }
                     }
+                    items to instants
                 }
 
                 LibraryEnum.SPECIES -> {
                     val dtos = updatedDtos.decodeList<SpeciesDto>()
-                    items = dtos.map { it.toSpeciesItem() }
-                    dtos.mapNotNull {
-                        it.updatedAt?.let { ts ->
-                            Instant.parse(ts).toEpochMilliseconds()
-                        }
+                    val items = dtos.map { it.toSpeciesItem() }
+                    val instants = dtos.mapNotNull { dto ->
+                        dto.updatedAt?.let { Instant.parse(it) }
                     }
+                    items to instants
                 }
 
                 LibraryEnum.TALENT -> {
                     val dtos = updatedDtos.decodeList<TalentDto>()
-                    items = dtos.map { it.toTalentItem() }
-                    dtos.mapNotNull {
-                        it.updatedAt?.let { ts ->
-                            Instant.parse(ts).toEpochMilliseconds()
-                        }
+                    val items = dtos.map { it.toTalentItem() }
+                    val instants = dtos.mapNotNull { dto ->
+                        dto.updatedAt?.let { Instant.parse(it) }
                     }
+                    items to instants
                 }
             }
 
@@ -248,22 +205,27 @@ class LibraryClientImpl : LibraryClient {
                     .decodeList<DeletionLogDto>()
                     .map { it.entityId }
             }
-            println("DELTA [$fromTable] updatedDtos=${updatedDtos}")
-            println("DELTA [$fromTable] items=${items.size}, timestamps=${updatedTimestamps.size}")
+
+            println("DELTA [$fromTable] items=${items.size}, timestamps=${updatedInstants.size}")
             println("DELTA [$fromTable] deletedIds=${deletedIds.size}")
 
-            val maxTs = updatedTimestamps.maxOrNull() ?: sinceEpochMs?.toLong() ?: 0L
-            println("DELTA [$fromTable] maxTimestamp=${maxTs}")
+            val maxInstant = updatedInstants.maxOrNull()
+            val maxEpochMs = when {
+                maxInstant != null -> maxInstant.toEpochMilliseconds()
+                sinceEpochMs != null -> sinceEpochMs.toLongOrNull() ?: 0L
+                else -> 0L
+            }
+
+            println("DELTA [$fromTable] maxTimestamp=$maxEpochMs")
 
             LibraryDelta(
                 items = items,
                 deletedIds = deletedIds,
-                maxTimestampEpochMs = maxTs
+                maxTimestampEpochMs = maxEpochMs
             )
 
         } catch (e: Exception) {
             handleException(e)
         }
     }
-
 }

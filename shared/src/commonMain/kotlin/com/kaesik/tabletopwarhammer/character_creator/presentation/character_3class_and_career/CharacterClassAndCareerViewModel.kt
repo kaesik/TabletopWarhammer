@@ -3,7 +3,7 @@ package com.kaesik.tabletopwarhammer.character_creator.presentation.character_3c
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kaesik.tabletopwarhammer.character_creator.domain.CharacterCreatorClient
-import com.kaesik.tabletopwarhammer.core.domain.library.LibraryDataSource
+import com.kaesik.tabletopwarhammer.core.domain.library.LibraryLocalDataSource
 import com.kaesik.tabletopwarhammer.core.domain.library.items.CareerItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.CareerPathItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.ClassItem
@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 
 class CharacterClassAndCareerViewModel(
     private val characterCreatorClient: CharacterCreatorClient,
-    private val libraryDataSource: LibraryDataSource,
+    private val libraryLocalDataSource: LibraryLocalDataSource,
 ) : ViewModel() {
     private val _state = MutableStateFlow(CharacterClassAndCareerState())
     val state = _state.asStateFlow()
@@ -75,7 +75,7 @@ class CharacterClassAndCareerViewModel(
 
             // Roll a random class and career from the list and update the state with the rolled class and career
             is CharacterClassAndCareerEvent.OnClassAndCareerRoll -> onClassAndCareerRoll(event.speciesName)
-            
+
             else -> Unit
         }
     }
@@ -83,7 +83,7 @@ class CharacterClassAndCareerViewModel(
     private suspend fun fetchClassList(): List<ClassItem> {
         return try {
             // PLACEHOLDER: Replace with actual condition to determine data source
-            if (true) libraryDataSource.getAllClasses()
+            if (true) libraryLocalDataSource.getAllClasses()
             else characterCreatorClient.getAllClasses()
 
         } catch (e: DataException) {
@@ -100,7 +100,7 @@ class CharacterClassAndCareerViewModel(
     private suspend fun fetchCareerList(speciesName: String, className: String): List<CareerItem> {
         return try {
             // PLACEHOLDER: Replace with actual condition to determine data source
-            if (true) libraryDataSource
+            if (true) libraryLocalDataSource
                 .getFilteredCareers(speciesName = speciesName, className = className)
             else characterCreatorClient
                 .getFilteredCareers(speciesName = speciesName, className = className)
@@ -122,7 +122,7 @@ class CharacterClassAndCareerViewModel(
 
         return try {
             // PLACEHOLDER: Replace with actual condition to determine data source
-            if (true) libraryDataSource.getCareerPath(firstCareerPathName)
+            if (true) libraryLocalDataSource.getCareerPath(firstCareerPathName)
             else characterCreatorClient.getCareerPath(firstCareerPathName)
         } catch (e: Exception) {
             null

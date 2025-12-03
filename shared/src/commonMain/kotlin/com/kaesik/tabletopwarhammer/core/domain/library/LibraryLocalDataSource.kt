@@ -1,5 +1,6 @@
 package com.kaesik.tabletopwarhammer.core.domain.library
 
+import com.kaesik.tabletopwarhammer.core.data.library.LibraryEnum
 import com.kaesik.tabletopwarhammer.core.domain.library.items.AttributeItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.CareerItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.CareerPathItem
@@ -10,7 +11,9 @@ import com.kaesik.tabletopwarhammer.core.domain.library.items.SkillItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.SpeciesItem
 import com.kaesik.tabletopwarhammer.core.domain.library.items.TalentItem
 
-interface LibraryDataSource {
+interface LibraryLocalDataSource {
+    suspend fun deleteById(table: LibraryEnum, id: String)
+
     fun getAllAttributes(): List<AttributeItem>
     fun getAttribute(attributeName: String): AttributeItem
     suspend fun insertAttribute(item: AttributeItem)

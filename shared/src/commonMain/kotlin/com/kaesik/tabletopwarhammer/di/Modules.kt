@@ -20,19 +20,21 @@ import com.kaesik.tabletopwarhammer.character_creator.presentation.character_6tr
 import com.kaesik.tabletopwarhammer.character_creator.presentation.character_7details.CharacterDetailsViewModel
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_1sheet_list.CharacterSheetListViewModel
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.CharacterSheetViewModel
-import com.kaesik.tabletopwarhammer.core.data.character.SqlDelightCharacterDataSource
-import com.kaesik.tabletopwarhammer.core.data.library.SqlDelightLibraryDataSource
+import com.kaesik.tabletopwarhammer.core.data.character.SqlDelightCharacterLocalDataSource
+import com.kaesik.tabletopwarhammer.core.data.library.SqlDelightLibraryLocalDataSource
 import com.kaesik.tabletopwarhammer.core.data.local.DatabaseDriverFactory
 import com.kaesik.tabletopwarhammer.core.data.local.SqlDelightSyncStateDataSource
-import com.kaesik.tabletopwarhammer.core.data.local.SyncStateDataSource
 import com.kaesik.tabletopwarhammer.core.data.remote.HttpClientFactory
+import com.kaesik.tabletopwarhammer.core.data.remote.LibraryStartupSyncImpl
 import com.kaesik.tabletopwarhammer.core.data.remote.SupabaseLibrarySyncManagerImpl
-import com.kaesik.tabletopwarhammer.core.domain.character.CharacterDataSource
+import com.kaesik.tabletopwarhammer.core.domain.character.CharacterLocalDataSource
 import com.kaesik.tabletopwarhammer.core.domain.info.InfoMappers
 import com.kaesik.tabletopwarhammer.core.domain.info.InfoRepository
 import com.kaesik.tabletopwarhammer.core.domain.info.SimpleInfoMappers
-import com.kaesik.tabletopwarhammer.core.domain.library.LibraryDataSource
+import com.kaesik.tabletopwarhammer.core.domain.library.LibraryLocalDataSource
 import com.kaesik.tabletopwarhammer.core.domain.library.items.AttributeItem
+import com.kaesik.tabletopwarhammer.core.domain.local.SyncStateDataSource
+import com.kaesik.tabletopwarhammer.core.domain.remote.LibraryStartupSync
 import com.kaesik.tabletopwarhammer.core.domain.remote.SupabaseLibrarySyncManager
 import com.kaesik.tabletopwarhammer.database.TabletopWarhammerDatabase
 import com.kaesik.tabletopwarhammer.features.presentation.info.InfoDialogViewModel
@@ -67,15 +69,23 @@ val sharedModule = module {
     single { HttpClientFactory.create(get()) }
     single { get<DatabaseDriverFactory>().create() }
     single { TabletopWarhammerDatabase(get()) }
-    single<CharacterDataSource> { SqlDelightCharacterDataSource(get()) }
-    single<LibraryDataSource> { SqlDelightLibraryDataSource(get()) }
+    single<CharacterLocalDataSource> { SqlDelightCharacterLocalDataSource(get()) }
+    single<LibraryLocalDataSource> { SqlDelightLibraryLocalDataSource(get()) }
+
     single<SyncStateDataSource> { SqlDelightSyncStateDataSource(get()) }
+
     single<SupabaseLibrarySyncManager> {
         SupabaseLibrarySyncManagerImpl(
             libraryClient = get(),
             library = get(),
-            database = get(),
             syncState = get()
+        )
+    }
+
+    single<LibraryStartupSync> {
+        LibraryStartupSyncImpl(
+            local = get(),
+            remoteSync = get()
         )
     }
 
@@ -112,7 +122,11 @@ val sharedModule = module {
     // Library
     single { libraryList }
     single { libraryItem }
-    single<LibraryClient> { LibraryClientImpl() }
+    single<LibraryClient> {
+        LibraryClientImpl(
+            local = get(),
+        )
+    }
     viewModel { (fromTable: String) -> LibraryViewModel() }
     viewModelOf(::LibraryViewModel)
     viewModelOf(::LibraryListViewModel)
@@ -123,7 +137,11 @@ val sharedModule = module {
     viewModelOf(::CharacterSheetViewModel)
 
     // Character Creator
-    single<CharacterCreatorClient> { CharacterCreatorClientImpl() }
+    single<CharacterCreatorClient> {
+        CharacterCreatorClientImpl(
+            local = get(),
+        )
+    }
     viewModelOf(::CharacterCreatorViewModel)
     viewModelOf(::CharacterSpeciesViewModel)
     viewModelOf(::CharacterClassAndCareerViewModel)
