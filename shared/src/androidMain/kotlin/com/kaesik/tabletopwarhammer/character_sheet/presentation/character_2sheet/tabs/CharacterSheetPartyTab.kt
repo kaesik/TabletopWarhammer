@@ -9,12 +9,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.components.WarhammerInfoRow
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.components.WarhammerSectionTitle
 import com.kaesik.tabletopwarhammer.core.domain.character.CharacterItem
-import com.kaesik.tabletopwarhammer.core.presentation.components.InfoText
-import com.kaesik.tabletopwarhammer.core.presentation.components.SectionTitle
 
 @Composable
-fun CharacterSheetPartyTab(character: CharacterItem) {
+fun CharacterSheetPartyTab(
+    character: CharacterItem,
+    onCharacterChange: (CharacterItem) -> Unit
+) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -22,12 +25,12 @@ fun CharacterSheetPartyTab(character: CharacterItem) {
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         if (character.partyName.isNotBlank()) {
-            item { SectionTitle("Party") }
-            item { InfoText("Name", character.partyName) }
-            item { InfoText("Short-Term Ambition", character.partyAmbitionShortTerm) }
-            item { InfoText("Long-Term Ambition", character.partyAmbitionLongTerm) }
+            item { WarhammerSectionTitle("Party") }
+            item { WarhammerInfoRow("Name", character.partyName) }
+            item { WarhammerInfoRow("Short-Term Ambition", character.partyAmbitionShortTerm) }
+            item { WarhammerInfoRow("Long-Term Ambition", character.partyAmbitionLongTerm) }
             character.partyMembers.forEachIndexed { index, member ->
-                item { InfoText("Member ${index + 1}", member) }
+                item { WarhammerInfoRow("Member ${index + 1}", member) }
             }
         } else {
             item { Text("No party", style = MaterialTheme.typography.bodyMedium) }

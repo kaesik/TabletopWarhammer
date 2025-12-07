@@ -8,4 +8,5 @@ interface CharacterLocalDataSource {
     fun getCharacter(context: CoroutineContext): CommonFlow<List<CharacterItem>>
     suspend fun deleteCharacter(id: Long)
     suspend fun insertCharacter(characterItem: CharacterItem)
+    suspend fun updateCharacter(characterItem: CharacterItem)
 }

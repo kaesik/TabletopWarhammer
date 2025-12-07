@@ -8,6 +8,7 @@ data class CharacterSheetState(
     val message: String? = null,
     val isError: Boolean = false,
     val isLoading: Boolean = false,
+    val isSaving: Boolean = false,
 
     val character: CharacterItem? = null
 )

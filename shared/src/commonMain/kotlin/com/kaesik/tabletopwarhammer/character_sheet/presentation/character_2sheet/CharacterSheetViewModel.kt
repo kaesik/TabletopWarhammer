@@ -21,7 +21,11 @@ class CharacterSheetViewModel(
         when (event) {
             is CharacterSheetEvent.LoadCharacterById -> {
                 viewModelScope.launch {
-                    _state.value = _state.value.copy(isLoading = true, error = null)
+                    _state.value = _state.value.copy(
+                        isLoading = true,
+                        error = null
+                    )
+
                     try {
                         val characters = characterLocalDataSource.getAllCharacters()
                         val character = characters.find { it.id == event.id }
@@ -42,10 +46,39 @@ class CharacterSheetViewModel(
                             error = e.error,
                             isLoading = false
                         )
-                    } catch (e: Exception) {
+                    } catch (_: Exception) {
                         _state.value = _state.value.copy(
                             error = DataError.Local.UNKNOWN,
                             isLoading = false
+                        )
+                    }
+                }
+            }
+
+            is CharacterSheetEvent.SaveCharacter -> {
+                viewModelScope.launch {
+                    _state.value = _state.value.copy(
+                        isSaving = true,
+                        error = null
+                    )
+
+                    try {
+                        characterLocalDataSource.updateCharacter(event.character)
+
+                        _state.value = _state.value.copy(
+                            character = event.character,
+                            isSaving = false,
+                            message = "Zapisano kartę postaci"
+                        )
+                    } catch (e: DataException) {
+                        _state.value = _state.value.copy(
+                            error = e.error,
+                            isSaving = false
+                        )
+                    } catch (_: Exception) {
+                        _state.value = _state.value.copy(
+                            error = DataError.Local.UNKNOWN,
+                            isSaving = false
                         )
                     }
                 }
@@ -58,8 +91,6 @@ class CharacterSheetViewModel(
             is CharacterSheetEvent.ClearMessage -> {
                 _state.update { it.copy(message = null) }
             }
-
-            else -> Unit
         }
     }
 }
