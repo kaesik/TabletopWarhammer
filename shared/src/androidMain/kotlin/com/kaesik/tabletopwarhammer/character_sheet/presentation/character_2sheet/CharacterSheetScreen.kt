@@ -7,11 +7,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.components.WarhammerTabChip
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.CharacterSheetAttributesTab
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.CharacterSheetCombatTab
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.CharacterSheetGeneralTab
@@ -109,7 +109,7 @@ fun CharacterSheetScreen(
         content = {
             Column(Modifier.fillMaxSize()) {
 
-                // Pasek z przyciskiem "Save"
+                // SAVE BUTTON
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -117,95 +117,83 @@ fun CharacterSheetScreen(
                     horizontalArrangement = Arrangement.End
                 ) {
                     WarhammerButton(
-                        onClick = {
-                            onEvent(CharacterSheetEvent.SaveCharacter(editableCharacter))
-                        },
+                        onClick = { onEvent(CharacterSheetEvent.SaveCharacter(editableCharacter)) },
                         text = if (state.isSaving) "Saving..." else "Save",
-                        isLoading = state.isSaving,  // <-- TU ważna zmiana
-                        enabled = !state.isSaving    // opcjonalnie blokujemy podczas zapisu
+                        isLoading = state.isSaving,
+                        enabled = !state.isSaving
                     )
                 }
 
-                TabRow(selectedTabIndex = tabs.indexOf(currentTab)) {
-                    tabs.forEach { tab ->
-                        Tab(
-                            selected = tab == currentTab,
-                            onClick = { currentTab = tab },
-                            text = { Text(tab.title) }
+                // SCROLLABLE TAB "CHMURKI"
+                LazyRow(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(tabs.size) { index ->
+                        val tab = tabs[index]
+                        val selected = tab == currentTab
+
+                        WarhammerTabChip(
+                            text = tab.title,
+                            selected = selected,
+                            onClick = { currentTab = tab }
                         )
                     }
                 }
 
+                // TAB CONTENT
                 when (currentTab) {
-                    CharacterSheetTab.General -> {
-                        CharacterSheetGeneralTab(
-                            character = editableCharacter,
-                            onCharacterChange = { editableCharacter = it }
-                        )
-                    }
+                    CharacterSheetTab.General -> CharacterSheetGeneralTab(
+                        character = editableCharacter,
+                        onCharacterChange = { editableCharacter = it }
+                    )
 
-                    CharacterSheetTab.Points -> {
-                        CharacterSheetPointsTab(
-                            character = editableCharacter,
-                            onCharacterChange = { editableCharacter = it }
-                        )
-                    }
+                    CharacterSheetTab.Points -> CharacterSheetPointsTab(
+                        character = editableCharacter,
+                        onCharacterChange = { editableCharacter = it }
+                    )
 
-                    CharacterSheetTab.Attributes -> {
-                        CharacterSheetAttributesTab(
-                            character = editableCharacter,
-                            onCharacterChange = { editableCharacter = it }
-                        )
-                    }
+                    CharacterSheetTab.Attributes -> CharacterSheetAttributesTab(
+                        character = editableCharacter,
+                        onCharacterChange = { editableCharacter = it }
+                    )
 
-                    CharacterSheetTab.Skills -> {
-                        CharacterSheetSkillsTab(
-                            character = editableCharacter,
-                            onCharacterChange = { editableCharacter = it }
-                        )
-                    }
+                    CharacterSheetTab.Skills -> CharacterSheetSkillsTab(
+                        character = editableCharacter,
+                        onCharacterChange = { editableCharacter = it }
+                    )
 
-                    CharacterSheetTab.Talents -> {
-                        CharacterSheetTalentsTab(
-                            character = editableCharacter,
-                            onCharacterChange = { editableCharacter = it }
-                        )
-                    }
+                    CharacterSheetTab.Talents -> CharacterSheetTalentsTab(
+                        character = editableCharacter,
+                        onCharacterChange = { editableCharacter = it }
+                    )
 
-                    CharacterSheetTab.Inventory -> {
-                        CharacterSheetInventoryTab(
-                            character = editableCharacter,
-                            onCharacterChange = { editableCharacter = it }
-                        )
-                    }
+                    CharacterSheetTab.Inventory -> CharacterSheetInventoryTab(
+                        character = editableCharacter,
+                        onCharacterChange = { editableCharacter = it }
+                    )
 
-                    CharacterSheetTab.SpellsAndPrayers -> {
-                        CharacterSheetSpellsAndPrayersTab(
-                            character = editableCharacter,
-                            onCharacterChange = { editableCharacter = it }
-                        )
-                    }
+                    CharacterSheetTab.SpellsAndPrayers -> CharacterSheetSpellsAndPrayersTab(
+                        character = editableCharacter,
+                        onCharacterChange = { editableCharacter = it }
+                    )
 
-                    CharacterSheetTab.Party -> {
-                        CharacterSheetPartyTab(
-                            character = editableCharacter,
-                            onCharacterChange = { editableCharacter = it }
-                        )
-                    }
+                    CharacterSheetTab.Party -> CharacterSheetPartyTab(
+                        character = editableCharacter,
+                        onCharacterChange = { editableCharacter = it }
+                    )
 
-                    CharacterSheetTab.Combat -> {
-                        CharacterSheetCombatTab(
-                            character = editableCharacter,
-                            onCharacterChange = { editableCharacter = it }
-                        )
-                    }
+                    CharacterSheetTab.Combat -> CharacterSheetCombatTab(
+                        character = editableCharacter,
+                        onCharacterChange = { editableCharacter = it }
+                    )
 
-                    CharacterSheetTab.Notes -> {
-                        CharacterSheetNotesTab(
-                            character = editableCharacter,
-                            onCharacterChange = { editableCharacter = it }
-                        )
-                    }
+                    CharacterSheetTab.Notes -> CharacterSheetNotesTab(
+                        character = editableCharacter,
+                        onCharacterChange = { editableCharacter = it }
+                    )
                 }
             }
         }
