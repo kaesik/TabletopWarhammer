@@ -7,20 +7,22 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -146,34 +148,16 @@ fun CharacterSheetGeneralTab(
                             .padding(8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        GeneralNumberField(
-                            label = "Fate",
-                            value = character.fate,
-                            onValueChange = { onCharacterChange(character.copy(fate = it)) }
-                        )
-
-                        GeneralNumberField(
-                            label = "Fortune",
-                            value = character.fortune,
-                            onValueChange = { onCharacterChange(character.copy(fortune = it)) }
-                        )
-
-                        GeneralNumberField(
-                            label = "Resilience",
-                            value = character.resilience,
-                            onValueChange = { onCharacterChange(character.copy(resilience = it)) }
-                        )
-
-                        GeneralNumberField(
-                            label = "Resolve",
-                            value = character.resolve,
-                            onValueChange = { onCharacterChange(character.copy(resolve = it)) }
+                        GeneralTextField(
+                            label = "Short Term Ambition",
+                            value = character.ambitionShortTerm,
+                            onValueChange = { onCharacterChange(character.copy(ambitionShortTerm = it)) }
                         )
 
                         GeneralTextField(
-                            label = "Motivation",
-                            value = character.motivation,
-                            onValueChange = { onCharacterChange(character.copy(motivation = it)) }
+                            label = "Long Term Ambition",
+                            value = character.ambitionLongTerm,
+                            onValueChange = { onCharacterChange(character.copy(ambitionLongTerm = it)) }
                         )
                     }
                 }
@@ -212,7 +196,7 @@ private fun GeneralPointsHeader() {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "Points and Motivation",
+            text = "Character Ambitions",
             modifier = Modifier
                 .weight(1f)
                 .padding(horizontal = 8.dp),
@@ -227,7 +211,7 @@ fun GeneralTextField(
     label: String,
     value: String,
     onValueChange: (String) -> Unit,
-    singleLine: Boolean = true,
+    singleLine: Boolean = false,
     modifier: Modifier = Modifier.fillMaxWidth()
 ) {
     Column {
@@ -241,21 +225,26 @@ fun GeneralTextField(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        TextField(
-            value = value,
-            onValueChange = onValueChange,
-            modifier = modifier.height(32.dp),
-            singleLine = singleLine,
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = Brown1,
-                unfocusedContainerColor = Brown1,
-                focusedTextColor = Black1,
-                unfocusedTextColor = Black1,
+        Box(
+            modifier = modifier
+                .defaultMinSize(minHeight = 32.dp)
+                .background(Brown1)
+                .padding(horizontal = 8.dp, vertical = 4.dp)
+        ) {
+            BasicTextField(
+                value = value,
+                onValueChange = onValueChange,
+                textStyle = LocalTextStyle.current.copy(
+                    color = Black1,
+                ),
+                cursorBrush = SolidColor(Black1),
+                singleLine = singleLine,
+                maxLines = Int.MAX_VALUE,
+                modifier = modifier
             )
-        )
+        }
     }
 }
-
 
 @Composable
 fun GeneralNumberField(
@@ -272,22 +261,27 @@ fun GeneralNumberField(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        TextField(
-            value = value.toString(),
-            onValueChange = { text ->
-                val intValue = text.toIntOrNull() ?: 0
-                onValueChange(intValue)
-            },
-            modifier = modifier,
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = Brown1,
-                unfocusedContainerColor = Brown1,
-                focusedTextColor = Black1,
-                unfocusedTextColor = Black1,
+        Box(
+            modifier = modifier
+                .height(32.dp)
+                .background(Brown1)
+                .padding(horizontal = 8.dp, vertical = 6.dp)
+        ) {
+            BasicTextField(
+                value = value.toString(),
+                onValueChange = { text ->
+                    val intValue = text.toIntOrNull() ?: 0
+                    onValueChange(intValue)
+                },
+                textStyle = LocalTextStyle.current.copy(
+                    color = Black1,
+                ),
+                cursorBrush = SolidColor(Black1),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                modifier = modifier
             )
-        )
+        }
     }
 }
 
