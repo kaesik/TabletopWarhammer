@@ -144,12 +144,14 @@ class SqlDelightCharacterLocalDataSource(
                 ListSerializer(String.serializer()),
                 characterItem.mutations
             ),
+            corruption = characterItem.corruption.toString(),
             wealth = json.encodeToString(ListSerializer(Int.serializer()), characterItem.wealth),
             encumbrance = json.encodeToString(
                 ListSerializer(Int.serializer()),
                 characterItem.encumbrance
             ),
             wounds = json.encodeToString(ListSerializer(Int.serializer()), characterItem.wounds),
+            woundsFormula = characterItem.woundsFormula,
             spells = json.encodeToString(
                 ListSerializer(ListSerializer(String.serializer())),
                 characterItem.spells
@@ -274,6 +276,7 @@ class SqlDelightCharacterLocalDataSource(
                 ListSerializer(String.serializer()),
                 characterItem.mutations
             ),
+            corruption = characterItem.corruption.toString(),
             wealth = json.encodeToString(
                 ListSerializer(Int.serializer()),
                 characterItem.wealth

@@ -25,17 +25,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.components.WarhammerTabChip
-import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.attributes.CharacterSheetAttributesTab
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.CharacterSheetCombatTab
-import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.general.CharacterSheetGeneralTab
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.CharacterSheetInventoryTab
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.CharacterSheetNotesTab
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.CharacterSheetPartyTab
-import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.CharacterSheetPointsTab
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.CharacterSheetSkillsTab
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.CharacterSheetSpellsAndPrayersTab
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.CharacterSheetTab
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.CharacterSheetTalentsTab
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.attributes.CharacterSheetAttributesTab
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.general.CharacterSheetGeneralTab
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.points.CharacterSheetPointsTab
 import com.kaesik.tabletopwarhammer.core.domain.character.CharacterItem
 import com.kaesik.tabletopwarhammer.core.presentation.MainScaffold
 import com.kaesik.tabletopwarhammer.core.presentation.components.SnackbarType
@@ -257,9 +257,11 @@ fun CharacterSheetScreenPreview() {
             trappings = emptyList(),
             psychology = emptyList(),
             mutations = emptyList(),
+            corruption = 0,
             wealth = listOf(10, 0, 0),
             encumbrance = emptyList(),
             wounds = emptyList(),
+            woundsFormula = "xxx",
             spells = emptyList(),
             prayers = emptyList(),
             sin = 0,

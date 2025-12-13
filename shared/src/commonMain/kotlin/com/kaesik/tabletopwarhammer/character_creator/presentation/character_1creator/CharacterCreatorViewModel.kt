@@ -102,11 +102,13 @@ class CharacterCreatorViewModel : ViewModel() {
 
             // SPECIES
             is CharacterCreatorEvent.SetSpecies -> {
+
                 _state.update { current ->
                     val newSpecies = event.speciesItem.name
                     val resetClassAndCareer = current.character.species != newSpecies
                     val updatedCharacter = current.character.copy(
                         species = newSpecies,
+                        woundsFormula = event.speciesItem.wounds ?: current.character.woundsFormula,
                         cLass = if (resetClassAndCareer) "" else current.character.cLass,
                         career = if (resetClassAndCareer) "" else current.character.career,
                         careerLevel = if (resetClassAndCareer) "" else current.character.careerLevel,
@@ -207,6 +209,8 @@ class CharacterCreatorViewModel : ViewModel() {
                         return if (value != null) listOf(value, 0, value) else old
                     }
 
+                    val maxWounds = calculateMaxWounds(character, character.woundsFormula)
+
                     val updatedCharacter = character.copy(
                         weaponSkill = tripleOrOld(0, character.weaponSkill),
                         ballisticSkill = tripleOrOld(1, character.ballisticSkill),
@@ -222,7 +226,9 @@ class CharacterCreatorViewModel : ViewModel() {
                         fate = event.fatePoints ?: character.fate,
                         fortune = event.fatePoints ?: character.fortune,
                         resilience = event.resiliencePoints ?: character.resilience,
-                        resolve = character.resolve
+                        resolve = character.resolve,
+
+                        wounds = listOf(maxWounds, maxWounds)
                     )
 
                     println("Updated CharacterItem: $updatedCharacter")
@@ -329,4 +335,38 @@ class CharacterCreatorViewModel : ViewModel() {
             else -> Unit
         }
     }
+
+    private fun calculateMaxWounds(character: CharacterItem, formula: String?): Int {
+        if (formula.isNullOrBlank()) return 0
+
+        val s = character.strength.getOrNull(2) ?: 0
+        val t = character.toughness.getOrNull(2) ?: 0
+        val wp = character.willPower.getOrNull(2) ?: 0
+
+        fun bonus(v: Int) = (v / 10).coerceAtLeast(0)
+
+        val replaced = formula
+            .replace("SB", bonus(s).toString())
+            .replace("TB", bonus(t).toString())
+            .replace("WPB", bonus(wp).toString())
+            .replace(" ", "")
+            .replace("(", "")
+            .replace(")", "")
+
+        return try {
+            replaced.split("+").sumOf { term ->
+                if (term.contains("*")) {
+                    val parts = term.split("*")
+                    parts.fold(1) { acc, part ->
+                        acc * part.toInt()
+                    }
+                } else {
+                    term.toInt()
+                }
+            }
+        } catch (_: Exception) {
+            0
+        }
+    }
+
 }

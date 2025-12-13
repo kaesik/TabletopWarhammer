@@ -82,6 +82,7 @@ data class CharacterItem(
     // PSYCHOLOGY & MUTATIONS
     val psychology: List<String>,
     val mutations: List<String>,
+    val corruption: Int,
 
     // WEALTH
     val wealth: List<Int>,
@@ -89,8 +90,9 @@ data class CharacterItem(
     // ENCUMBRANCE
     val encumbrance: List<Int>,
 
-    // WOUNDS
+    // WOUNDS[ACTUAL,MAX]
     val wounds: List<Int>,
+    val woundsFormula: String,
 
     // SPELLS & PRAYERS
     // SPELLS[NAME[CN,RANGE,TARGET,DURATION,EFFECT]
@@ -99,7 +101,7 @@ data class CharacterItem(
     val prayers: List<List<String>>,
     val sin: Int,
 
-    //
+    // METADATA
     val updatedAt: String?,
     val createdAt: String?,
     val deletedAt: String?,
@@ -151,9 +153,11 @@ data class CharacterItem(
             trappings = emptyList(),
             psychology = emptyList(),
             mutations = emptyList(),
+            corruption = 0,
             wealth = listOf(0, 0, 0),
             encumbrance = listOf(0, 0, 0),
-            wounds = listOf(0, 0, 0),
+            wounds = listOf(0, 0),
+            woundsFormula = "xxx",
             spells = emptyList(),
             prayers = emptyList(),
             sin = 0,

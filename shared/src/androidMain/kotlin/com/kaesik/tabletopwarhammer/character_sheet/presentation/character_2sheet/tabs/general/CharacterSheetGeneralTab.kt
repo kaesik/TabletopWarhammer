@@ -31,6 +31,7 @@ import com.kaesik.tabletopwarhammer.core.domain.character.CharacterItem
 import com.kaesik.tabletopwarhammer.core.theme.Black1
 import com.kaesik.tabletopwarhammer.core.theme.Brown1
 
+// TODO: CLEAN THAT THING UP LATER
 @Composable
 fun CharacterSheetGeneralTab(
     character: CharacterItem,

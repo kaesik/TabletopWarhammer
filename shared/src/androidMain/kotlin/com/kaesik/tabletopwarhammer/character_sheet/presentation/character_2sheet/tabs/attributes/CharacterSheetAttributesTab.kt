@@ -2,6 +2,7 @@ package com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2she
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,12 +17,16 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults.iconButtonColors
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,6 +45,7 @@ fun CharacterSheetAttributesTab(
     character: CharacterItem,
     onCharacterChange: (CharacterItem) -> Unit
 ) {
+    println(character)
     val attributes = remember(character) {
         listOf(
             AttributeRowState(
@@ -155,6 +161,27 @@ fun CharacterSheetAttributesTab(
         )
     }
 
+    fun updateCurrentWounds(
+        character: CharacterItem,
+        delta: Int,
+        onCharacterChange: (CharacterItem) -> Unit
+    ) {
+        val list = character.wounds.toMutableList()
+        while (list.size < 2) list.add(0)
+
+        val maxWounds = list[1].coerceAtLeast(0)
+        if (maxWounds <= 0) return
+
+        val storedCurrent = list[0]
+        val effectiveCurrent = if (storedCurrent <= 0) maxWounds else storedCurrent
+
+        val newCurrent = (effectiveCurrent + delta).coerceIn(0, maxWounds)
+
+        list[0] = newCurrent
+
+        onCharacterChange(character.copy(wounds = list))
+    }
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -180,6 +207,11 @@ fun CharacterSheetAttributesTab(
 
                     HorizontalDivider(thickness = 1.dp, color = Brown1)
 
+                    val maxWounds = character.wounds.getOrNull(1) ?: 0
+                    val storedCurrent = character.wounds.getOrNull(0) ?: 0
+                    val currentWounds =
+                        if (storedCurrent <= 0 && maxWounds > 0) maxWounds else storedCurrent
+
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -187,19 +219,28 @@ fun CharacterSheetAttributesTab(
                             .background(Black1),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+                        PointsStepperCell(
+                            value = currentWounds,
+                            onIncrement = {
+                                updateCurrentWounds(character, +1, onCharacterChange)
+                            },
+                            onDecrement = {
+                                updateCurrentWounds(character, -1, onCharacterChange)
+                            },
+                            modifier = Modifier.weight(1f)
+                        )
+
                         Text(
-                            text = character.wounds[0].toString(),
+                            text = "/ $maxWounds",
                             color = Brown1,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(1f)
-                                .padding(horizontal = 8.dp),
-                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(end = 16.dp)
                         )
                     }
+
                 }
             }
         }
+
         item {
             Box(
                 modifier = Modifier
@@ -302,6 +343,17 @@ private fun WoundsHeaderRow() {
 
 @Composable
 private fun WoundsRow(character: CharacterItem) {
+    val strengthCurrent = character.strength.getOrNull(2) ?: 0
+    val toughnessCurrent = character.toughness.getOrNull(2) ?: 0
+    val willpowerCurrent = character.willPower.getOrNull(2) ?: 0
+
+    fun bonus(value: Int) = (value / 10).coerceAtLeast(0)
+
+    val sb = bonus(strengthCurrent)
+    val tbx2 = bonus(toughnessCurrent) * 2
+    val wpb = bonus(willpowerCurrent)
+    val hardy = 1
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -310,7 +362,7 @@ private fun WoundsRow(character: CharacterItem) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = character.strength[0].toString(),
+            text = sb.toString(),
             color = Brown1,
             modifier = Modifier
                 .fillMaxWidth()
@@ -322,7 +374,7 @@ private fun WoundsRow(character: CharacterItem) {
         VerticalGridDivider()
 
         Text(
-            text = character.strength[0].toString(),
+            text = tbx2.toString(),
             color = Brown1,
             modifier = Modifier
                 .fillMaxWidth()
@@ -334,7 +386,7 @@ private fun WoundsRow(character: CharacterItem) {
         VerticalGridDivider()
 
         Text(
-            text = character.strength[0].toString(),
+            text = wpb.toString(),
             color = Brown1,
             modifier = Modifier
                 .fillMaxWidth()
@@ -346,7 +398,7 @@ private fun WoundsRow(character: CharacterItem) {
         VerticalGridDivider()
 
         Text(
-            text = character.strength[0].toString(),
+            text = hardy.toString(),
             color = Brown1,
             modifier = Modifier
                 .fillMaxWidth()
@@ -365,6 +417,46 @@ private data class AttributeRowState(
     val current: Int,
     val onAdvancesChange: (Int) -> Unit
 )
+
+@Composable
+private fun PointsStepperCell(
+    value: Int,
+    onIncrement: () -> Unit,
+    onDecrement: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxHeight()
+            .background(Brown1)
+            .padding(horizontal = 4.dp, vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        Text(
+            text = "<",
+            modifier = Modifier
+                .padding(horizontal = 4.dp)
+                .clickable { onDecrement() },
+            color = Black1,
+            textAlign = TextAlign.Center
+        )
+        Text(
+            text = value.toString(),
+            modifier = Modifier.padding(horizontal = 4.dp),
+            color = Black1,
+            textAlign = TextAlign.Center
+        )
+        Text(
+            text = ">",
+            modifier = Modifier
+                .padding(horizontal = 4.dp)
+                .clickable { onIncrement() },
+            color = Black1,
+            textAlign = TextAlign.Center
+        )
+    }
+}
 
 @Composable
 private fun AttributeHeader() {
@@ -444,6 +536,8 @@ private fun AttributeRow(
     row: AttributeRowState,
     upgradable: Boolean = true
 ) {
+    val showDialog = remember { mutableStateOf(false) }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -487,7 +581,7 @@ private fun AttributeRow(
         VerticalGridDivider()
 
         IconButton(
-            onClick = { },
+            onClick = { if (upgradable) showDialog.value = true },
             colors = iconButtonColors(
                 containerColor = if (upgradable) Brown1 else Black1
             ),
@@ -513,6 +607,58 @@ private fun AttributeRow(
             textAlign = TextAlign.Center
         )
     }
+
+    if (showDialog.value) {
+        AdvancesDialog(
+            title = row.fullLabel,
+            currentAdvances = row.advances,
+            onDismiss = { showDialog.value = false },
+            onConfirm = { newAdv ->
+                showDialog.value = false
+                row.onAdvancesChange(newAdv)
+            }
+        )
+    }
+}
+
+@Composable
+private fun AdvancesDialog(
+    title: String,
+    currentAdvances: Int,
+    onDismiss: () -> Unit,
+    onConfirm: (Int) -> Unit
+) {
+    val tempAdv = remember { mutableIntStateOf(currentAdvances.coerceAtLeast(0)) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(title) },
+        text = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                PointsStepperCell(
+                    value = tempAdv.intValue,
+                    onIncrement = { tempAdv.intValue += 1 },
+                    onDecrement = { tempAdv.intValue = (tempAdv.intValue - 1).coerceAtLeast(0) }
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = { onConfirm(tempAdv.intValue) }) {
+                Text("OK")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
 }
 
 @Composable

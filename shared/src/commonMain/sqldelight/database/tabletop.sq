@@ -56,19 +56,21 @@ CREATE TABLE characterEntity (
     partyAmbitionLongTerm TEXT NOT NULL,
     partyMembers TEXT NOT NULL,
 
-    -- ARMOUR & WEAPONS (JSON Arrays as TEXT)
+    -- ARMOUR, WEAPONS & TRAPPINGS (JSON Arrays as TEXT)
     armour TEXT NOT NULL,
     weapons TEXT NOT NULL,
-
-    -- TRAPPINGS, PSYCHOLOGY, MUTATIONS
     trappings TEXT NOT NULL,
+
+    -- PSYCHOLOGY, MUTATIONS
     psychology TEXT NOT NULL,
     mutations TEXT NOT NULL,
+    corruption TEXT NOT NULL,
 
     -- WEALTH, ENCUMBRANCE, WOUNDS (JSON Arrays as TEXT)
     wealth TEXT NOT NULL,
     encumbrance TEXT NOT NULL,
     wounds TEXT NOT NULL,
+    woundsFormula TEXT NOT NULL,
 
     -- SPELLS & PRAYERS
     spells TEXT NOT NULL,
@@ -322,9 +324,11 @@ INTO characterEntity (
     trappings,
     psychology,
     mutations,
+    corruption,
     wealth,
     encumbrance,
     wounds,
+    woundsFormula,
     spells,
     prayers,
     sin,
@@ -333,12 +337,12 @@ INTO characterEntity (
     deletedAt
 )
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,
-    ?, ?, ?, ?, ?, ?, ?, ?,
+    ?, ?, ?, ?, ?, ?, ?, ?, ?,
     ?, ?, ?, ?, ?, ?, ?, ?,
     ?, ?, ?, ?, ?, ?, ?, ?,
     ?, ?, ?, ?, ?,
     ?, ?, ?, ?, ?, ?, ?,
-    ?, ?, ?, ?, ?, ?, ?, ?
+    ?, ?, ?, ?, ?, ?, ?, ?, ?
     );
 
 updateCharacterEntity:
@@ -388,6 +392,7 @@ SET
     trappings = ?,
     psychology = ?,
     mutations = ?,
+    corruption = ?,
     wealth = ?,
     encumbrance = ?,
     wounds = ?,
