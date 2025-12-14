@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.CharacterSheetEvent
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.party.components.PartyAmbitionsSection
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.party.components.PartyMembersSection
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.party.components.PartyNameSection
@@ -16,7 +17,7 @@ import com.kaesik.tabletopwarhammer.core.domain.character.CharacterItem
 @Composable
 fun CharacterSheetPartyTab(
     character: CharacterItem,
-    onCharacterChange: (CharacterItem) -> Unit
+    onEvent: (CharacterSheetEvent) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -28,7 +29,7 @@ fun CharacterSheetPartyTab(
             PartyNameSection(
                 name = character.partyName,
                 onNameChange = { newName ->
-                    onCharacterChange(character.copy(partyName = newName))
+                    onEvent(CharacterSheetEvent.SetPartyName(newName))
                 }
             )
         }
@@ -37,7 +38,7 @@ fun CharacterSheetPartyTab(
             PartyMembersSection(
                 members = character.partyMembers,
                 onMembersChange = { newMembers ->
-                    onCharacterChange(character.copy(partyMembers = newMembers))
+                    onEvent(CharacterSheetEvent.SetPartyMembers(newMembers))
                 }
             )
         }
@@ -46,12 +47,20 @@ fun CharacterSheetPartyTab(
             PartyAmbitionsSection(
                 shortTerm = character.partyAmbitionShortTerm,
                 longTerm = character.partyAmbitionLongTerm,
-                onShortTermChange = { newShortTerm ->
-                    onCharacterChange(character.copy(partyAmbitionShortTerm = newShortTerm))
+                onShortTermChange = { newShort ->
+                    onEvent(
+                        CharacterSheetEvent.SetPartyAmbitions(
+                            shortTerm = newShort
+                        )
+                    )
                 },
-                onLongTermChange = { newLongTerm ->
-                    onCharacterChange(character.copy(partyAmbitionLongTerm = newLongTerm))
-                },
+                onLongTermChange = { newLong ->
+                    onEvent(
+                        CharacterSheetEvent.SetPartyAmbitions(
+                            longTerm = newLong
+                        )
+                    )
+                }
             )
         }
     }
@@ -71,6 +80,6 @@ fun CharacterSheetPartyTabPreview() {
 
     CharacterSheetPartyTab(
         character = character,
-        onCharacterChange = {}
+        onEvent = {}
     )
 }

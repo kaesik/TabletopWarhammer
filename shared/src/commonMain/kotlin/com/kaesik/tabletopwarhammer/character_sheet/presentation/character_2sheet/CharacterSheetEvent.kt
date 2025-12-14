@@ -48,4 +48,46 @@ sealed class CharacterSheetEvent {
 
     data class SetCorruption(val value: Int) : CharacterSheetEvent()
     data object AddMutation : CharacterSheetEvent()
+
+    // ATTRIBUTES
+    enum class Attribute {
+        WS, BS, S, T, I, Ag, Dex, Int, WP, Fel
+    }
+
+    data class SetAttributeAdvances(
+        val attribute: Attribute,
+        val advances: Int
+    ) : CharacterSheetEvent()
+
+    data class ChangeCurrentWounds(val delta: Int) : CharacterSheetEvent()
+
+    // SKILLS
+    data class SetSkillAdvances(
+        val name: String,
+        val isBasic: Boolean,
+        val advances: Int
+    ) : CharacterSheetEvent()
+
+    data object AddAdvancedSkill : CharacterSheetEvent()
+
+    // TALENTS
+    data class SetTalentCount(
+        val name: String,
+        val count: Int
+    ) : CharacterSheetEvent()
+
+    data object AddTalent : CharacterSheetEvent()
+
+    // PARTY
+    data class SetPartyName(val name: String) : CharacterSheetEvent()
+
+    data class SetPartyAmbitions(
+        val shortTerm: String? = null,
+        val longTerm: String? = null
+    ) : CharacterSheetEvent()
+
+    data class SetPartyMembers(val members: List<List<String>>) : CharacterSheetEvent()
+
+    data object AddPartyMember : CharacterSheetEvent()
+
 }

@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.CharacterSheetEvent
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.components.CharacterSheetEmptyRow
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.components.CharacterSheetSectionCard
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.components.CharacterSheetSectionHeader
@@ -29,13 +30,12 @@ fun SkillsSection(
     entries: List<List<String>>,
     isBasic: Boolean,
     character: CharacterItem,
-    onCharacterChange: (CharacterItem) -> Unit
+    onEvent: (CharacterSheetEvent) -> Unit
 ) {
     CharacterSheetSectionCard(
         header = { CharacterSheetSectionHeader(text = title) }
     ) {
         Column {
-            // HEADER ROW
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -100,7 +100,7 @@ fun SkillsSection(
                         name = entry.key,
                         entries = entry.value,
                         isBasic = isBasic,
-                        onCharacterChange = onCharacterChange
+                        onEvent = onEvent
                     )
                     SkillRow(row)
                     if (index != list.lastIndex) {
@@ -117,21 +117,7 @@ fun SkillsSection(
                         .height(32.dp)
                         .background(Brown1)
                         .clickable {
-                            val baseName = "New Advanced Skill"
-                            val existingCount = character.advancedSkills.count {
-                                it
-                                    .getOrNull(0)
-                                    ?.startsWith(baseName) == true
-                            }
-                            val newName = if (existingCount == 0) {
-                                baseName
-                            } else {
-                                "$baseName ${existingCount + 1}"
-                            }
-
-                            val newList = character.advancedSkills.toMutableList()
-                            newList.add(listOf(newName, "Int", "0"))
-                            onCharacterChange(character.copy(advancedSkills = newList))
+                            onEvent(CharacterSheetEvent.AddAdvancedSkill)
                         },
                     contentAlignment = Alignment.Center
                 ) {

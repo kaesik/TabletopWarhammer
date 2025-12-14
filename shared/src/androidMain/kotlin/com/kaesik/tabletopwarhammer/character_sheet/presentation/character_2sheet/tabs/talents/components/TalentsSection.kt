@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.CharacterSheetEvent
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.components.CharacterSheetEmptyRow
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.components.CharacterSheetSectionCard
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.components.CharacterSheetSectionHeader
@@ -26,7 +27,7 @@ import com.kaesik.tabletopwarhammer.core.theme.Brown1
 @Composable
 fun TalentsSection(
     character: CharacterItem,
-    onCharacterChange: (CharacterItem) -> Unit
+    onEvent: (CharacterSheetEvent) -> Unit
 ) {
     CharacterSheetSectionCard(
         header = { CharacterSheetSectionHeader(text = "Talents") }
@@ -73,15 +74,16 @@ fun TalentsSection(
                         name = entry.key,
                         count = entry.value.size,
                         onCountChange = { newCount ->
-                            val updated = updateTalentCount(
-                                character = character,
-                                name = entry.key,
-                                newCount = newCount
+                            onEvent(
+                                CharacterSheetEvent.SetTalentCount(
+                                    name = entry.key,
+                                    count = newCount
+                                )
                             )
-                            onCharacterChange(character.copy(talents = updated))
                         }
                     )
                     TalentRow(row)
+
                     if (index != entries.lastIndex) {
                         HorizontalDivider(thickness = 1.dp, color = Brown1)
                     }
@@ -95,10 +97,7 @@ fun TalentsSection(
                     .height(32.dp)
                     .background(Brown1)
                     .clickable {
-                        val newList = character.talents.toMutableList()
-                        val newIndex = character.talents.size + 1
-                        newList.add(listOf("New Talent $newIndex"))
-                        onCharacterChange(character.copy(talents = newList))
+                        onEvent(CharacterSheetEvent.AddTalent)
                     },
                 contentAlignment = Alignment.Center
             ) {

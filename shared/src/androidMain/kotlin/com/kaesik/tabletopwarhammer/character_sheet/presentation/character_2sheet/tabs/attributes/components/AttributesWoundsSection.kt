@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.CharacterSheetEvent
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.components.CharacterSheetSectionCard
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.components.CharacterSheetSectionHeader
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.components.CharacterSheetStepper
@@ -24,7 +25,7 @@ import com.kaesik.tabletopwarhammer.core.theme.Brown1
 @Composable
 fun AttributesWoundsSection(
     character: CharacterItem,
-    onCharacterChange: (CharacterItem) -> Unit
+    onEvent: (CharacterSheetEvent) -> Unit
 ) {
     CharacterSheetSectionCard(
         header = { CharacterSheetSectionHeader(text = "Wounds") }
@@ -101,12 +102,10 @@ fun AttributesWoundsSection(
                 CharacterSheetStepper(
                     value = currentWounds,
                     onIncrement = {
-                        val newList = updateCurrentWoundsInternal(character, +1)
-                        onCharacterChange(character.copy(wounds = newList))
+                        onEvent(CharacterSheetEvent.ChangeCurrentWounds(+1))
                     },
                     onDecrement = {
-                        val newList = updateCurrentWoundsInternal(character, -1)
-                        onCharacterChange(character.copy(wounds = newList))
+                        onEvent(CharacterSheetEvent.ChangeCurrentWounds(-1))
                     },
                     modifier = Modifier.weight(1f)
                 )

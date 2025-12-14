@@ -36,7 +36,6 @@ import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2shee
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.points.CharacterSheetPointsTab
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.skills.CharacterSheetSkillsTab
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.talents.CharacterSheetTalentsTab
-import com.kaesik.tabletopwarhammer.core.domain.character.CharacterItem
 import com.kaesik.tabletopwarhammer.core.presentation.MainScaffold
 import com.kaesik.tabletopwarhammer.core.presentation.components.SnackbarType
 import com.kaesik.tabletopwarhammer.core.presentation.components.WarhammerButton
@@ -150,23 +149,17 @@ fun CharacterSheetScreen(
 
                     CharacterSheetTab.Attributes -> CharacterSheetAttributesTab(
                         character = character,
-                        onCharacterChange = { updated ->
-                            onEvent(CharacterSheetEvent.UpdateCharacter(updated))
-                        }
+                        onEvent = onEvent
                     )
 
                     CharacterSheetTab.Skills -> CharacterSheetSkillsTab(
                         character = character,
-                        onCharacterChange = { updated ->
-                            onEvent(CharacterSheetEvent.UpdateCharacter(updated))
-                        }
+                        onEvent = onEvent
                     )
 
                     CharacterSheetTab.Talents -> CharacterSheetTalentsTab(
                         character = character,
-                        onCharacterChange = { updated ->
-                            onEvent(CharacterSheetEvent.UpdateCharacter(updated))
-                        }
+                        onEvent = onEvent
                     )
 
                     CharacterSheetTab.Inventory -> CharacterSheetInventoryTab(
@@ -185,9 +178,7 @@ fun CharacterSheetScreen(
 
                     CharacterSheetTab.Party -> CharacterSheetPartyTab(
                         character = character,
-                        onCharacterChange = { updated ->
-                            onEvent(CharacterSheetEvent.UpdateCharacter(updated))
-                        }
+                        onEvent = onEvent
                     )
 
                     CharacterSheetTab.Combat -> CharacterSheetCombatTab(
