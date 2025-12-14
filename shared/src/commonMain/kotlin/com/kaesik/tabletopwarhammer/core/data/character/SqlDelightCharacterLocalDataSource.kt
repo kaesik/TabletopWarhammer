@@ -121,7 +121,7 @@ class SqlDelightCharacterLocalDataSource(
             partyAmbitionShortTerm = characterItem.partyAmbitionShortTerm,
             partyAmbitionLongTerm = characterItem.partyAmbitionLongTerm,
             partyMembers = json.encodeToString(
-                ListSerializer(String.serializer()),
+                ListSerializer(ListSerializer(String.serializer())),
                 characterItem.partyMembers
             ),
             armour = json.encodeToString(
@@ -253,7 +253,7 @@ class SqlDelightCharacterLocalDataSource(
             partyAmbitionShortTerm = characterItem.partyAmbitionShortTerm,
             partyAmbitionLongTerm = characterItem.partyAmbitionLongTerm,
             partyMembers = json.encodeToString(
-                ListSerializer(String.serializer()),
+                ListSerializer(ListSerializer(String.serializer())),
                 characterItem.partyMembers
             ),
             armour = json.encodeToString(

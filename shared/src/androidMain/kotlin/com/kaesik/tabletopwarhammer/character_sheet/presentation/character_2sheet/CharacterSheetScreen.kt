@@ -28,11 +28,11 @@ import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2shee
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.CharacterSheetCombatTab
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.CharacterSheetInventoryTab
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.CharacterSheetNotesTab
-import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.CharacterSheetPartyTab
-import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.CharacterSheetSkillsTab
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.party.CharacterSheetPartyTab
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.skills.CharacterSheetSkillsTab
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.CharacterSheetSpellsAndPrayersTab
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.CharacterSheetTab
-import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.CharacterSheetTalentsTab
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.talents.CharacterSheetTalentsTab
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.attributes.CharacterSheetAttributesTab
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.general.CharacterSheetGeneralTab
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.points.CharacterSheetPointsTab
@@ -43,6 +43,7 @@ import com.kaesik.tabletopwarhammer.core.presentation.components.WarhammerButton
 import com.kaesik.tabletopwarhammer.core.presentation.components.showWarhammerSnackbar
 import org.koin.androidx.compose.koinViewModel
 
+// TODO: CLEAN THAT THING UP LATER
 @Composable
 fun CharacterSheetScreenRoot(
     viewModel: AndroidCharacterSheetViewModel = koinViewModel(),

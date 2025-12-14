@@ -209,22 +209,22 @@ private fun GeneralPointsHeader() {
 
 @Composable
 fun GeneralTextField(
-    label: String,
+    label: String? = null,
     value: String,
     onValueChange: (String) -> Unit,
     singleLine: Boolean = false,
     modifier: Modifier = Modifier.fillMaxWidth()
 ) {
     Column {
-        if (label.isNotBlank()) {
+        if (label != null) {
             Text(
                 text = label,
                 style = MaterialTheme.typography.labelMedium,
                 color = Brown1
             )
-        }
 
-        Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(8.dp))
+        }
 
         Box(
             modifier = modifier

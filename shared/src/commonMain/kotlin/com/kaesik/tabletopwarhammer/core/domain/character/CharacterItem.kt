@@ -65,7 +65,8 @@ data class CharacterItem(
     val partyName: String,
     val partyAmbitionShortTerm: String,
     val partyAmbitionLongTerm: String,
-    val partyMembers: List<String>,
+    // PARTY_MEMBERS[MEMBER[NAME,NOTES]]
+    val partyMembers: List<List<String>>,
 
     // ARMOUR
     // ARMOUR[NAME[LOCATIONS,ENC,AP,QUALITIES]

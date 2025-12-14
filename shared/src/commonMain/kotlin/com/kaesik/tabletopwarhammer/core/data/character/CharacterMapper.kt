@@ -60,7 +60,7 @@ fun CharacterEntity.toCharacterItem(): CharacterItem {
         partyName = partyName,
         partyAmbitionShortTerm = partyAmbitionShortTerm,
         partyAmbitionLongTerm = partyAmbitionLongTerm,
-        partyMembers = parseStringList(partyMembers),
+        partyMembers = parseListOfStringLists(partyMembers),
         armour = parseListOfStringLists(armour),
         weapons = parseListOfStringLists(weapons),
         trappings = parseStringList(trappings),
