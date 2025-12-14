@@ -28,14 +28,14 @@ import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2shee
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.CharacterSheetCombatTab
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.CharacterSheetInventoryTab
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.CharacterSheetNotesTab
-import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.party.CharacterSheetPartyTab
-import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.skills.CharacterSheetSkillsTab
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.CharacterSheetSpellsAndPrayersTab
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.CharacterSheetTab
-import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.talents.CharacterSheetTalentsTab
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.attributes.CharacterSheetAttributesTab
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.general.CharacterSheetGeneralTab
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.party.CharacterSheetPartyTab
 import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.points.CharacterSheetPointsTab
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.skills.CharacterSheetSkillsTab
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.talents.CharacterSheetTalentsTab
 import com.kaesik.tabletopwarhammer.core.domain.character.CharacterItem
 import com.kaesik.tabletopwarhammer.core.presentation.MainScaffold
 import com.kaesik.tabletopwarhammer.core.presentation.components.SnackbarType
@@ -58,8 +58,8 @@ fun CharacterSheetScreenRoot(
                 message = message,
                 type = if (state.isError) SnackbarType.Error else SnackbarType.Success
             )
+            viewModel.onEvent(CharacterSheetEvent.ClearMessage)
         }
-        viewModel.onEvent(CharacterSheetEvent.ClearMessage)
     }
 
     LaunchedEffect(characterId) {
@@ -84,7 +84,6 @@ fun CharacterSheetScreenRoot(
 
     CharacterSheetScreen(
         state = state,
-        character = character,
         onEvent = viewModel::onEvent
     )
 }
@@ -92,25 +91,20 @@ fun CharacterSheetScreenRoot(
 @Composable
 fun CharacterSheetScreen(
     state: CharacterSheetState,
-    character: CharacterItem,
     onEvent: (CharacterSheetEvent) -> Unit
 ) {
+    val character = state.character ?: return
+
     var currentTab by rememberSaveable { mutableStateOf(CharacterSheetTab.General) }
     val tabs = CharacterSheetTab.entries
 
-    var editableCharacter by remember(character.id) {
-        mutableStateOf(character)
-    }
-
     MainScaffold(
-        title = editableCharacter.name,
+        title = character.name,
         isLoading = state.isLoading,
         isError = state.isError,
         error = state.error,
         content = {
             Column(Modifier.fillMaxSize()) {
-
-                // SAVE BUTTON
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -118,14 +112,13 @@ fun CharacterSheetScreen(
                     horizontalArrangement = Arrangement.End
                 ) {
                     WarhammerButton(
-                        onClick = { onEvent(CharacterSheetEvent.SaveCharacter(editableCharacter)) },
+                        onClick = { onEvent(CharacterSheetEvent.SaveCharacter) },
                         text = if (state.isSaving) "Saving..." else "Save",
                         isLoading = state.isSaving,
                         enabled = !state.isSaving
                     )
                 }
 
-                // SCROLLABLE TAB "CHMURKI"
                 LazyRow(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -144,56 +137,71 @@ fun CharacterSheetScreen(
                     }
                 }
 
-                // TAB CONTENT
                 when (currentTab) {
                     CharacterSheetTab.General -> CharacterSheetGeneralTab(
-                        character = editableCharacter,
-                        onCharacterChange = { editableCharacter = it }
+                        character = character,
+                        onEvent = onEvent
                     )
 
                     CharacterSheetTab.Points -> CharacterSheetPointsTab(
-                        character = editableCharacter,
-                        onCharacterChange = { editableCharacter = it }
+                        character = character,
+                        onEvent = onEvent
                     )
 
                     CharacterSheetTab.Attributes -> CharacterSheetAttributesTab(
-                        character = editableCharacter,
-                        onCharacterChange = { editableCharacter = it }
+                        character = character,
+                        onCharacterChange = { updated ->
+                            onEvent(CharacterSheetEvent.UpdateCharacter(updated))
+                        }
                     )
 
                     CharacterSheetTab.Skills -> CharacterSheetSkillsTab(
-                        character = editableCharacter,
-                        onCharacterChange = { editableCharacter = it }
+                        character = character,
+                        onCharacterChange = { updated ->
+                            onEvent(CharacterSheetEvent.UpdateCharacter(updated))
+                        }
                     )
 
                     CharacterSheetTab.Talents -> CharacterSheetTalentsTab(
-                        character = editableCharacter,
-                        onCharacterChange = { editableCharacter = it }
+                        character = character,
+                        onCharacterChange = { updated ->
+                            onEvent(CharacterSheetEvent.UpdateCharacter(updated))
+                        }
                     )
 
                     CharacterSheetTab.Inventory -> CharacterSheetInventoryTab(
-                        character = editableCharacter,
-                        onCharacterChange = { editableCharacter = it }
+                        character = character,
+                        onCharacterChange = { updated ->
+                            onEvent(CharacterSheetEvent.UpdateCharacter(updated))
+                        }
                     )
 
                     CharacterSheetTab.SpellsAndPrayers -> CharacterSheetSpellsAndPrayersTab(
-                        character = editableCharacter,
-                        onCharacterChange = { editableCharacter = it }
+                        character = character,
+                        onCharacterChange = { updated ->
+                            onEvent(CharacterSheetEvent.UpdateCharacter(updated))
+                        }
                     )
 
                     CharacterSheetTab.Party -> CharacterSheetPartyTab(
-                        character = editableCharacter,
-                        onCharacterChange = { editableCharacter = it }
+                        character = character,
+                        onCharacterChange = { updated ->
+                            onEvent(CharacterSheetEvent.UpdateCharacter(updated))
+                        }
                     )
 
                     CharacterSheetTab.Combat -> CharacterSheetCombatTab(
-                        character = editableCharacter,
-                        onCharacterChange = { editableCharacter = it }
+                        character = character,
+                        onCharacterChange = { updated ->
+                            onEvent(CharacterSheetEvent.UpdateCharacter(updated))
+                        }
                     )
 
                     CharacterSheetTab.Notes -> CharacterSheetNotesTab(
-                        character = editableCharacter,
-                        onCharacterChange = { editableCharacter = it }
+                        character = character,
+                        onCharacterChange = { updated ->
+                            onEvent(CharacterSheetEvent.UpdateCharacter(updated))
+                        }
                     )
                 }
             }
@@ -205,70 +213,7 @@ fun CharacterSheetScreen(
 @Composable
 fun CharacterSheetScreenPreview() {
     CharacterSheetScreen(
-        state = CharacterSheetState(
-            isLoading = false,
-            isError = false,
-            error = null,
-            character = null
-        ),
+        state = CharacterSheetState(),
         onEvent = {},
-        character = CharacterItem(
-            id = 1,
-            name = "Test",
-            species = "Human",
-            cLass = "Warrior",
-            career = "Soldier",
-            careerLevel = "Recruit",
-            careerPath = "Soldier",
-            status = "Brass 2",
-            age = "25",
-            height = "175 cm",
-            hair = "Brown",
-            eyes = "Blue",
-            weaponSkill = listOf(30),
-            ballisticSkill = listOf(25),
-            strength = listOf(32),
-            toughness = listOf(34),
-            initiative = listOf(28),
-            agility = listOf(29),
-            dexterity = listOf(30),
-            intelligence = listOf(31),
-            willPower = listOf(33),
-            fellowship = listOf(35),
-            fate = 2,
-            fortune = 2,
-            resilience = 1,
-            resolve = 1,
-            motivation = "Honor",
-            experience = listOf(0),
-            movement = 4,
-            walk = 8,
-            run = 12,
-            basicSkills = emptyList(),
-            advancedSkills = emptyList(),
-            talents = emptyList(),
-            ambitionShortTerm = "",
-            ambitionLongTerm = "",
-            partyName = "",
-            partyAmbitionShortTerm = "",
-            partyAmbitionLongTerm = "",
-            partyMembers = emptyList(),
-            armour = emptyList(),
-            weapons = emptyList(),
-            trappings = emptyList(),
-            psychology = emptyList(),
-            mutations = emptyList(),
-            corruption = 0,
-            wealth = listOf(10, 0, 0),
-            encumbrance = emptyList(),
-            wounds = emptyList(),
-            woundsFormula = "xxx",
-            spells = emptyList(),
-            prayers = emptyList(),
-            sin = 0,
-            createdAt = "",
-            updatedAt = "",
-            deletedAt = ""
-        )
     )
 }

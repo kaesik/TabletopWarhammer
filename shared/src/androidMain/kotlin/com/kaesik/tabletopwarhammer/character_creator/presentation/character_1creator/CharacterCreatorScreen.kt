@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorButton
 import com.kaesik.tabletopwarhammer.character_creator.presentation.components.CharacterCreatorTitle
-import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.CharacterSheetEvent
 import com.kaesik.tabletopwarhammer.core.presentation.MainScaffold
 import com.kaesik.tabletopwarhammer.core.presentation.components.SnackbarType
 import com.kaesik.tabletopwarhammer.core.presentation.components.showWarhammerSnackbar
@@ -121,7 +120,6 @@ fun CharacterCreatorScreen(
         }
     )
 }
-
 
 @Preview
 @Composable

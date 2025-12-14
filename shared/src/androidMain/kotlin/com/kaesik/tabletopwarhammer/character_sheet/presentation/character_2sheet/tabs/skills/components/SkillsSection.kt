@@ -1,0 +1,147 @@
+package com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.tabs.skills.components
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.components.CharacterSheetEmptyRow
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.components.CharacterSheetSectionCard
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.components.CharacterSheetSectionHeader
+import com.kaesik.tabletopwarhammer.character_sheet.presentation.character_2sheet.components.CharacterSheetVerticalDivider
+import com.kaesik.tabletopwarhammer.core.domain.character.CharacterItem
+import com.kaesik.tabletopwarhammer.core.theme.Black1
+import com.kaesik.tabletopwarhammer.core.theme.Brown1
+
+@Composable
+fun SkillsSection(
+    title: String,
+    entries: List<List<String>>,
+    isBasic: Boolean,
+    character: CharacterItem,
+    onCharacterChange: (CharacterItem) -> Unit
+) {
+    CharacterSheetSectionCard(
+        header = { CharacterSheetSectionHeader(text = title) }
+    ) {
+        Column {
+            // HEADER ROW
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(32.dp)
+                    .background(Black1),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Name",
+                    modifier = Modifier
+                        .weight(3f)
+                        .padding(horizontal = 8.dp),
+                    color = Brown1,
+                    textAlign = TextAlign.Center
+                )
+
+                CharacterSheetVerticalDivider()
+
+                Text(
+                    text = "Characteristic",
+                    modifier = Modifier
+                        .weight(3f)
+                        .padding(horizontal = 8.dp),
+                    color = Brown1,
+                    textAlign = TextAlign.Center
+                )
+
+                CharacterSheetVerticalDivider()
+
+                Text(
+                    text = "Adv",
+                    modifier = Modifier
+                        .weight(2f)
+                        .padding(horizontal = 8.dp),
+                    color = Brown1,
+                    textAlign = TextAlign.Center
+                )
+
+                CharacterSheetVerticalDivider()
+
+                Text(
+                    text = "Skill",
+                    modifier = Modifier
+                        .weight(2f)
+                        .padding(horizontal = 8.dp),
+                    color = Brown1,
+                    textAlign = TextAlign.Center
+                )
+            }
+
+            HorizontalDivider(thickness = 1.dp, color = Brown1)
+
+            val grouped = entries.groupBy { it.getOrNull(0).orEmpty() }
+            val list = grouped.entries.toList()
+
+            if (list.isEmpty()) {
+                CharacterSheetEmptyRow(text = "None")
+            } else {
+                list.forEachIndexed { index, entry ->
+                    val row = buildSkillRowState(
+                        character = character,
+                        name = entry.key,
+                        entries = entry.value,
+                        isBasic = isBasic,
+                        onCharacterChange = onCharacterChange
+                    )
+                    SkillRow(row)
+                    if (index != list.lastIndex) {
+                        HorizontalDivider(thickness = 1.dp, color = Brown1)
+                    }
+                }
+            }
+
+            if (!isBasic) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp)
+                        .height(32.dp)
+                        .background(Brown1)
+                        .clickable {
+                            val baseName = "New Advanced Skill"
+                            val existingCount = character.advancedSkills.count {
+                                it
+                                    .getOrNull(0)
+                                    ?.startsWith(baseName) == true
+                            }
+                            val newName = if (existingCount == 0) {
+                                baseName
+                            } else {
+                                "$baseName ${existingCount + 1}"
+                            }
+
+                            val newList = character.advancedSkills.toMutableList()
+                            newList.add(listOf(newName, "Int", "0"))
+                            onCharacterChange(character.copy(advancedSkills = newList))
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Add advanced skill",
+                        color = Black1,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+        }
+    }
+}
