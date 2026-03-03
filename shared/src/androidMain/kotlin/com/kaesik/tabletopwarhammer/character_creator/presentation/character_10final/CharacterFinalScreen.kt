@@ -31,6 +31,7 @@ import com.kaesik.tabletopwarhammer.core.presentation.components.WarhammerSnackb
 import com.kaesik.tabletopwarhammer.core.presentation.components.showWarhammerSnackbar
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.getKoin
+import androidx.compose.runtime.collectAsState
 
 @Composable
 fun CharacterFinalScreenRoot(
@@ -42,7 +43,7 @@ fun CharacterFinalScreenRoot(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val creatorState by creatorViewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
-    val character = creatorViewModel.state.value.character
+    val character = creatorViewModel.state.collectAsState().value.character
 
     var isSaving by remember { mutableStateOf(false) }
 
