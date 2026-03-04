@@ -25,6 +25,22 @@ val CaslonAntiqueText = FontFamily(
 
 
 val typography = Typography(
+    titleSmall = TextStyle(
+        fontFamily = CaslonAntiqueText,
+        fontWeight = FontWeight.Bold,
+        fontSize = 16.sp
+    ),
+    titleMedium = TextStyle(
+        fontFamily = CaslonAntiqueText,
+        fontWeight = FontWeight.Bold,
+        fontSize = 20.sp
+    ),
+    titleLarge = TextStyle(
+        fontFamily = CaslonAntiqueText,
+        fontWeight = FontWeight.Bold,
+        fontSize = 24.sp
+    ),
+
     bodySmall = TextStyle(
         fontFamily = CaslonAntiqueText,
         fontWeight = FontWeight.Normal,

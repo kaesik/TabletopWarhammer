@@ -4,7 +4,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.Help
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Login
@@ -16,8 +17,11 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,6 +31,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kaesik.tabletopwarhammer.core.domain.util.SessionManager.isLoggedIn
+import com.kaesik.tabletopwarhammer.core.theme.Black1
+import com.kaesik.tabletopwarhammer.core.theme.Brown1
+import com.kaesik.tabletopwarhammer.core.theme.Brown2
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,17 +46,23 @@ fun MainTopBar(
     onLogoutClick: () -> Unit = {},
     onLoginClick: () -> Unit = {},
     showBackButton: Boolean = true,
+    showInfoButton: Boolean = true,
     showMenuButton: Boolean = true,
 ) {
     var expanded by remember { mutableStateOf(false) }
 
     TopAppBar(
-        title = { Text(title) },
+        title = {
+            Text(
+                text = title,
+                style = typography.titleLarge
+            )
+        },
         navigationIcon = {
             if (showBackButton) {
                 IconButton(onClick = onBackClick) {
                     Icon(
-                        Icons.Default.ArrowBack,
+                        Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back"
                     )
                 }
@@ -58,6 +71,11 @@ fun MainTopBar(
             }
         },
         actions = {
+            if (showInfoButton) {
+                IconButton(onClick = {}) {
+                    Icon(Icons.AutoMirrored.Filled.Help, contentDescription = "Info")
+                }
+            }
             if (showMenuButton) {
                 Box {
                     IconButton(onClick = { expanded = true }) {
@@ -123,7 +141,13 @@ fun MainTopBar(
                     }
                 }
             }
-        }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Black1,
+            titleContentColor = Brown1,
+            navigationIconContentColor = Brown1,
+            actionIconContentColor = Brown1
+        ),
     )
 }
 

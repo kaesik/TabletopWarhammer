@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.MenuBook
@@ -12,11 +13,14 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.kaesik.tabletopwarhammer.core.theme.Black1
+import com.kaesik.tabletopwarhammer.core.theme.Brown1
 
 @Composable
 fun MainBottomBar(
@@ -24,7 +28,10 @@ fun MainBottomBar(
     onLibraryClick: () -> Unit = {},
     onUserClick: () -> Unit = {},
 ) {
-    BottomAppBar {
+    BottomAppBar(
+        containerColor = Black1,
+        contentColor = Brown1
+    ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly,
@@ -32,7 +39,7 @@ fun MainBottomBar(
         ) {
             IconButton(onClick = onLibraryClick) {
                 Icon(
-                    Icons.Default.MenuBook,
+                    Icons.AutoMirrored.Filled.MenuBook,
                     modifier = Modifier.size(64.dp),
                     contentDescription = "Library"
                 )
